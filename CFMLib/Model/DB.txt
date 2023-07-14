@@ -1,0 +1,37 @@
+CREATE DATABASE CoffeeShop;
+use CoffeeShop;
+
+create table Staff(
+StaffID int NOT NULL,
+StaffName varchar(50) NOT NULL,
+UserName varchar(10) NOT NULL,
+password varchar(20) NOT NULL,
+PRIMARY KEY (StaffID)
+);
+
+create table Orders(
+OrderID int NOT NULL,
+StaffID int NOT NULL,
+OrderDate datetime NOT NULL,
+OrderStatus int,
+PRIMARY KEY (OrderID),
+FOREIGN KEY (StaffID) REFERENCES Staff(StaffID)
+);
+
+create table Product(
+ProductID int NOT NULL,
+ProductName varchar(50) NOT NULL,
+Descriptions varchar(50),
+Quantity int,
+PRIMARY KEY (ProductID)
+);
+
+create table OrderDetails(
+OrderID int NOT NULL,
+ProductID int NOT NULL,
+Price decimal NOT NULL,
+Quantity int NOT NULL,
+PRIMARY KEY (OrderID, ProductID),
+FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+);

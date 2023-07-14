@@ -1,0 +1,15 @@
+C:\VTC\CFM(code)\testcode\bin\Debug\net7.0\testcode.exe
+C:\VTC\CFM(code)\testcode\bin\Debug\net7.0\testcode.deps.json
+C:\VTC\CFM(code)\testcode\bin\Debug\net7.0\testcode.runtimeconfig.json
+C:\VTC\CFM(code)\testcode\bin\Debug\net7.0\testcode.dll
+C:\VTC\CFM(code)\testcode\bin\Debug\net7.0\testcode.pdb
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.csproj.AssemblyReference.cache
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.GeneratedMSBuildEditorConfig.editorconfig
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.AssemblyInfoInputs.cache
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.AssemblyInfo.cs
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.csproj.CoreCompileInputs.cache
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.dll
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\refint\testcode.dll
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.pdb
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\testcode.genruntimeconfig.cache
+C:\VTC\CFM(code)\testcode\obj\Debug\net7.0\ref\testcode.dll
