@@ -16,6 +16,8 @@ namespace Model
         public Staff OrderStaffID { get; set;}
         public DateTime OrderDate { set; get; }
         public int Status { set; get; }
+        public char size {set; get;}
+        public decimal TotalPrice {set; get;}
         public List<Product> ProductsList { set; get; }
 
         public Product? this[int index]
