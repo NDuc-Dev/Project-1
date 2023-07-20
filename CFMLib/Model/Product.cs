@@ -1,3 +1,5 @@
+using System;
+
 namespace Model
 {
     public static class ProductStatus
@@ -10,11 +12,17 @@ namespace Model
     {
         public int ProductId { set; get; }
         public string ProductName { set; get; }
-        public decimal ProductPrice { set; get; }
-        public int Quantity { set; get; }
+        public Size ProductPrice { set; get; }
+        public Size ProductQuantity { set; get; }
         public string? Description { set; get; }
+        public Size ProductSize { set; get; }
+        public int ProductStatus { set; get; }
+        public Staff CreateBy { set; get; }
+        public Staff UpdateBy { set; get; }
+        public DateTime CreateTime { set; get; }
+        public DateTime UpdateTime { set; get; }
 
-        public Product ()
+        public Product()
         {
             ProductName = "no name";
         }

@@ -1,7 +1,19 @@
+using System;
+using Model;
+
 namespace UI
 {
     public class Ultilities
     {
+        public void Line()
+        {
+            Console.WriteLine("█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ ");
+        }
+
+        public void SmallLine()
+        {
+            Console.WriteLine("--------------------------------------------------");
+        }
         public int Menu(string? title, string[] item)
         {
             Console.Clear();
@@ -23,11 +35,25 @@ namespace UI
             while (choice <= 0 || choice > item.Count());
             return choice;
         }
+
         public void Title(string title)
         {
             Console.Clear();
-            System.Console.WriteLine(" " + title);
+            Line();
+            Console.WriteLine(" " + title);
+            Line();
+        }
 
+        public void PrintMenu(Product product)
+        {
+            Console.WriteLine("| {0, 5} | {1, 45} | ", product.ProductId,product.ProductName);
+            //                      Id   ProductName
+            SmallLine();
+        }
+
+        public void PrintProductDetails(Product product)
+        {
+            
         }
     }
 }
