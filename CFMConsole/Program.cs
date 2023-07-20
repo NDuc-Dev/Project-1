@@ -1,7 +1,6 @@
 ﻿using BL;
 using UI;
 using Model;
-
 public class Program
 {
     static void Main()
