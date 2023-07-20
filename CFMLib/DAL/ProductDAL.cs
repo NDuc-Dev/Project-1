@@ -1,5 +1,5 @@
 using MySqlConnector;
-using Model;
+using Persistence;
 
 namespace DAL
 {
@@ -14,13 +14,13 @@ namespace DAL
         private MySqlConnection connection = DbConfig.GetConnection();
 
         public Product GetProductById(int productId)
-         {
+        {
             Product product = new Product();
             try
             {
-                query = @"select product_id, product_name, unit_price, quantity, product_status,
-                        ifnull(product_description, '') as product_description
-                        from Product where product_id=@productId;";
+                query = @"select p.product_id, p.product_name, s.Product_Size, ps.price, ps.quantity, p.descriptions from products p 
+                        inner join product_sizes ps on p.Product_ID = ps.Product_ID
+                        inner join sizes s on ps.size_id = s.size_id where product_id=@productId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@productId", productId);
                 MySqlDataReader reader = command.ExecuteReader();
@@ -39,29 +39,20 @@ namespace DAL
             Product product = new Product();
             product.ProductId = reader.GetInt32("product_id");
             product.ProductName = reader.GetString("product_name");
-            product.ProductPrice = reader.GetDecimal("unit_price");
-            product.ProductQuantity= reader.GetInt32("quantity");
-            product.ProductDescription = reader.GetString("product_description");
+            // product.ProductSize.SizeProduct = reader.GetChar("Product_Size");
+            // product.ProductPrice = reader.GetDecimal("price");
+            // product.ProductQuantity = reader.GetInt32("quantity");
+            product.ProductDescription = reader.GetString("descriptions");
             return product;
         }
 
-         public List<Product> GetProducts(int productFilter, Product product)
+        public List<Product> GetProducts(Product product)
         {
             List<Product> lst = new List<Product>();
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                switch (productFilter)
-                {
-                    case ProductFilter.GET_ALL:
-                        query = @"select product_id, product_name, unit_price, quantity, product_status, ifnull(product_description, '') as product_description from Products";
-                        break;
-                    case ProductFilter.FILTER_BY_PRODUCT_NAME:
-                        query = @"select product_id, product_name, unit_price, quantity, product_status, ifnull(product_description, '') as product_description from Products
-                                where product_name like concat('%',@productName,'%');";
-                        command.Parameters.AddWithValue("@productName", product.ProductName);
-                        break;
-                }
+                query = @"select product_id, product_name, descriptions from products ;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 lst = new List<Product>();

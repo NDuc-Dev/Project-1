@@ -1,20 +1,19 @@
 using System.Collections.Generic;
-using Model;
+using Persistence;
 using DAL;
 
 namespace BL
 {
     public class ProductBL
     {
-        private ProductDAL pdal = new ProductDAL();
+        private ProductDAL productDal = new ProductDAL();
         public Product GetProductById(int productId)
         {
-            return pdal.GetProductById(productId);
+            return productDal.GetProductById(productId);
         }
         public List<Product> GetAll()
         {
-            return pdal.GetProducts(ProductFilter.GET_ALL, new Product());
-        }
-        
+            return new ProductDAL().GetProducts(new Product());
+        } 
     }
 }

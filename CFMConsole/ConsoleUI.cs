@@ -1,4 +1,4 @@
-using Model;
+using Persistence;
 
 namespace UI
 {
@@ -19,24 +19,23 @@ namespace UI
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(@"
-██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ██╗   ██╗
-██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗╚██╗ ██╔╝
-██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║       ██████╔╝ ╚████╔╝ 
-██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██╔══██╗  ╚██╔╝  
-██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝   ██║   
-╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝    ╚═╝   
-                                                                                
+                ██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ██╗   ██╗
+                ██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗╚██╗ ██╔╝
+                ██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║       ██████╔╝ ╚████╔╝ 
+                ██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██╔══██╗  ╚██╔╝  
+                ██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝   ██║   
+                ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝    ╚═╝                                                                                
 ");
             Thread.Sleep(1000);
             Console.Clear();        
             Console.WriteLine(@"
-██╗   ██╗████████╗ ██████╗     █████╗  ██████╗ █████╗ ██████╗ ███████╗███╗   ███╗██╗   ██╗
-██║   ██║╚══██╔══╝██╔════╝    ██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝████╗ ████║╚██╗ ██╔╝
-██║   ██║   ██║   ██║         ███████║██║     ███████║██║  ██║█████╗  ██╔████╔██║ ╚████╔╝ 
-╚██╗ ██╔╝   ██║   ██║         ██╔══██║██║     ██╔══██║██║  ██║██╔══╝  ██║╚██╔╝██║  ╚██╔╝  
- ╚████╔╝    ██║   ╚██████╗    ██║  ██║╚██████╗██║  ██║██████╔╝███████╗██║ ╚═╝ ██║   ██║   
-  ╚═══╝     ╚═╝    ╚═════╝    ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝     ╚═╝   ╚═╝   
-                                                                                          
+                ██╗   ██╗████████╗ ██████╗     █████╗  ██████╗ █████╗ ██████╗ ███████╗███╗   ███╗██╗   ██╗
+                ██║   ██║╚══██╔══╝██╔════╝    ██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝████╗ ████║╚██╗ ██╔╝
+                ██║   ██║   ██║   ██║         ███████║██║     ███████║██║  ██║█████╗  ██╔████╔██║ ╚████╔╝ 
+                ╚██╗ ██╔╝   ██║   ██║         ██╔══██║██║     ██╔══██║██║  ██║██╔══╝  ██║╚██╔╝██║  ╚██╔╝  
+                 ╚████╔╝    ██║   ╚██████╗    ██║  ██║╚██████╗██║  ██║██████╔╝███████╗██║ ╚═╝ ██║   ██║   
+                  ╚═══╝     ╚═╝    ╚═════╝    ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝     ╚═╝   ╚═╝   
+                                                                                                          
 ");
         Thread.Sleep(1000);
         Console.ForegroundColor = ConsoleColor.White;
@@ -71,24 +70,28 @@ namespace UI
             Line();
         }
 
-        public void PrintMenu(Product product)
+        public void PrintProducts(List<Product> lst)
+        {
+            foreach (var item in lst )
+            {
+                PrintProduct(item);
+            }
+        }
+
+        public void PrintProduct(Product product)
         {
             Console.WriteLine("| {0, 5} | {1, 45} |", product.ProductId,product.ProductName);
             //                      Id   ProductName
             SmallLine();
         }
 
-        public void PrintProductDetailsInfo(Product product)
+        public void PrintProductInfo(Product product)
         {
             Console.Clear();
             Title("Product Details");
             Console.WriteLine("Product ID: " + product.ProductId);
             Console.WriteLine("Product Name: " + product.ProductName);
             Console.WriteLine("Product Description: " + product.ProductDescription);
-            foreach (Size item in product.ProductSize)
-            {
-            Console.WriteLine("Size:" + item.ProductSize, "Price:" + item.SizePrice, "Quantity instock:" + item.Quantity);
-            }
         }
     }
 }

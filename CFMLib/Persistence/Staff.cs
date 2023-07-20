@@ -1,4 +1,4 @@
-namespace Model
+namespace Persistence
 {
     public class Staff
     {

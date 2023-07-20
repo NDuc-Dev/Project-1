@@ -1,6 +1,6 @@
 using System;
 
-namespace Model
+namespace Persistence
 {
     public static class ProductStatus
     {
@@ -15,7 +15,7 @@ namespace Model
         public decimal ProductPrice { set; get; }
         public int ProductQuantity { set; get; }
         public string? ProductDescription { set; get; }
-        public List<Size>? ProductSize { set; get; }
+        public List<Size> ProductSize { set; get; }
         public int ProductStatus { set; get; }
         public Staff? CreateBy { set; get; }
         public Staff? UpdateBy { set; get; }
