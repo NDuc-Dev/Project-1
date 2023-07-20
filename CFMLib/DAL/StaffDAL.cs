@@ -17,10 +17,10 @@ namespace DAL
                 connection.Open();
                 
             }
-                string query = @"select * from Staff where UserName = @UserName";
+                string query = @"select * from Staffs where User_Name = @User_Name";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.Clear();
-                command.Parameters.AddWithValue("@UserName", UserName);
+                command.Parameters.AddWithValue("@User_Name", UserName);
                 MySqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
@@ -38,10 +38,11 @@ namespace DAL
         public Staff GetStaff(MySqlDataReader reader)
         {
             Staff staff = new Staff();
-            staff.StaffId = reader.GetInt32("StaffID");
-            staff.StaffName = reader.GetString("StaffName");
-            staff.UserName = reader.GetString("UserName");
+            staff.StaffId = reader.GetInt32("Staff_ID");
+            staff.StaffName = reader.GetString("Staff_Name");
+            staff.UserName = reader.GetString("User_Name");
             staff.Password = reader.GetString("Password");
+            staff.StaffStatus = reader.GetInt32("Staff_Status");
             return staff;
         }
     }

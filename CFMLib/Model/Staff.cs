@@ -10,7 +10,9 @@ namespace Model
 
         public Staff()
         {
-            StaffName = "no name";
+            StaffName = "";
+            UserName = "";
+            Password = "";
         }
 
     }

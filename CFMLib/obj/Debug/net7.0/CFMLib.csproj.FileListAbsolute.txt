@@ -10,3 +10,15 @@ C:\VTC\CFM(code)\CFMLib\obj\Debug\net7.0\CFMLib.dll
 C:\VTC\CFM(code)\CFMLib\obj\Debug\net7.0\refint\CFMLib.dll
 C:\VTC\CFM(code)\CFMLib\obj\Debug\net7.0\CFMLib.pdb
 C:\VTC\CFM(code)\CFMLib\obj\Debug\net7.0\ref\CFMLib.dll
+C:\VTC\Project1\Project-1\CFMLib\bin\Debug\net7.0\CFMLib.deps.json
+C:\VTC\Project1\Project-1\CFMLib\bin\Debug\net7.0\CFMLib.dll
+C:\VTC\Project1\Project-1\CFMLib\bin\Debug\net7.0\CFMLib.pdb
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\CFMLib.csproj.AssemblyReference.cache
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\CFMLib.GeneratedMSBuildEditorConfig.editorconfig
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\CFMLib.AssemblyInfoInputs.cache
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\CFMLib.AssemblyInfo.cs
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\CFMLib.csproj.CoreCompileInputs.cache
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\CFMLib.dll
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\refint\CFMLib.dll
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\CFMLib.pdb
+C:\VTC\Project1\Project-1\CFMLib\obj\Debug\net7.0\ref\CFMLib.dll

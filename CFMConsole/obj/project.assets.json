@@ -76,11 +76,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\VTC\\CFM(code)\\CFMConsole\\CFMConsole.csproj",
+      "projectUniqueName": "C:\\VTC\\Project1\\Project-1\\CFMConsole\\CFMConsole.csproj",
       "projectName": "CFMConsole",
-      "projectPath": "C:\\VTC\\CFM(code)\\CFMConsole\\CFMConsole.csproj",
+      "projectPath": "C:\\VTC\\Project1\\Project-1\\CFMConsole\\CFMConsole.csproj",
       "packagesPath": "C:\\Users\\ditvu\\.nuget\\packages\\",
-      "outputPath": "C:\\VTC\\CFM(code)\\CFMConsole\\obj\\",
+      "outputPath": "C:\\VTC\\Project1\\Project-1\\CFMConsole\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ditvu\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -95,8 +95,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\VTC\\CFM(code)\\CFMLib\\CFMLib.csproj": {
-              "projectPath": "C:\\VTC\\CFM(code)\\CFMLib\\CFMLib.csproj"
+            "C:\\VTC\\Project1\\Project-1\\CFMLib\\CFMLib.csproj": {
+              "projectPath": "C:\\VTC\\Project1\\Project-1\\CFMLib\\CFMLib.csproj"
             }
           }
         }

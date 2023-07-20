@@ -9,10 +9,12 @@ public class Program
         OrderBL oBL = new OrderBL();
         staffBL sBL = new staffBL();
         Staff? OrderStaff;
-        string UserName;
         string[] LoginMenu = { " Login", " Exit" };
         string[] MainMenu = { " Create Order", " Update Order", " Payment", " Check out" };
-        int LoginChoice = UI.Menu(@"
+        UI.LogoVTCA();
+        do
+        {
+            int LoginChoice = UI.Menu(@"
 ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
 ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
 ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗  
@@ -21,8 +23,6 @@ public class Program
  ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
                                                               
 ", LoginMenu);
-        do
-        {
             switch (LoginChoice)
             {
                 case 1:
@@ -38,34 +38,14 @@ public class Program
 ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝
                                        
 ");
-                        Console.Write("User Name: ");
-                        UserName = Console.ReadLine();
-                        Console.Write("Pass Word: ");
-                        string PassWord = "";
-                        ConsoleKey key;
-                        do
-                        {
-                            var keyInfo = Console.ReadKey(intercept: true);
-                            key = keyInfo.Key;
-
-                            if (key == ConsoleKey.Backspace && PassWord.Length > 0)
-                            {
-                                Console.Write("\b \b");
-                                PassWord = PassWord[0..^1];
-                            }
-                            else if (!char.IsControl(keyInfo.KeyChar))
-                            {
-                                Console.Write("*");
-                                PassWord += keyInfo.KeyChar;
-                            }
-                        } while (key != ConsoleKey.Enter);
-
-
-
-                        OrderStaff = sBL.Login(UserName, PassWord);
+                        OrderStaff = sBL.Login();
                         if (OrderStaff != null)
                         {
-
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Welcome " + OrderStaff.StaffName);
+                            Thread.Sleep(900);
+                            Console.ForegroundColor = ConsoleColor.White;
                             int MainMenuChoice = UI.Menu(@"
  ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗ 
 ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗
@@ -81,12 +61,13 @@ public class Program
                         else
                         {
                             Console.Write("\n");
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("Invalid Username or Password");
+                            Console.ForegroundColor = ConsoleColor.White;
                             Console.Write("Press Any Key to continue...");
                             Console.ReadKey();
                         }
                     }
-                    break;
                 case 2:
                     return;
             }

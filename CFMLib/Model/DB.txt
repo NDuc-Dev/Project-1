@@ -1,37 +1,65 @@
 CREATE DATABASE CoffeeShop;
 use CoffeeShop;
-
-create table Staff(
-StaffID int NOT NULL,
-StaffName varchar(50) NOT NULL,
-UserName varchar(10) NOT NULL,
-password varchar(20) NOT NULL,
-PRIMARY KEY (StaffID)
+-- drop database coffeeshop; 
+create table Staffs(
+Staff_ID int NOT NULL auto_increment,
+Staff_Name varchar(50) NOT NULL,
+User_Name varchar(50) NOT NULL,
+password varchar(50) NOT NULL,
+Staff_Status int NOT NULL,
+PRIMARY KEY (Staff_ID)
 );
 
 create table Orders(
-OrderID int NOT NULL,
-StaffID int NOT NULL,
-OrderDate datetime NOT NULL,
-OrderStatus int,
-PRIMARY KEY (OrderID),
-FOREIGN KEY (StaffID) REFERENCES Staff(StaffID)
+Order_ID int auto_increment,
+Order_Staff_ID int NOT NULL,
+Order_Date datetime NOT NULL,
+Order_Status int NOT NULL,
+PRIMARY KEY (Order_ID),
+FOREIGN KEY (Order_Staff_ID) REFERENCES Staffs(Staff_ID)
 );
 
-create table Product(
-ProductID int NOT NULL,
-ProductName varchar(50) NOT NULL,
+create table Order_Details (
+Order_ID int NOT NULL,
+Product_ID int NOT NULL,
+Amount decimal NOT NULL,
+ProductQuantity int NOT NULL,
+index(Product_ID),	
+PRIMARY KEY (Order_ID,Product_ID),
+FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID)
+);
+
+-- drop table Order_Details;
+
+create table Products(
+Product_ID int NOT NULL auto_increment,
+Product_Name varchar(50) NOT NULL,
 Descriptions varchar(50),
-Quantity int,
-PRIMARY KEY (ProductID)
+CreateBy int,
+UpdateBy int,
+CreateTime datetime NOT NULL default current_timestamp(),
+UpdateTime datetime,
+PRIMARY KEY (Product_ID, Product_Name),
+FOREIGN KEY (Product_ID) REFERENCES Order_Details(Product_ID),
+FOREIGN KEY (CreateBy) REFERENCES Staffs(Staff_ID),
+FOREIGN KEY (UpdateBy) REFERENCES Staffs(Staff_ID)
 );
 
-create table OrderDetails(
-OrderID int NOT NULL,
-ProductID int NOT NULL,
+-- drop table Products;
+
+create table ProductSize (
+Product_ID int NOT NULL,
+Size_ID int NOT NULL,
+index(Size_ID),
+PRIMARY KEY (Product_ID),
+FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)
+);
+
+create table Size(
+Size_ID int NOT NULL,
 Price decimal NOT NULL,
 Quantity int NOT NULL,
-PRIMARY KEY (OrderID, ProductID),
-FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
-FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+Status int NOT NULL,
+PRIMARY KEY (Size_ID),
+FOREIGN KEY (Size_ID) REFERENCES ProductSize(Size_ID)
 );

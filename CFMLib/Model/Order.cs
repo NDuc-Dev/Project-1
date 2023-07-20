@@ -13,28 +13,14 @@ namespace Model
     {
 
         public int OrderId { set; get; }
-        public Staff OrderStaffID { get; set; }
+        public Staff? OrderStaffID { get; set; }
         public DateTime OrderDate { set; get; }
         public int Status { set; get; }
         public decimal Amount { set; get; }
         public int OrderStatus { set; get; }
         public List<Product> ProductsList { set; get; }
 
-        public Product? this[int index]
-        {
-            get
-            {
-                if (ProductsList == null || ProductsList.Count == 0 || index < 0 || ProductsList.Count < index) return null;
-                return ProductsList[index];
-            }
-            set
-            {
-                if (ProductsList == null) ProductsList = new List<Product>();
-                if (value == null) return;
-                ProductsList.Add(value);
-            }
-        }
-
+       
         public Order()
         {
             ProductsList = new List<Product>();
@@ -42,14 +28,6 @@ namespace Model
             Status = 0;
         }
 
-        public override bool Equals(object? obj)
-        {
-            if (obj == null) return false;
-            if (obj is Order)
-            {
-                return ((Order)obj).OrderId.Equals(OrderId);
-            }
-            return false;
-        }
+        
     }
 }

@@ -2,7 +2,7 @@ namespace Model;
 
 public class Size
 {
-    public int size {set; get;}
-    public int Quantity {set; get;}
-    public decimal Price {set; get;}
+    public char ProductSize { set; get; }
+    public decimal SizePrice { get; set; }
+    public int Quantity { get; set; }
 }

@@ -1,4 +1,3 @@
-using System;
 using Model;
 
 namespace UI
@@ -13,6 +12,34 @@ namespace UI
         public void SmallLine()
         {
             Console.WriteLine("--------------------------------------------------");
+        }
+
+        public void LogoVTCA()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine(@"
+██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ██╗   ██╗
+██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗╚██╗ ██╔╝
+██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║       ██████╔╝ ╚████╔╝ 
+██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██╔══██╗  ╚██╔╝  
+██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝   ██║   
+╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝    ╚═╝   
+                                                                                
+");
+            Thread.Sleep(1000);
+            Console.Clear();        
+            Console.WriteLine(@"
+██╗   ██╗████████╗ ██████╗     █████╗  ██████╗ █████╗ ██████╗ ███████╗███╗   ███╗██╗   ██╗
+██║   ██║╚══██╔══╝██╔════╝    ██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝████╗ ████║╚██╗ ██╔╝
+██║   ██║   ██║   ██║         ███████║██║     ███████║██║  ██║█████╗  ██╔████╔██║ ╚████╔╝ 
+╚██╗ ██╔╝   ██║   ██║         ██╔══██║██║     ██╔══██║██║  ██║██╔══╝  ██║╚██╔╝██║  ╚██╔╝  
+ ╚████╔╝    ██║   ╚██████╗    ██║  ██║╚██████╗██║  ██║██████╔╝███████╗██║ ╚═╝ ██║   ██║   
+  ╚═══╝     ╚═╝    ╚═════╝    ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝     ╚═╝   ╚═╝   
+                                                                                          
+");
+        Thread.Sleep(1000);
+        Console.ForegroundColor = ConsoleColor.White;
         }
         public int Menu(string? title, string[] item)
         {
@@ -33,7 +60,7 @@ namespace UI
                 int.TryParse(Console.ReadLine(), out choice);
             }
             while (choice <= 0 || choice > item.Count());
-            return choice;
+            return choice; 
         }
 
         public void Title(string title)
@@ -46,14 +73,22 @@ namespace UI
 
         public void PrintMenu(Product product)
         {
-            Console.WriteLine("| {0, 5} | {1, 45} | ", product.ProductId,product.ProductName);
+            Console.WriteLine("| {0, 5} | {1, 45} |", product.ProductId,product.ProductName);
             //                      Id   ProductName
             SmallLine();
         }
 
-        public void PrintProductDetails(Product product)
+        public void PrintProductDetailsInfo(Product product)
         {
-            
+            Console.Clear();
+            Title("Product Details");
+            Console.WriteLine("Product ID: " + product.ProductId);
+            Console.WriteLine("Product Name: " + product.ProductName);
+            Console.WriteLine("Product Description: " + product.ProductDescription);
+            foreach (Size item in product.ProductSize)
+            {
+            Console.WriteLine("Size:" + item.ProductSize, "Price:" + item.SizePrice, "Quantity instock:" + item.Quantity);
+            }
         }
     }
 }

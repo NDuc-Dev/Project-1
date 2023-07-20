@@ -40,8 +40,8 @@ namespace DAL
             product.ProductId = reader.GetInt32("product_id");
             product.ProductName = reader.GetString("product_name");
             product.ProductPrice = reader.GetDecimal("unit_price");
-            product.Quantity = reader.GetInt32("quantity");
-            product.Description = reader.GetString("product_description");
+            product.ProductQuantity= reader.GetInt32("quantity");
+            product.ProductDescription = reader.GetString("product_description");
             return product;
         }
 

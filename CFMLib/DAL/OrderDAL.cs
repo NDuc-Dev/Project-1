@@ -45,7 +45,7 @@ namespace DAL
                     //insert Order Details table
                     foreach (var item in order.ProductsList)
                     {
-                        if (item.ProductId == 0 || item.Quantity <= 0)
+                        if (item.ProductId == 0 || item.ProductQuantity <= 0)
                         {
                             throw new Exception("Not Exists Product");
                         }
@@ -63,13 +63,13 @@ namespace DAL
 
                         //insert to Order Details
                         cmd.CommandText = @"insert into OrderDetails(order_id, item_id, unit_price, quantity) values 
-                            (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductPrice + ", " + item.Quantity + ");";
+                            (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductPrice + ", " + item.ProductQuantity + ");";
                         cmd.ExecuteNonQuery();
 
                         //update quantity in Items
                         cmd.CommandText = "update Products set quantity=quantity-@quantity where item_id=" + item.ProductId + ";";
                         cmd.Parameters.Clear();
-                        cmd.Parameters.AddWithValue("@quantity", item.Quantity);
+                        cmd.Parameters.AddWithValue("@quantity", item.ProductQuantity);
                         cmd.ExecuteNonQuery();
                     }
                     //commit transaction
