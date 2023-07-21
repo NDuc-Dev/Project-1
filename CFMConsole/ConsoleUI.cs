@@ -1,5 +1,5 @@
 using Persistence;
-
+using Spectre.Console;
 namespace UI
 {
     public class Ultilities
@@ -27,7 +27,7 @@ namespace UI
                 ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝    ╚═╝                                                                                
 ");
             Thread.Sleep(1000);
-            Console.Clear();        
+            Console.Clear();
             Console.WriteLine(@"
                 ██╗   ██╗████████╗ ██████╗     █████╗  ██████╗ █████╗ ██████╗ ███████╗███╗   ███╗██╗   ██╗
                 ██║   ██║╚══██╔══╝██╔════╝    ██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝████╗ ████║╚██╗ ██╔╝
@@ -37,8 +37,8 @@ namespace UI
                   ╚═══╝     ╚═╝    ╚═════╝    ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝     ╚═╝   ╚═╝   
                                                                                                           
 ");
-        Thread.Sleep(1000);
-        Console.ForegroundColor = ConsoleColor.White;
+            Thread.Sleep(1000);
+            Console.ForegroundColor = ConsoleColor.White;
         }
         public int Menu(string? title, string[] item)
         {
@@ -59,7 +59,7 @@ namespace UI
                 int.TryParse(Console.ReadLine(), out choice);
             }
             while (choice <= 0 || choice > item.Count());
-            return choice; 
+            return choice;
         }
 
         public void Title(string title)
@@ -72,7 +72,7 @@ namespace UI
 
         public void PrintProducts(List<Product> lst)
         {
-            foreach (var item in lst )
+            foreach (var item in lst)
             {
                 PrintProduct(item);
             }
@@ -80,7 +80,7 @@ namespace UI
 
         public void PrintProduct(Product product)
         {
-            Console.WriteLine("| {0, 5} | {1, 45} |", product.ProductId,product.ProductName);
+            Console.WriteLine("| {0, 5} | {1, 45} |", product.ProductId, product.ProductName);
             //                      Id   ProductName
             SmallLine();
         }
@@ -92,6 +92,27 @@ namespace UI
             Console.WriteLine("Product ID: " + product.ProductId);
             Console.WriteLine("Product Name: " + product.ProductName);
             Console.WriteLine("Product Description: " + product.ProductDescription);
+        }
+
+        public async void ProgressAsync()
+        {
+            await AnsiConsole.Progress().StartAsync(async ctx =>
+                {
+                    // Define tasks
+                    var task1 = ctx.AddTask("[green]Progress[/]");
+                    // var task2 = ctx.AddTask("Done!!!");
+
+                    while (!ctx.IsFinished)
+                    {
+                        // Simulate some work
+                        await Task.Delay(20);
+
+                        // Increment
+                        task1.Increment(4.5);
+                        // task2.Increment(2);
+                        // Console.Clear();
+                    }
+                });
         }
     }
 }

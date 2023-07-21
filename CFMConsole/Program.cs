@@ -2,6 +2,7 @@
 using UI;
 using System.Text;
 using Persistence;
+using Spectre.Console;
 public class Program
 {
     static void Main()
@@ -45,6 +46,8 @@ public class Program
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("Welcome " + OrderStaff.StaffName);
                             Thread.Sleep(900);
+                            UI.ProgressAsync();
+                            Thread.Sleep(1000);
                             Console.ForegroundColor = ConsoleColor.White;
                             int MainMenuChoice = UI.Menu(@"
  ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗ 
@@ -56,10 +59,10 @@ public class Program
                                                        
 ", MainMenu);
 
-                        switch(MainMenuChoice)
-                        {
-                            case 1:
-                            UI.Title(@"
+                            switch (MainMenuChoice)
+                            {
+                                case 1:
+                                    UI.Title(@"
  ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗     ██████╗ ██████╗ ██████╗ ███████╗██████╗ 
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
 ██║     ██████╔╝█████╗  ███████║   ██║   █████╗      ██║   ██║██████╔╝██║  ██║█████╗  ██████╔╝
@@ -68,9 +71,9 @@ public class Program
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝     ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝
                                                                                               
 ");
-                            
-                            break;
-                        }
+
+                                    break;
+                            }
                         }
                         else
                         {
