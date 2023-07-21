@@ -1,6 +1,7 @@
 CREATE DATABASE CoffeeShop;
 use CoffeeShop;
 -- drop database coffeeshop; 
+
 create table Staffs(
 Staff_ID int NOT NULL auto_increment,
 Staff_Name varchar(50) NOT NULL,
@@ -19,47 +20,50 @@ PRIMARY KEY (Order_ID),
 FOREIGN KEY (Order_Staff_ID) REFERENCES Staffs(Staff_ID)
 );
 
-create table Order_Details (
-Order_ID int NOT NULL,
-Product_ID int NOT NULL,
-Amount decimal NOT NULL,
-ProductQuantity int NOT NULL,
-index(Product_ID),	
-PRIMARY KEY (Order_ID,Product_ID),
-FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID)
-);
-
--- drop table Order_Details;
-
 create table Products(
 Product_ID int NOT NULL auto_increment,
 Product_Name varchar(50) NOT NULL,
 Descriptions varchar(50),
-CreateBy int,
-UpdateBy int,
-CreateTime datetime NOT NULL default current_timestamp(),
-UpdateTime datetime,
-PRIMARY KEY (Product_ID, Product_Name),
-FOREIGN KEY (Product_ID) REFERENCES Order_Details(Product_ID),
-FOREIGN KEY (CreateBy) REFERENCES Staffs(Staff_ID),
-FOREIGN KEY (UpdateBy) REFERENCES Staffs(Staff_ID)
+PRIMARY KEY (Product_ID)
 );
 
--- drop table Products;
-
-create table ProductSize (
-Product_ID int NOT NULL,
+create table Sizes(
 Size_ID int NOT NULL,
-index(Size_ID),
-PRIMARY KEY (Product_ID),
-FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID)
+Product_Size char(1),
+PRIMARY KEY (Size_ID)
 );
 
-create table Size(
+create table Product_Sizes(
+Product_Size_ID int NOT NULL,
+Product_ID int NOT NULL,
 Size_ID int NOT NULL,
 Price decimal NOT NULL,
 Quantity int NOT NULL,
-Status int NOT NULL,
-PRIMARY KEY (Size_ID),
-FOREIGN KEY (Size_ID) REFERENCES ProductSize(Size_ID)
+PRIMARY KEY (Product_Size_ID),
+FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
+FOREIGN KEY (Size_ID) REFERENCES Sizes(Size_ID)
 );
+
+create table Order_Details(
+Order_ID int NOT NULL,
+Product_Size_ID int NOT NULL,
+Amount decimal NOT NULL,
+Quantity int NOT NULL,
+PRIMARY KEY (Order_ID,Product_Size_ID),
+FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),
+FOREIGN KEY (Product_Size_ID) REFERENCES Product_Sizes(Product_Size_ID)
+);
+
+create table Update_Details(
+Update_ID int NOT NULL,
+Product_ID int NOT NULL,
+Create_By int NOT NULL default '265204',
+Create_Time datetime default current_timestamp(),
+Update_By int,
+Update_Time datetime,
+Update_Des varchar(300),
+PRIMARY KEY(Update_ID),
+FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
+FOREIGN KEY (Update_By) REFERENCES Staffs(Staff_ID)
+);
+
