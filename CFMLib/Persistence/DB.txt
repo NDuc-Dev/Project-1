@@ -12,7 +12,7 @@ PRIMARY KEY (Staff_ID)
 );
 
 create table Orders(
-Order_ID int auto_increment,
+Order_ID int NOT NULL auto_increment,
 Order_Staff_ID int NOT NULL,
 Order_Date datetime NOT NULL,
 Order_Status int NOT NULL,
@@ -29,12 +29,12 @@ PRIMARY KEY (Product_ID)
 
 create table Sizes(
 Size_ID int NOT NULL,
-Product_Size char(1),
+Product_Size char(1) NOT NULL,
 PRIMARY KEY (Size_ID)
 );
 
 create table Product_Sizes(
-Product_Size_ID int NOT NULL,
+Product_Size_ID int NOT NULL auto_increment,
 Product_ID int NOT NULL,
 Size_ID int NOT NULL,
 Price decimal NOT NULL,
@@ -55,7 +55,7 @@ FOREIGN KEY (Product_Size_ID) REFERENCES Product_Sizes(Product_Size_ID)
 );
 
 create table Update_Details(
-Update_ID int NOT NULL,
+Update_ID int NOT NULL auto_increment,
 Product_ID int NOT NULL,
 Create_By int NOT NULL default '265204',
 Create_Time datetime default current_timestamp(),
@@ -66,4 +66,3 @@ PRIMARY KEY(Update_ID),
 FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
 FOREIGN KEY (Update_By) REFERENCES Staffs(Staff_ID)
 );
-

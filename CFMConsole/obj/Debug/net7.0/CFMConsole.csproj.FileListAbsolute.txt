@@ -60,3 +60,4 @@ C:\VTC\Project-1\CFMConsole\bin\Debug\net7.0\MySQLConnection.dll
 C:\VTC\Project1\Project-1\CFMConsole\bin\Debug\net7.0\MySql.Data.dll
 C:\VTC\Project1\Project-1\CFMConsole\bin\Debug\net7.0\MySQLConnection.dll
 C:\VTC\Project1\Project-1\CFMConsole\bin\Debug\net7.0\Spectre.Console.dll
+C:\VTC\Project-1\CFMConsole\bin\Debug\net7.0\Spectre.Console.dll
