@@ -52,7 +52,7 @@ namespace DAL
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select product_id, product_name, descriptions from products ;";
+                query = @"select product_id, product_name, descriptions ifnull(descriptions, '') as description from products ;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 lst = new List<Product>();

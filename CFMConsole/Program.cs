@@ -1,23 +1,31 @@
 ﻿using BL;
 using UI;
+using DAL;
 using System.Text;
 using Persistence;
 using Spectre.Console;
+using System.ComponentModel.Design;
+using System.Diagnostics;
+
 public class Program
 {
     static void Main()
     {
+        int LoginChoice = 0;
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Ultilities UI = new Ultilities();
-        OrderBL oBL = new OrderBL();
-        staffBL sBL = new staffBL();
+        OrderBL orderBL = new OrderBL();
+        staffBL staffBL = new staffBL();
+        ProductBL productBL = new ProductBL();
+        List<Product> lstproduct;
         Staff? OrderStaff;
         string[] LoginMenu = { " Login", " Exit" };
         string[] MainMenu = { " Create Order", " Update Order", " Payment", " Check out" };
+
         UI.LogoVTCA();
         do
         {
-            int LoginChoice = UI.Menu(@"
+            LoginChoice = UI.Menu(@"
                 ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
                 ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
                 ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗  
@@ -25,12 +33,12 @@ public class Program
                 ╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗
                  ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
 ", LoginMenu);
+
             switch (LoginChoice)
             {
                 case 1:
                     while (true)
                     {
-
                         UI.Title(@"
                 ██╗      ██████╗  ██████╗ ██╗███╗   ██╗
                 ██║     ██╔═══██╗██╔════╝ ██║████╗  ██║
@@ -39,7 +47,7 @@ public class Program
                 ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║
                 ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝                                                       
 ");
-                        OrderStaff = sBL.Login();
+                        OrderStaff = staffBL.Login();
                         if (OrderStaff != null)
                         {
                             Console.Clear();
@@ -58,10 +66,12 @@ public class Program
                  ╚═════╝╚═╝     ╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                          
 ", MainMenu);
 
-                            switch (MainMenuChoice)
-                            {
-                                case 1:
-                                    UI.Title(@"
+                            
+                            
+                                switch (MainMenuChoice)
+                                {
+                                    case 1:
+                                        UI.Title(@"
                  ██████╗██████╗ ███████╗ █████╗ ████████╗     ██████╗ ██████╗ ██████╗ ███████╗██████╗ 
                 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝    ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
                 ██║     ██████╔╝█████╗  ███████║   ██║       ██║   ██║██████╔╝██║  ██║█████╗  ██████╔╝
@@ -70,23 +80,21 @@ public class Program
                  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝        ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝                                                                              
 ");
 
-                                    break;
-                            }
+                                        lstproduct = productBL.GetAll();
+                                        UI.PrintProducts(lstproduct);
+                                        break;
+                                }
+                            
                         }
                         else
                         {
-                            Console.Write("\n");
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Invalid Username or Password");
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.Write("Press Any Key to continue...");
-                            Console.ReadKey();
+                            Console.WriteLine("");
+                            UI.RedMessage("Invalid Username or Password");
+                            UI.PressAnyKeyToContinue();
                         }
-                    }
-                case 2:
-                    return;
-            }
 
-        } while (true);
+                    }
+            }
+        } while (LoginChoice != LoginMenu.Length);
     }
 }

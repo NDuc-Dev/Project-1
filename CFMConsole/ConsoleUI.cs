@@ -14,6 +14,24 @@ namespace UI
             Console.WriteLine("--------------------------------------------------");
         }
 
+        public void RedMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("" + message);
+        }
+
+        public void GreenMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("" + message);
+        }
+
+        public void PressAnyKeyToContinue()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Press any key to continue");
+            Console.ReadKey();
+        }
         public void LogoVTCA()
         {
             Console.Clear();
