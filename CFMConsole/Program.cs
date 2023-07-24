@@ -13,7 +13,7 @@ public class Program
     {
         int LoginChoice = 0;
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Ultilities UI = new Ultilities();
+        ConsoleUI UI = new ConsoleUI();
         OrderBL orderBL = new OrderBL();
         staffBL staffBL = new staffBL();
         ProductBL productBL = new ProductBL();

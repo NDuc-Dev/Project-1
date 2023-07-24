@@ -2,8 +2,9 @@ using Persistence;
 using Spectre.Console;
 namespace UI
 {
-    public class Ultilities
+    public class ConsoleUI
     {
+        // Line
         public void Line()
         {
             Console.WriteLine("█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ ");
@@ -14,24 +15,15 @@ namespace UI
             Console.WriteLine("--------------------------------------------------");
         }
 
-        public void RedMessage(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("" + message);
-        }
-
-        public void GreenMessage(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("" + message);
-        }
-
+        //PressAnyKeyToContinue
         public void PressAnyKeyToContinue()
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
         }
+
+        //Logo
         public void LogoVTCA()
         {
             Console.Clear();
@@ -58,6 +50,8 @@ namespace UI
             Thread.Sleep(1000);
             Console.ForegroundColor = ConsoleColor.White;
         }
+
+        //Menu Handle
         public int Menu(string? title, string[] item)
         {
             Console.Clear();
@@ -80,6 +74,7 @@ namespace UI
             return choice;
         }
 
+        //Title
         public void Title(string title)
         {
             Console.Clear();
@@ -88,6 +83,7 @@ namespace UI
             Line();
         }
 
+        //Product Handle
         public void PrintProducts(List<Product> lst)
         {
             foreach (var item in lst)
@@ -112,6 +108,7 @@ namespace UI
             Console.WriteLine("Product Description: " + product.ProductDescription);
         }
 
+        //Progress Async
         public async void ProgressAsync()
         {
             await AnsiConsole.Progress().StartAsync(async ctx =>
@@ -131,6 +128,29 @@ namespace UI
                         // Console.Clear();
                     }
                 });
+        }
+
+        // Message Color
+        public void RedMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("" + message);
+        }
+
+        public void GreenMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("" + message);
+        }
+
+        public void WelcomeStaff(Staff staff)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Welcome " + staff.StaffName);
+            Thread.Sleep(900);
+            UI.ProgressAsync();
+            Thread.Sleep(1000);
         }
     }
 }
