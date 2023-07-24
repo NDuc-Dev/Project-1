@@ -8,16 +8,18 @@ public class Ults
 {
     ConsoleUI UI = new ConsoleUI();
     StaffBL staffBL = new StaffBL();
-    List<Product> lstproduct;
+    ProductBL productBL = new ProductBL();
+    List<Product>? lstproduct;
+    Staff? orderStaff;
     string[] LoginMenu = { "Login", "Exit" };
     string[] MainMenu = { " Create Order", " Update Order", " Payment", " Check out" };
-
+    int LoginChoice = 0;
     public void Welcome()
     {
-        
+
         do
         {
-            int Loginchoice = UI.Menu(@"
+            LoginChoice = UI.Menu(@"
                 ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
                 ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
                 ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗  
@@ -26,9 +28,10 @@ public class Ults
                  ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
 ", LoginMenu);
 
-            switch (Loginchoice)
+            switch (LoginChoice)
             {
                 case 1:
+                    Login();
                     break;
                 case 2:
                     break;
@@ -40,8 +43,6 @@ public class Ults
 
     public void Login()
     {
-        
-        Staff orderStaff;
         UI.Title(@"
                 ██╗      ██████╗  ██████╗ ██╗███╗   ██╗
                 ██║     ██╔═══██╗██╔════╝ ██║████╗  ██║
@@ -67,6 +68,7 @@ public class Ults
             switch (MainMenuChoice)
             {
                 case 1:
+                    CreateOrder();
                     break;
                 case 2:
                     break;
@@ -87,6 +89,7 @@ public class Ults
 
     public void CreateOrder()
     {
+        int productId;
         UI.Title(@"
                  ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗     ██████╗ ██████╗ ██████╗ ███████╗██████╗ 
                 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
@@ -98,5 +101,16 @@ public class Ults
 ");
         lstproduct = productBL.GetAll();
         UI.PrintProducts(lstproduct);
+        bool showAlert = false;
+        do
+        {
+            if (showAlert == true) Console.WriteLine("Invalid input");
+            Console.Write("Choose id to add product to order: ");
+            int.TryParse(Console.ReadLine(), out productId);
+            if (productId < 0 || productId > lstproduct.Count()) showAlert = true;
+        } while (productId < 0 || productId > lstproduct.Count());
+
+
+
     }
 }

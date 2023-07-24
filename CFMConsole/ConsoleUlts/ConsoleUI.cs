@@ -109,7 +109,7 @@ namespace UI
         }
 
         //Progress Async
-        public async void ProgressAsync()
+        public static async void ProgressAsync()
         {
             await AnsiConsole.Progress().StartAsync(async ctx =>
                 {
@@ -143,13 +143,13 @@ namespace UI
             Console.WriteLine("" + message);
         }
 
-        public void WelcomeStaff(Staff staff)
+        public async void WelcomeStaff(Staff staff)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Welcome " + staff.StaffName);
             Thread.Sleep(900);
-            UI.ProgressAsync();
+            ProgressAsync();
             Thread.Sleep(1000);
         }
     }

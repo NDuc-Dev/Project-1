@@ -3,9 +3,9 @@ using DAL;
 
 namespace BL
 {
-    public class staffBL
+    public class StaffBL
     {
-        StaffDAL uDAL = new StaffDAL();
+        StaffDAL staffDAL = new StaffDAL();
         public Staff? Login()
         {
             Console.Write("User Name: ");
@@ -31,7 +31,7 @@ namespace BL
             } while (key != ConsoleKey.Enter);
             
             Staff staff = new Staff();
-            staff = uDAL.GetStaffAccount(UserName);
+            staff = staffDAL.GetStaffAccount(UserName);
             if (staff.Password == PassWord && staff.StaffStatus == 1)
             {
                 return staff;
