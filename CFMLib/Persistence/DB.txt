@@ -66,3 +66,5 @@ PRIMARY KEY(Update_ID),
 FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
 FOREIGN KEY (Update_By) REFERENCES Staffs(Staff_ID)
 );
+
+query = @"select product_size_id, product_id, size_id, price, quantity from product_sizes ";

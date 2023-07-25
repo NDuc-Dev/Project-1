@@ -13,7 +13,7 @@ namespace BL
         }
         public List<Product> GetAll()
         {
-            return new ProductDAL().GetProducts(new Product());
+            return new ProductDAL().GetProducts();
         } 
     }
 }

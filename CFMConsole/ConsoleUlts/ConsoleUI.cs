@@ -54,7 +54,7 @@ namespace UI
         //Menu Handle
         public int Menu(string? title, string[] item)
         {
-            Console.Clear();
+            // Console.Clear();
             int i = 0;
             int choice;
             if (title != null)
@@ -101,11 +101,19 @@ namespace UI
 
         public void PrintProductInfo(Product product)
         {
-            Console.Clear();
-            Title("Product Details");
+            // Console.Clear();
+            Title(@"
+██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ███████╗████████╗ █████╗ ██╗██╗     ███████╗
+██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██║██║     ██╔════╝
+██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║       ██║  ██║█████╗     ██║   ███████║██║██║     ███████╗
+██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██║  ██║██╔══╝     ██║   ██╔══██║██║██║     ╚════██║
+██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝███████╗   ██║   ██║  ██║██║███████╗███████║
+╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝
+                                                                                                                   
+");
             Console.WriteLine("Product ID: " + product.ProductId);
             Console.WriteLine("Product Name: " + product.ProductName);
-            Console.WriteLine("Product Description: " + product.ProductDescription);
+            // Console.WriteLine("Product Description: " + product.ProductDescription);
         }
 
         //Progress Async
@@ -152,5 +160,19 @@ namespace UI
             ProgressAsync();
             Thread.Sleep(1000);
         }
+
+        public void PrintProductSizeInfo(Persistence.Size size)
+        {
+            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + size.SizePrice + " VND" +"  Quantity Instock :" + size.Quantity);
+        }
+
+        public void PrintSizes(List<Persistence.Size> lst)
+        {
+            foreach (var item in lst)
+            {
+                PrintProductSizeInfo(item);
+            }
+        }
+
     }
 }

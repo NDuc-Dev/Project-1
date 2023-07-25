@@ -15,12 +15,12 @@ namespace Persistence
         public decimal ProductPrice { set; get; }
         public int ProductQuantity { set; get; }
         public string? ProductDescription { set; get; }
-        public List<Size> ProductSize { set; get; }
+        public List<Size>? ProductSize { set; get; }
         public int ProductStatus { set; get; }
         public Staff? CreateBy { set; get; }
         public Staff? UpdateBy { set; get; }
         public DateTime CreateTime { set; get; }
-        public DateTime UpdateTime { set; get; }
+        public DateTime? UpdateTime { set; get; }
 
         public Product()
         {

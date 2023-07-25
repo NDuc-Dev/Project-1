@@ -2,6 +2,7 @@ using Persistence;
 using Spectre.Console;
 using UI;
 using BL;
+
 namespace Ultilities;
 
 public class Ults
@@ -9,8 +10,11 @@ public class Ults
     ConsoleUI UI = new ConsoleUI();
     StaffBL staffBL = new StaffBL();
     ProductBL productBL = new ProductBL();
+    SizeBL sizeBL = new SizeBL();
     List<Product>? lstproduct;
     Staff? orderStaff;
+    List<Persistence.Size> size;
+    bool showAlert = false;
     string[] LoginMenu = { "Login", "Exit" };
     string[] MainMenu = { " Create Order", " Update Order", " Payment", " Check out" };
     int LoginChoice = 0;
@@ -19,6 +23,7 @@ public class Ults
 
         do
         {
+            UI.LogoVTCA();
             LoginChoice = UI.Menu(@"
                 ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
                 ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
@@ -101,15 +106,25 @@ public class Ults
 ");
         lstproduct = productBL.GetAll();
         UI.PrintProducts(lstproduct);
-        bool showAlert = false;
         do
         {
             if (showAlert == true) Console.WriteLine("Invalid input");
             Console.Write("Choose id to add product to order: ");
             int.TryParse(Console.ReadLine(), out productId);
+            Product product = new Product();
+            product = productBL.GetProductById(productId);
+            UI.PrintProductInfo(product);
+            size = sizeBL.GetListProductSizeByProductID(productId);
+            UI.PrintSizes(size);
+            Console.WriteLine("Choose Product Size:");
+            Console.ReadKey();
+
             if (productId < 0 || productId > lstproduct.Count()) showAlert = true;
         } while (productId < 0 || productId > lstproduct.Count());
 
+        // size = sizeBL.GetListProductSizeByProductID(productId);
+        // Console.WriteLine(size.Count());
+        // // UI.PrintSizes(size);
 
 
     }

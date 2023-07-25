@@ -18,9 +18,7 @@ namespace DAL
             Product product = new Product();
             try
             {
-                query = @"select p.product_id, p.product_name, s.Product_Size, ps.price, ps.quantity, p.descriptions from products p 
-                        inner join product_sizes ps on p.Product_ID = ps.Product_ID
-                        inner join sizes s on ps.size_id = s.size_id where product_id=@productId;";
+                query = @"select product_id, product_name from products where product_id=@productId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@productId", productId);
                 MySqlDataReader reader = command.ExecuteReader();
@@ -42,20 +40,19 @@ namespace DAL
             // product.ProductSize.SizeProduct = reader.GetChar("Product_Size");
             // product.ProductPrice = reader.GetDecimal("price");
             // product.ProductQuantity = reader.GetInt32("quantity");
-            product.ProductDescription = reader.GetString("descriptions");
+            // product.ProductDescription = reader.GetString("descriptions");
             return product;
         }
 
-        public List<Product> GetProducts(Product product)
+        public List<Product> GetProducts()
         {
             List<Product> lst = new List<Product>();
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select product_id, product_name, descriptions ifnull(descriptions, '') as description from products ;";
+                query = @"select product_id, product_name from products ;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
-                lst = new List<Product>();
                 while (reader.Read())
                 {
                     lst.Add(GetProduct(reader));
