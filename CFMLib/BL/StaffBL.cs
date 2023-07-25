@@ -6,11 +6,9 @@ namespace BL
     public class StaffBL
     {
         StaffDAL staffDAL = new StaffDAL();
-        public Staff? Login()
+        public Staff? Login(string UserName)
         {
-            Console.Write("User Name: ");
-            string UserName = Console.ReadLine() ?? "";
-            Console.Write("Pass Word: ");
+            Console.Write("Password: ");
             string PassWord = "";
             ConsoleKey key;
             do

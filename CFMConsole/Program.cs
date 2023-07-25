@@ -1,6 +1,5 @@
 ﻿using BL;
 using UI;
-using DAL;
 using System.Text;
 using Persistence;
 using Spectre.Console;
@@ -12,7 +11,8 @@ public class Program
 {
     public static void Main()
     {
-    Ults Ultilities = new Ults();
-        Ultilities.Welcome();
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Ults Ultilities = new Ults();
+        Ultilities.Login();
     }
 }

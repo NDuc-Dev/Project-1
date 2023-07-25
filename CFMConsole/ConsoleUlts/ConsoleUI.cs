@@ -7,12 +7,8 @@ namespace UI
         // Line
         public void Line()
         {
-            Console.WriteLine("█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ ");
-        }
-
-        public void SmallLine()
-        {
-            Console.WriteLine("--------------------------------------------------");
+            var rule = new Rule();
+            AnsiConsole.Write(rule);
         }
 
         //PressAnyKeyToContinue
@@ -79,24 +75,24 @@ namespace UI
         {
             Console.Clear();
             Line();
+            // var panel = new Panel(title);
             Console.WriteLine(" " + title);
             Line();
         }
 
+        
         //Product Handle
         public void PrintProducts(List<Product> lst)
         {
+
+            var table = new Table();
+            table.AddColumn(new TableColumn("Product ID").Centered());
+            table.AddColumn(new TableColumn("Product Name").LeftAligned());
             foreach (var item in lst)
             {
-                PrintProduct(item);
+                table.AddRow($"{item.ProductId}", $"{item.ProductName}");
             }
-        }
-
-        public void PrintProduct(Product product)
-        {
-            Console.WriteLine("| {0, 5} | {1, 45} |", product.ProductId, product.ProductName);
-            //                      Id   ProductName
-            SmallLine();
+            AnsiConsole.Write(table);
         }
 
         public void PrintProductInfo(Product product)
@@ -117,7 +113,7 @@ namespace UI
         }
 
         //Progress Async
-        public static async void ProgressAsync()
+        public async void ProgressAsync()
         {
             await AnsiConsole.Progress().StartAsync(async ctx =>
                 {
@@ -136,19 +132,24 @@ namespace UI
                         // Console.Clear();
                     }
                 });
+            Thread.Sleep(300);
         }
 
         // Message Color
         public void RedMessage(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("" + message);
+            AnsiConsole.Markup($"[underline yellow]{message}[/]");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public void GreenMessage(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("" + message);
+            // Console.ForegroundColor = ConsoleColor.Green;
+            AnsiConsole.Markup($"[underline green]{message}[/]");
+            Console.WriteLine();
+            // Console.WriteLine("" + message);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public async void WelcomeStaff(Staff staff)
@@ -163,7 +164,7 @@ namespace UI
 
         public void PrintProductSizeInfo(Persistence.Size size)
         {
-            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + size.SizePrice + " VND" +"  Quantity Instock :" + size.Quantity);
+            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + size.SizePrice + " VND" + "  Quantity Instock :" + size.Quantity);
         }
 
         public void PrintSizes(List<Persistence.Size> lst)

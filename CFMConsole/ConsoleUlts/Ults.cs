@@ -18,50 +18,40 @@ public class Ults
     string[] LoginMenu = { "Login", "Exit" };
     string[] MainMenu = { " Create Order", " Update Order", " Payment", " Check out" };
     int LoginChoice = 0;
-    public void Welcome()
-    {
-
-        do
-        {
-            UI.LogoVTCA();
-            LoginChoice = UI.Menu(@"
-                ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
-                ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
-                ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗  
-                ██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝  
-                ╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗
-                 ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
-", LoginMenu);
-
-            switch (LoginChoice)
-            {
-                case 1:
-                    Login();
-                    break;
-                case 2:
-                    break;
-            }
-
-        }
-        while (LoginChoice != LoginMenu.Length);
-    }
 
     public void Login()
     {
-        UI.Title(@"
-                ██╗      ██████╗  ██████╗ ██╗███╗   ██╗
-                ██║     ██╔═══██╗██╔════╝ ██║████╗  ██║
-                ██║     ██║   ██║██║  ███╗██║██╔██╗ ██║
-                ██║     ██║   ██║██║   ██║██║██║╚██╗██║
-                ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║
-                ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝                                                       
-");
-        orderStaff = staffBL.Login();
-        if (orderStaff != null)
+        bool active = true;
+        UI.LogoVTCA();
+        while (active = true)
         {
-            UI.WelcomeStaff(orderStaff);
-            Console.ForegroundColor = ConsoleColor.White;
-            int MainMenuChoice = UI.Menu(@"
+            string UserName;
+            UI.Title(@"
+                        ██╗      ██████╗  ██████╗ ██╗███╗   ██╗
+                        ██║     ██╔═══██╗██╔════╝ ██║████╗  ██║
+                        ██║     ██║   ██║██║  ███╗██║██╔██╗ ██║
+                        ██║     ██║   ██║██║   ██║██║██║╚██╗██║
+                        ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║
+                        ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝                                                       
+");
+
+            UI.GreenMessage("Input User name and password to LOGIN or input 0 to user name to EXIT.");
+            Console.Write("User Name: ");
+            UserName = Console.ReadLine();
+            if (UserName == "0")
+            {
+                active = false;
+                break;
+            }
+            else
+            {
+                orderStaff = staffBL.Login(UserName);
+            }
+            if (orderStaff != null)
+            {
+                UI.WelcomeStaff(orderStaff);
+                Console.ForegroundColor = ConsoleColor.White;
+                int MainMenuChoice = UI.Menu(@"
                  ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗ 
                 ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗
                 ██║     █████╗  ██╔████╔██║    ███████║██████╔╝██████╔╝
@@ -70,26 +60,26 @@ public class Ults
                  ╚═════╝╚═╝     ╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                          
 ", MainMenu);
 
-            switch (MainMenuChoice)
+                switch (MainMenuChoice)
+                {
+                    case 1:
+                        CreateOrder();
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                }
+            }
+            else
             {
-                case 1:
-                    CreateOrder();
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
+                Console.WriteLine("");
+                UI.RedMessage("Invalid Username or Password !");
+                UI.PressAnyKeyToContinue();
             }
         }
-        else
-        {
-            Console.WriteLine("");
-            UI.RedMessage("Invalid Username or Password");
-            UI.PressAnyKeyToContinue();
-        }
-
     }
 
     public void CreateOrder()
