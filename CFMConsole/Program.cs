@@ -6,6 +6,7 @@ using Spectre.Console;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using Ultilities;
+using DAL;
 
 public class Program
 {

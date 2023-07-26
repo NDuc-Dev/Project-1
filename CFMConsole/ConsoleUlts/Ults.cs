@@ -35,7 +35,7 @@ public class Ults
                         ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝                                                       
 ");
 
-            UI.GreenMessage("Input User name and password to LOGIN or input 0 to user name to EXIT.");
+            UI.GreenMessage("Input User name and password to LOGIN or input User Name = 0 to EXIT.");
             Console.Write("User Name: ");
             UserName = Console.ReadLine();
             if (UserName == "0")
@@ -47,11 +47,14 @@ public class Ults
             {
                 orderStaff = staffBL.Login(UserName);
             }
+
             if (orderStaff != null)
             {
                 UI.WelcomeStaff(orderStaff);
-                Console.ForegroundColor = ConsoleColor.White;
-                int MainMenuChoice = UI.Menu(@"
+                while (true)
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    int MainMenuChoice = UI.Menu(@"
                  ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗ 
                 ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗
                 ██║     █████╗  ██╔████╔██║    ███████║██████╔╝██████╔╝
@@ -60,24 +63,24 @@ public class Ults
                  ╚═════╝╚═╝     ╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                          
 ", MainMenu);
 
-                switch (MainMenuChoice)
-                {
-                    case 1:
-                        CreateOrder();
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                    case 4:
-                        break;
+                    switch (MainMenuChoice)
+                    {
+                        case 1:
+                            CreateOrder();
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                    }
                 }
             }
             else
             {
                 Console.WriteLine("");
                 UI.RedMessage("Invalid Username or Password !");
-                UI.PressAnyKeyToContinue();
             }
         }
     }
@@ -94,14 +97,24 @@ public class Ults
                  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝     ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝
                                                                                                               
 ");
-        lstproduct = productBL.GetAll();
-        UI.PrintProducts(lstproduct);
         do
         {
-            if (showAlert == true) Console.WriteLine("Invalid input");
-            Console.Write("Choose id to add product to order: ");
-            int.TryParse(Console.ReadLine(), out productId);
             Product product = new Product();
+            lstproduct = productBL.GetAll();
+            foreach (var item in lstproduct)
+            {
+                
+            }
+            do
+            {
+                UI.PrintProducts(lstproduct);
+                Console.Write("Choose id to add product to order: ");
+                int.TryParse(Console.ReadLine(), out productId);
+                if (productId <= 0 || productId > lstproduct.Count()) showAlert = true;
+                else showAlert = false;
+                if (showAlert)
+                    UI.RedMessage("Invalid input, please re-enter");
+            } while (productId <= 0 || productId > lstproduct.Count());
             product = productBL.GetProductById(productId);
             UI.PrintProductInfo(product);
             size = sizeBL.GetListProductSizeByProductID(productId);
@@ -109,7 +122,6 @@ public class Ults
             Console.WriteLine("Choose Product Size:");
             Console.ReadKey();
 
-            if (productId < 0 || productId > lstproduct.Count()) showAlert = true;
         } while (productId < 0 || productId > lstproduct.Count());
 
         // size = sizeBL.GetListProductSizeByProductID(productId);

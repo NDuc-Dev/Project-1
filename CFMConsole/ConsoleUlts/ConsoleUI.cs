@@ -109,6 +109,10 @@ namespace UI
 ");
             Console.WriteLine("Product ID: " + product.ProductId);
             Console.WriteLine("Product Name: " + product.ProductName);
+            // foreach (var item in product.ProductSize)
+            // {
+            //     Console.WriteLine("Size: " + item.SizeProduct + "price: " + item.SizePrice + "VND" + "Quantity instok: "+ item.Quantity);
+            // }
             // Console.WriteLine("Product Description: " + product.ProductDescription);
         }
 
@@ -141,14 +145,15 @@ namespace UI
             AnsiConsole.Markup($"[underline yellow]{message}[/]");
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
+            PressAnyKeyToContinue();
+            Console.Clear();
         }
 
         public void GreenMessage(string message)
         {
-            // Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine();
             AnsiConsole.Markup($"[underline green]{message}[/]");
             Console.WriteLine();
-            // Console.WriteLine("" + message);
             Console.ForegroundColor = ConsoleColor.White;
         }
 

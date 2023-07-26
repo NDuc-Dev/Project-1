@@ -67,4 +67,68 @@ FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
 FOREIGN KEY (Update_By) REFERENCES Staffs(Staff_ID)
 );
 
-query = @"select product_size_id, product_id, size_id, price, quantity from product_sizes ";
+SELECT * FROM coffeeshop.staffs;
+insert into Staffs(Staff_ID, Staff_Name, User_Name, Password, Staff_Status)
+value ('265204','Nguyen Ngoc Duc', 'duckhongngu', 'ducngu', '1');
+insert into Staffs(Staff_ID, Staff_Name, User_Name, Password, Staff_Status)
+value ('111111','Nguyen Thi Khanh Ly', 'lykhongngu', 'lyngu', '1');
+
+SELECT * FROM coffeeshop.products;
+
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('1', 'Capuchino','');
+
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('2', 'Ice Tea','');
+
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('3', 'Latte','');
+SELECT * FROM coffeeshop.sizes;
+
+insert into Sizes(Size_ID, Product_Size)
+value ('1','S');
+
+insert into Sizes(Size_ID, Product_Size)
+value ('2','M');
+
+insert into Sizes(Size_ID, Product_Size)
+value ('3','L');
+SELECT * FROM coffeeshop.product_sizes;
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('1','1','20000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('1','2','23000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('1','3','25000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('2','1','10000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('2','2','12000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('2','3','15000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('3','1','30000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('3','2','32000','10');
+
+insert into Product_Sizes(Product_ID, Size_ID, Price, Quantity)
+value ('3','3','35000','10');
+
+SELECT * FROM coffeeshop.update_details;
+
+insert into update_details(Product_ID, Update_Des)
+value ('1', 'Create Product Capuchino');
+
+insert into update_details(Product_ID, Update_Des)
+value ('2', 'Create Product Ice Tea');
+
+insert into update_details(Product_ID, Update_Des)
+value ('3', 'Create Product Latte');
