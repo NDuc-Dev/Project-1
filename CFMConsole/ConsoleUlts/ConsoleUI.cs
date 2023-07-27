@@ -14,83 +14,92 @@ namespace UI
         //PressAnyKeyToContinue
         public void PressAnyKeyToContinue()
         {
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Press any key to continue");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.ReadKey();
         }
 
         //Logo
-        public void LogoVTCA()
+        public void Introduction()
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(@"
-                ██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ██╗   ██╗
-                ██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗╚██╗ ██╔╝
-                ██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║       ██████╔╝ ╚████╔╝ 
-                ██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██╔══██╗  ╚██╔╝  
-                ██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝   ██║   
-                ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝    ╚═╝                                                                                
+            TitleNoBorder(@"
+                ██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ██╗   ██╗                
+                ██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗╚██╗ ██╔╝                
+                ██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║       ██████╔╝ ╚████╔╝                 
+                ██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██╔══██╗  ╚██╔╝                  
+                ██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝   ██║                   
+                ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝    ╚═╝                   
 ");
             Thread.Sleep(1000);
             Console.Clear();
-            Console.WriteLine(@"
-                ██╗   ██╗████████╗ ██████╗     █████╗  ██████╗ █████╗ ██████╗ ███████╗███╗   ███╗██╗   ██╗
-                ██║   ██║╚══██╔══╝██╔════╝    ██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝████╗ ████║╚██╗ ██╔╝
-                ██║   ██║   ██║   ██║         ███████║██║     ███████║██║  ██║█████╗  ██╔████╔██║ ╚████╔╝ 
-                ╚██╗ ██╔╝   ██║   ██║         ██╔══██║██║     ██╔══██║██║  ██║██╔══╝  ██║╚██╔╝██║  ╚██╔╝  
-                 ╚████╔╝    ██║   ╚██████╗    ██║  ██║╚██████╗██║  ██║██████╔╝███████╗██║ ╚═╝ ██║   ██║   
-                  ╚═══╝     ╚═╝    ╚═════╝    ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝     ╚═╝   ╚═╝   
-                                                                                                          
+            TitleNoBorder(@"
+            ██╗   ██╗████████╗ ██████╗     █████╗  ██████╗ █████╗ ██████╗ ███████╗███╗   ███╗██╗   ██╗            
+            ██║   ██║╚══██╔══╝██╔════╝    ██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝████╗ ████║╚██╗ ██╔╝            
+            ██║   ██║   ██║   ██║         ███████║██║     ███████║██║  ██║█████╗  ██╔████╔██║ ╚████╔╝             
+            ╚██╗ ██╔╝   ██║   ██║         ██╔══██║██║     ██╔══██║██║  ██║██╔══╝  ██║╚██╔╝██║  ╚██╔╝              
+             ╚████╔╝    ██║   ╚██████╗    ██║  ██║╚██████╗██║  ██║██████╔╝███████╗██║ ╚═╝ ██║   ██║               
+              ╚═══╝     ╚═╝    ╚═════╝    ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝     ╚═╝   ╚═╝               
+
 ");
+            Thread.Sleep(1000);
+            Console.Clear();
+            var table = new Table();
+            table.AddColumn(new TableColumn("CFM CONSOLE APPLICATION").Centered()).NoBorder().Centered();
+            AnsiConsole.Write(table);
             Thread.Sleep(1000);
             Console.ForegroundColor = ConsoleColor.White;
         }
 
         //Menu Handle
-        public int Menu(string? title, string[] item)
+
+        public string NewMenu(string? title, string[] item)
         {
-            // Console.Clear();
-            int i = 0;
-            int choice;
+            Console.Clear();
             if (title != null)
             {
                 Title(title);
             }
-            for (i = 0; i < item.Count(); i++)
-            {
-                Console.WriteLine(" " + (i + 1) + "." + item[i]);
-            }
-            do
-            {
-                Console.Write("#YOUR CHOICE: ");
-                int.TryParse(Console.ReadLine(), out choice);
-            }
-            while (choice <= 0 || choice > item.Count());
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Move [green]UP/DOWN button and ENTER[/] to select function")
+               .PageSize(10)
+               // .MoreChoicesText("[grey](Move up and down to reveal more fruits)[/]")
+               .AddChoices(item));
             return choice;
         }
+
+        
 
         //Title
         public void Title(string title)
         {
             Console.Clear();
-            Line();
-            // var panel = new Panel(title);
-            Console.WriteLine(" " + title);
-            Line();
+            var table = new Table();
+            table.AddColumn(new TableColumn($"{title}").Centered()).RoundedBorder().Centered();
+            AnsiConsole.Write(table);
         }
 
-        
+        public void TitleNoBorder(string title)
+        {
+            Console.Clear();
+            var table = new Table();
+            table.AddColumn(new TableColumn($"{title}").Centered()).NoBorder().Centered();
+            AnsiConsole.Write(table);
+        }
+
+
         //Product Handle
         public void PrintProducts(List<Product> lst)
         {
-
             var table = new Table();
             table.AddColumn(new TableColumn("Product ID").Centered());
             table.AddColumn(new TableColumn("Product Name").LeftAligned());
             foreach (var item in lst)
             {
-                table.AddRow($"{item.ProductId}", $"{item.ProductName}");
+                table.AddRow($"{item.ProductId}", $"{item.ProductName}" + "           ");
             }
             AnsiConsole.Write(table);
         }
@@ -180,5 +189,15 @@ namespace UI
             }
         }
 
+        public void About()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Coffee Shop Management Application");
+            Console.WriteLine("Version: Beta_0.0.1");
+            Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
+            Console.WriteLine("Instructor: Nguyen Xuan Sinh");
+            PressAnyKeyToContinue();
+        }
     }
 }
