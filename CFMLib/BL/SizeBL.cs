@@ -11,5 +11,19 @@ namespace BL
             return new SizeDAL().GetListProductSizeByProductId(productId);
         }
 
+        public Size GetSizeSByProductID(int productId)
+        {
+            return new SizeDAL().GetSizeSByProductID(productId);
+        }
+
+        public Size GetSizeMByProductID(int productId)
+        {
+            return new SizeDAL().GetSizeMByProductID(productId);
+        }
+
+        public Size GetSizeLByProductID(int productId)
+        {
+            return new SizeDAL().GetSizeLByProductID(productId);
+        }
     }
 }

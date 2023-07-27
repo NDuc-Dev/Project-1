@@ -1,9 +1,13 @@
+using System.IO.Compression;
+using BL;
+using DAL;
 using Persistence;
 using Spectre.Console;
 namespace UI
 {
     public class ConsoleUI
     {
+        SizeBL sizeBL = new SizeBL();
         // Line
         public void Line()
         {
@@ -46,32 +50,44 @@ namespace UI
 ");
             Thread.Sleep(1000);
             Console.Clear();
-            var table = new Table();
-            table.AddColumn(new TableColumn("CFM CONSOLE APPLICATION").Centered()).NoBorder().Centered();
-            AnsiConsole.Write(table);
+            TitleNoBorder(@"
+                                 ██████╗███████╗███╗   ███╗                             
+                                ██╔════╝██╔════╝████╗ ████║                             
+                                ██║     ███████╗██╔████╔██║                             
+                                ██║     ╚════██║██║╚██╔╝██║                             
+                                ╚██████╗███████║██║ ╚═╝ ██║                             
+                                 ╚═════╝╚══════╝╚═╝     ╚═╝                             
+                                                                                        
+ ██████╗ ██████╗ ███╗   ██╗███████╗ ██████╗ ██╗     ███████╗     █████╗ ██████╗ ██████╗ 
+██╔════╝██╔═══██╗████╗  ██║██╔════╝██╔═══██╗██║     ██╔════╝    ██╔══██╗██╔══██╗██╔══██╗
+██║     ██║   ██║██╔██╗ ██║███████╗██║   ██║██║     █████╗      ███████║██████╔╝██████╔╝
+██║     ██║   ██║██║╚██╗██║╚════██║██║   ██║██║     ██╔══╝      ██╔══██║██╔═══╝ ██╔═══╝ 
+╚██████╗╚██████╔╝██║ ╚████║███████║╚██████╔╝███████╗███████╗    ██║  ██║██║     ██║     
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     
+");
             Thread.Sleep(1000);
             Console.ForegroundColor = ConsoleColor.White;
         }
 
         //Menu Handle
 
-        public string NewMenu(string? title, string[] item)
+        public string Menu(string? title, string[] item, Staff staff)
         {
             Console.Clear();
             if (title != null)
             {
                 Title(title);
             }
+            CurrentStaff(staff);
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title("Move [green]UP/DOWN button and ENTER[/] to select function")
                .PageSize(10)
-               // .MoreChoicesText("[grey](Move up and down to reveal more fruits)[/]")
                .AddChoices(item));
             return choice;
         }
 
-        
+
 
         //Title
         public void Title(string title)
@@ -92,20 +108,30 @@ namespace UI
 
 
         //Product Handle
-        public void PrintProducts(List<Product> lst)
+        public void PrintProducts(List<Product> prlst)
         {
             var table = new Table();
             table.AddColumn(new TableColumn("Product ID").Centered());
             table.AddColumn(new TableColumn("Product Name").LeftAligned());
-            foreach (var item in lst)
+            table.AddColumn(new TableColumn("Size S").Centered());
+            table.AddColumn(new TableColumn("Size M").Centered());
+            table.AddColumn(new TableColumn("Size L").Centered());
+            foreach (var item in prlst)
             {
-                table.AddRow($"{item.ProductId}", $"{item.ProductName}" + "           ");
+                decimal priceSize1 = sizeBL.GetSizeSByProductID(item.ProductId).SizePrice;
+                decimal priceSize2 = sizeBL.GetSizeMByProductID(item.ProductId).SizePrice;
+                decimal priceSize3 = sizeBL.GetSizeLByProductID(item.ProductId).SizePrice;
+                string pricesize1 = string.Format("{00:##'.'### VND}", priceSize1);
+                string pricesize2 = string.Format("{00:##'.'### VND}", priceSize2);
+                string pricesize3 = string.Format("{00:##'.'### VND}", priceSize3);
+                table.AddRow($"{item.ProductId}", $"{item.ProductName}", $"{pricesize1}", $"{pricesize2}", $"{pricesize3}");
             }
-            AnsiConsole.Write(table);
+            AnsiConsole.Write(table.Centered());
         }
 
         public void PrintProductInfo(Product product)
         {
+            List<Persistence.Size>? sizes = new List<Persistence.Size>();
             // Console.Clear();
             Title(@"
 ██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ███████╗████████╗ █████╗ ██╗██╗     ███████╗
@@ -114,38 +140,13 @@ namespace UI
 ██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██║  ██║██╔══╝     ██║   ██╔══██║██║██║     ╚════██║
 ██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝███████╗   ██║   ██║  ██║██║███████╗███████║
 ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝
-                                                                                                                   
 ");
             Console.WriteLine("Product ID: " + product.ProductId);
             Console.WriteLine("Product Name: " + product.ProductName);
-            // foreach (var item in product.ProductSize)
-            // {
-            //     Console.WriteLine("Size: " + item.SizeProduct + "price: " + item.SizePrice + "VND" + "Quantity instok: "+ item.Quantity);
-            // }
-            // Console.WriteLine("Product Description: " + product.ProductDescription);
-        }
-
-        //Progress Async
-        public async void ProgressAsync()
-        {
-            await AnsiConsole.Progress().StartAsync(async ctx =>
-                {
-                    // Define tasks
-                    var task1 = ctx.AddTask("[green]Progress[/]");
-                    // var task2 = ctx.AddTask("Done!!!");
-
-                    while (!ctx.IsFinished)
-                    {
-                        // Simulate some work
-                        await Task.Delay(20);
-
-                        // Increment
-                        task1.Increment(4.5);
-                        // task2.Increment(2);
-                        // Console.Clear();
-                    }
-                });
-            Thread.Sleep(300);
+            sizes = sizeBL.GetListProductSizeByProductID(product.ProductId);
+            PrintSizes(sizes);
+            Console.WriteLine("Choose Product Size:");
+            Console.ReadKey();
         }
 
         // Message Color
@@ -161,20 +162,11 @@ namespace UI
         public void GreenMessage(string message)
         {
             Console.WriteLine();
-            AnsiConsole.Markup($"[underline green]{message}[/]");
+            AnsiConsole.Markup($"[underline green]{message}[/] ");
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        public async void WelcomeStaff(Staff staff)
-        {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Welcome " + staff.StaffName);
-            Thread.Sleep(900);
-            ProgressAsync();
-            Thread.Sleep(1000);
-        }
 
         public void PrintProductSizeInfo(Persistence.Size size)
         {
@@ -189,15 +181,19 @@ namespace UI
             }
         }
 
-        public void About()
+        //Staff
+        public void CurrentStaff(Staff staff)
+        {
+            var table = new Table();
+            table.AddColumn(new TableColumn($"{staff.StaffName}" + " - " + "ID:" + $"{staff.StaffId}")).Centered();
+            AnsiConsole.Write(table);
+        }
+        public void WelcomeStaff(Staff staff)
         {
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Coffee Shop Management Application");
-            Console.WriteLine("Version: Beta_0.0.1");
-            Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
-            Console.WriteLine("Instructor: Nguyen Xuan Sinh");
-            PressAnyKeyToContinue();
+            Console.ForegroundColor = ConsoleColor.Green;
+            TitleNoBorder("Welcome " + staff.StaffName);
+            Thread.Sleep(1000);
         }
     }
 }

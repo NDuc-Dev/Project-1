@@ -52,14 +52,15 @@ public class Ults
                 while (true)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
-                    string MainMenuChoice = UI.NewMenu(@"
-                 ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗                     
-                ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗                    
-                ██║     █████╗  ██╔████╔██║    ███████║██████╔╝██████╔╝                    
-                ██║     ██╔══╝  ██║╚██╔╝██║    ██╔══██║██╔═══╝ ██╔═══╝                     
-                ╚██████╗██║     ██║ ╚═╝ ██║    ██║  ██║██║     ██║                         
-                 ╚═════╝╚═╝     ╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                         
-", MainMenu);
+                    string MainMenuChoice = UI.Menu(@"
+             ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗             
+            ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗            
+            ██║     ███████╗██╔████╔██║    ███████║██████╔╝██████╔╝            
+            ██║     ╚════██║██║╚██╔╝██║    ██╔══██║██╔═══╝ ██╔═══╝             
+            ╚██████╗███████║██║ ╚═╝ ██║    ██║  ██║██║     ██║                 
+             ╚═════╝╚══════╝╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                 
+            ----------------------------+--------------------------            
+", MainMenu, orderStaff);
 
                     switch (MainMenuChoice)
                     {
@@ -73,7 +74,7 @@ public class Ults
                         case "Check Out":
                             break;
                         case "About":
-                            UI.About();
+                            About();
                             break;
                     }
                 }
@@ -89,7 +90,13 @@ public class Ults
     public void CreateOrder()
     {
         int productId;
-        UI.Title(@"
+        do
+        {
+            Product product = new Product();
+            lstproduct = productBL.GetAll();
+            do
+            {
+                UI.Title(@"
  ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗     ██████╗ ██████╗ ██████╗ ███████╗██████╗ 
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
 ██║     ██████╔╝█████╗  ███████║   ██║   █████╗      ██║   ██║██████╔╝██║  ██║█████╗  ██████╔╝
@@ -97,31 +104,17 @@ public class Ults
 ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗    ╚██████╔╝██║  ██║██████╔╝███████╗██║  ██║
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝     ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 ");
-        do
-        {
-            Product product = new Product();
-            lstproduct = productBL.GetAll();
-            foreach (var item in lstproduct)
-            {
-                
-            }
-            do
-            {
+                UI.CurrentStaff(orderStaff);
                 UI.PrintProducts(lstproduct);
                 Console.Write("Choose id to add product to order: ");
                 int.TryParse(Console.ReadLine(), out productId);
-                if (productId <= 0 || productId > lstproduct.Count()) showAlert = true;
+                if (productId < 0 || productId > lstproduct.Count()) showAlert = true;
                 else showAlert = false;
                 if (showAlert)
                     UI.RedMessage("Invalid input, please re-enter");
-            } while (productId <= 0 || productId > lstproduct.Count());
+            } while (productId < 0 || productId > lstproduct.Count());
             product = productBL.GetProductById(productId);
             UI.PrintProductInfo(product);
-            size = sizeBL.GetListProductSizeByProductID(productId);
-            UI.PrintSizes(size);
-            Console.WriteLine("Choose Product Size:");
-            Console.ReadKey();
-
         } while (productId < 0 || productId > lstproduct.Count());
 
         // size = sizeBL.GetListProductSizeByProductID(productId);
@@ -129,5 +122,24 @@ public class Ults
         // // UI.PrintSizes(size);
 
 
+    }
+
+    public void About()
+    {
+        Console.Clear();
+        UI.Title(@"
+         █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗        
+        ██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝        
+        ███████║██████╔╝██║   ██║██║   ██║   ██║           
+        ██╔══██║██╔══██╗██║   ██║██║   ██║   ██║           
+        ██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║           
+        ╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝           
+");
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("Coffee Shop Management Application");
+        Console.WriteLine("Version: Beta_0.0.1");
+        Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
+        Console.WriteLine("Instructor: Nguyen Xuan Sinh");
+        UI.PressAnyKeyToContinue();
     }
 }

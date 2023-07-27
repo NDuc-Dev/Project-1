@@ -9,28 +9,28 @@ namespace BL
         public Staff? Login(string UserName)
         {
             Console.Write("Password: ");
-            string PassWord = "";
+            string Password = "";
             ConsoleKey key;
             do
             {
                 var keyInfo = Console.ReadKey(intercept: true);
                 key = keyInfo.Key;
 
-                if (key == ConsoleKey.Backspace && PassWord.Length > 0)
+                if (key == ConsoleKey.Backspace && Password.Length > 0)
                 {
                     Console.Write("\b \b");
-                    PassWord = PassWord[0..^1];
+                    Password = Password[0..^1];
                 }
                 else if (!char.IsControl(keyInfo.KeyChar))
                 {
                     Console.Write("*");
-                    PassWord += keyInfo.KeyChar;
+                    Password += keyInfo.KeyChar;
                 }
             } while (key != ConsoleKey.Enter);
             
             Staff staff = new Staff();
             staff = staffDAL.GetStaffAccount(UserName);
-            if (staff.Password == PassWord && staff.StaffStatus == 1)
+            if (staff.Password == staffDAL.ChangePasswordMD5(Password) && staff.StaffStatus == 1)
             {
                 return staff;
             }

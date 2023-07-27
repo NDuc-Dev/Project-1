@@ -7,31 +7,24 @@ namespace DAL
     {
         private string query = "";
         private MySqlConnection connection = DbConfig.GetConnection();
-        // public Size GetSizes (int productId)
-        // {
-        //     Size size = new Size();
-        //     try
-        //     {
-        //         query = @"select p.product_id, s.Product_Size, ps.price, ps.quantity from products p 
-        //                 inner join product_sizes ps on p.Product_ID = ps.Product_ID
-        //                 inner join sizes s on ps.size_id = s.size_id where product_id=@productId;";
-        //         MySqlCommand command = new MySqlCommand(query, connection);
-        //         command.Parameters.AddWithValue("@productId", productId);
-        //         MySqlDataReader reader = command.ExecuteReader();
-        //         if (reader.Read())
-        //         {
-        //             size = GetSize(reader);
-        //         }
-        //         reader.Close();
-        //     }
-        //     catch { }
-        //     return size;
-        // }
+        
+        internal Size GetSizes(MySqlDataReader reader)
+        {
+            Size size = new Size();
+            size.ProductId = reader.GetInt32("product_id");
+            size.SizeID = reader.GetInt32("size_id");
+            size.SizeProduct = reader.GetChar("product_size");
+            size.SizePrice = reader.GetDecimal("price");
+            size.Quantity = reader.GetInt32("quantity");
+            return size;
+        }
+
         internal Size GetSize(MySqlDataReader reader)
         {
             Size size = new Size();
+            size.ProductId = reader.GetInt32("product_id");
             size.SizeID = reader.GetInt32("size_id");
-            size.SizeProduct = reader.GetChar("product_size");
+            // size.SizeProduct = reader.GetChar("product_size");
             size.SizePrice = reader.GetDecimal("price");
             size.Quantity = reader.GetInt32("quantity");
             return size;
@@ -49,7 +42,7 @@ namespace DAL
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    lst.Add(GetSize(reader));
+                    lst.Add(GetSizes(reader));
                 }
                 reader.Close();
             }
@@ -58,6 +51,75 @@ namespace DAL
                 Console.WriteLine(ex.Message);
             }
             return lst;
+        }
+
+        public Size GetSizeSByProductID(int productId)
+        {
+            Size size = new Size();
+            try
+            {
+                query = @"select * from product_sizes where product_id=@productId and size_id=1;";
+                MySqlCommand command = new MySqlCommand("", connection);
+                command.Parameters.AddWithValue("@productId", productId);
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    size = GetSize(reader);
+                }
+                reader.Close();
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return size;
+        }
+
+        public Size GetSizeMByProductID(int productId)
+        {
+            Size size = new Size();
+            try
+            {
+                query = @"select * from product_sizes where product_id=@productId and size_id=2;";
+                MySqlCommand command = new MySqlCommand("", connection);
+                command.Parameters.AddWithValue("@productId", productId);
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    size = GetSize(reader);
+                }
+                reader.Close();
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return size;
+        }
+
+        public Size GetSizeLByProductID(int productId)
+        {
+            Size size = new Size();
+            try
+            {
+                query = @"select * from product_sizes where product_id=@productId and size_id=3;";
+                MySqlCommand command = new MySqlCommand("", connection);
+                command.Parameters.AddWithValue("@productId", productId);
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    size = GetSize(reader);
+                }
+                reader.Close();
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return size;
         }
     }
 }
