@@ -81,7 +81,7 @@ namespace UI
             CurrentStaff(staff);
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
-               .Title("Move [green]UP/DOWN button and ENTER[/] to select function")
+               .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
                .PageSize(10)
                .AddChoices(item));
             return choice;

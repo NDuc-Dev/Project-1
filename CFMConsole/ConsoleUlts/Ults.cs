@@ -90,10 +90,11 @@ public class Ults
     public void CreateOrder()
     {
         int productId;
-        do
+        bool active = true;
+        Product product = new Product();
+        lstproduct = productBL.GetAll();
+        while (active)
         {
-            Product product = new Product();
-            lstproduct = productBL.GetAll();
             do
             {
                 UI.Title(@"
@@ -106,21 +107,29 @@ public class Ults
 ");
                 UI.CurrentStaff(orderStaff);
                 UI.PrintProducts(lstproduct);
-                Console.Write("Choose id to add product to order: ");
+                AnsiConsole.Markup("Input [Green]ID[/] to add product to order or [Green]CHOOSE 0[/] to back main menu: ");
                 int.TryParse(Console.ReadLine(), out productId);
-                if (productId < 0 || productId > lstproduct.Count()) showAlert = true;
-                else showAlert = false;
+                if (productId < 0 || productId > lstproduct.Count())
+                {
+                    showAlert = true;
+                }
+                else if (productId == 0)
+                {
+                    active = false;
+                    break;
+                }
+                else
+                {
+                    showAlert = false;
+                    product = productBL.GetProductById(productId);
+                    UI.PrintProductInfo(product);
+                }
                 if (showAlert)
+                {
                     UI.RedMessage("Invalid input, please re-enter");
+                }
             } while (productId < 0 || productId > lstproduct.Count());
-            product = productBL.GetProductById(productId);
-            UI.PrintProductInfo(product);
-        } while (productId < 0 || productId > lstproduct.Count());
-
-        // size = sizeBL.GetListProductSizeByProductID(productId);
-        // Console.WriteLine(size.Count());
-        // // UI.PrintSizes(size);
-
+        }
 
     }
 
