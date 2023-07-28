@@ -131,8 +131,8 @@ namespace UI
 
         public void PrintProductInfo(Product product)
         {
-            List<Persistence.Size>? sizes = new List<Persistence.Size>();
-            // Console.Clear();
+
+            Console.Clear();
             Title(@"
 ██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ███████╗████████╗ █████╗ ██╗██╗     ███████╗
 ██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██║██║     ██╔════╝
@@ -143,16 +143,12 @@ namespace UI
 ");
             Console.WriteLine("Product ID: " + product.ProductId);
             Console.WriteLine("Product Name: " + product.ProductName);
-            sizes = sizeBL.GetListProductSizeByProductID(product.ProductId);
-            PrintSizes(sizes);
-            Console.WriteLine("Choose Product Size:");
-            Console.ReadKey();
         }
 
         // Message Color
         public void RedMessage(string message)
         {
-            AnsiConsole.Markup($"[underline yellow]{message}[/]");
+            AnsiConsole.Markup($"[underline red]{message}[/]");
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
             PressAnyKeyToContinue();
@@ -170,7 +166,8 @@ namespace UI
 
         public void PrintProductSizeInfo(Persistence.Size size)
         {
-            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + size.SizePrice + " VND" + "  Quantity Instock :" + size.Quantity);
+            string Size = string.Format("{00:##'.'### VND}", size.SizePrice);
+            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + Size + "  Quantity Instock :" + size.Quantity);
         }
 
         public void PrintSizes(List<Persistence.Size> lst)
@@ -185,8 +182,10 @@ namespace UI
         public void CurrentStaff(Staff staff)
         {
             var table = new Table();
+            Console.ForegroundColor = ConsoleColor.Green;
             table.AddColumn(new TableColumn($"{staff.StaffName}" + " - " + "ID:" + $"{staff.StaffId}")).Centered();
             AnsiConsole.Write(table);
+            Console.ForegroundColor = ConsoleColor.White;
         }
         public void WelcomeStaff(Staff staff)
         {
@@ -194,6 +193,42 @@ namespace UI
             Console.ForegroundColor = ConsoleColor.Green;
             TitleNoBorder("Welcome " + staff.StaffName);
             Thread.Sleep(1000);
+        }
+        public Persistence.Size ChooseProductsize(Product product)
+        {
+            int sizeId;
+            bool active = true;
+            bool showAlert = false;
+            Persistence.Size sizeChoose = new Persistence.Size();
+            List<Persistence.Size>? lstsize = new List<Persistence.Size>();
+            lstsize = sizeBL.GetListProductSizeByProductID(product.ProductId);
+            while (active)
+            {
+                do
+                {
+                    PrintSizes(lstsize);
+                    AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
+                    int.TryParse(Console.ReadLine(), out sizeId);
+
+                    if (sizeId < 0 || sizeId > lstsize.Count())
+                    {
+                        showAlert = true;
+                    }
+                    else if (sizeId == 0)
+                    {
+                        active = false;
+                        break;
+                    }
+                    else
+                    {
+                    RedMessage("Invalid choice. Please Re-enter");
+                    PressAnyKeyToContinue();
+                    }
+                }
+                while (sizeChoose != null);
+
+            }
+            return sizeChoose;
         }
     }
 }

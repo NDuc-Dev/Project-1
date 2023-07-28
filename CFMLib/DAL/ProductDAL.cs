@@ -37,10 +37,6 @@ namespace DAL
             Product product = new Product();
             product.ProductId = reader.GetInt32("product_id");
             product.ProductName = reader.GetString("product_name");
-            // product.ProductSize.SizeProduct = reader.GetChar("Product_Size");
-            // product.ProductPrice = reader.GetDecimal("price");
-            // product.ProductQuantity = reader.GetInt32("quantity");
-            // product.ProductDescription = reader.GetString("descriptions");
             return product;
         }
 

@@ -6,6 +6,7 @@ namespace DAL
     public class OrderDAL
     {
         private MySqlConnection connection = DbConfig.GetConnection();
+        
         public bool CreateOrder(Order order)
         {
             if (order == null || order.ProductsList == null || order.ProductsList.Count == 0)
@@ -20,17 +21,15 @@ namespace DAL
                 {
                     cmd.Connection = connection;
                     cmd.Transaction = trans;
-                    //Lock update all tables
-                    cmd.CommandText = "lock tables Staff write, Orders write, Items write, OrderDetails write;";
                     cmd.ExecuteNonQuery();
 
                     MySqlDataReader? reader = null;
                     
 
                     //insert order
-                    cmd.CommandText = "insert into Orders(staff_id, order_status) values (@StaffId, @orderStatus);";
+                    cmd.CommandText = "insert into Orders(order_staff_id, order_status) values (@StaffId, @orderStatus);";
                     cmd.Parameters.Clear();
-                    // cmd.Parameters.AddWithValue("@staffId", order.OrderStaff.StaffId);
+                    cmd.Parameters.AddWithValue("@staffId", order.OrderStaffID);
                     cmd.Parameters.AddWithValue("@orderStatus", OrderStatus.CREATE_NEW_ORDER);
                     cmd.ExecuteNonQuery();
                     //get new Order_ID
@@ -50,7 +49,7 @@ namespace DAL
                             throw new Exception("Not Exists Product");
                         }
                         //get unit_price
-                        cmd.CommandText = "select unit_price from Items where item_id=@itemId";
+                        cmd.CommandText = "select price from Products where product_id=@ProductId";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@productId", item.ProductId);
                         reader = cmd.ExecuteReader();
@@ -58,7 +57,7 @@ namespace DAL
                         {
                             throw new Exception("Not Exists Item");
                         }
-                        item.ProductPrice = reader.GetDecimal("unit_price");
+                        item.ProductPrice = reader.GetDecimal("price");
                         reader.Close();
 
                         //insert to Order Details
@@ -67,7 +66,7 @@ namespace DAL
                         cmd.ExecuteNonQuery();
 
                         //update quantity in Items
-                        cmd.CommandText = "update Products set quantity=quantity-@quantity where item_id=" + item.ProductId + ";";
+                        cmd.CommandText = "update Product set quantity=quantity-@quantity where item_id=" + item.ProductId + ";";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@quantity", item.ProductQuantity);
                         cmd.ExecuteNonQuery();
@@ -76,9 +75,6 @@ namespace DAL
                     trans.Commit();
                     result = true;
                     trans.Rollback();
-                    //unlock all tables;
-                    cmd.CommandText = "unlock tables;";
-                    cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)

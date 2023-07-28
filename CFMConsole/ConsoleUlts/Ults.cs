@@ -123,7 +123,10 @@ public class Ults
                     showAlert = false;
                     product = productBL.GetProductById(productId);
                     UI.PrintProductInfo(product);
+                    Persistence.Size choice = UI.ChooseProductsize(product);
+                    // Console.WriteLine(choice.SizeID);
                 }
+
                 if (showAlert)
                 {
                     UI.RedMessage("Invalid input, please re-enter");
