@@ -7,7 +7,7 @@ namespace DAL
     {
         private string query = "";
         private MySqlConnection connection = DbConfig.GetConnection();
-        
+
         internal Size GetSizes(MySqlDataReader reader)
         {
             Size size = new Size();
@@ -28,6 +28,30 @@ namespace DAL
             size.SizePrice = reader.GetDecimal("price");
             size.Quantity = reader.GetInt32("quantity");
             return size;
+        }
+
+        public int GetProductSizeIDBySizeID(int sizeId, int productId)
+        {
+            int ProductSizeID = 0;
+            try
+            {
+                query = @"select product_size_id from sizes product_sizes where product_id=@productId and size_id=@sizeId;";
+                MySqlCommand command = new MySqlCommand("", connection);
+                command.Parameters.AddWithValue("@productId", productId);
+                command.Parameters.AddWithValue("@sizeId", sizeId);
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    ProductSizeID = reader.GetInt32("Product_size_id");
+                }
+                reader.Close();
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return ProductSizeID;
         }
 
         public List<Size> GetListProductSizeByProductId(int productId)

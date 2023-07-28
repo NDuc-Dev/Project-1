@@ -1,1 +1,1 @@
-server=localhost;user id=root;password=Duc265204@;port=3306;database=coffeeshop;
+server=localhost;user id=nguyenngocduc;password=Duc265204@;port=3306;database=coffeeshop;

@@ -132,3 +132,6 @@ value ('2', 'Create Product Ice Tea');
 
 insert into update_details(Product_ID, Update_Des)
 value ('3', 'Create Product Latte');
+
+CREATE USER IF NOT exists 'nguyenngocduc'@'localhost' IDENTIFIED BY 'Duc265204@';
+GRANT ALL PRIVILEGES ON *.* TO 'nguyenngocduc'@'localhost' WITH GRANT OPTION;

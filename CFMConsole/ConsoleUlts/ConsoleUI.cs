@@ -194,23 +194,25 @@ namespace UI
             TitleNoBorder("Welcome " + staff.StaffName);
             Thread.Sleep(1000);
         }
-        public Persistence.Size ChooseProductsize(Product product)
+        public int ChooseProductsize(Product product)
         {
-            int sizeId;
+            int sizeId = 0;
             bool active = true;
             bool showAlert = false;
-            Persistence.Size sizeChoose = new Persistence.Size();
-            List<Persistence.Size>? lstsize = new List<Persistence.Size>();
-            lstsize = sizeBL.GetListProductSizeByProductID(product.ProductId);
+            int sizeChoose;
+            List<Persistence.Size> listsize = new List<Persistence.Size>();
+
             while (active)
             {
                 do
                 {
-                    PrintSizes(lstsize);
+                    PrintProductInfo(product);
+                    listsize = sizeBL.GetListProductSizeByProductID(product.ProductId);
+                    PrintSizes(listsize);
                     AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
                     int.TryParse(Console.ReadLine(), out sizeId);
 
-                    if (sizeId < 0 || sizeId > lstsize.Count())
+                    if (sizeId < 0 || sizeId > listsize.Count())
                     {
                         showAlert = true;
                     }
@@ -221,14 +223,17 @@ namespace UI
                     }
                     else
                     {
-                    RedMessage("Invalid choice. Please Re-enter");
-                    PressAnyKeyToContinue();
+                        return sizeId;
+                    }
+                    if (showAlert)
+                    {
+                        RedMessage("Invalid choice. Please Re-enter");
                     }
                 }
-                while (sizeChoose != null);
+                while (sizeId < 0 || sizeId > listsize.Count());
 
             }
-            return sizeChoose;
+            return sizeId;
         }
     }
 }

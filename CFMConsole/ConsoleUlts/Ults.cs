@@ -122,9 +122,10 @@ public class Ults
                 {
                     showAlert = false;
                     product = productBL.GetProductById(productId);
-                    UI.PrintProductInfo(product);
-                    Persistence.Size choice = UI.ChooseProductsize(product);
-                    // Console.WriteLine(choice.SizeID);
+                    int sizeChoice = UI.ChooseProductsize(product);
+                    Console.WriteLine(sizeChoice);
+                    Console.WriteLine(product.ProductId);
+                    Console.ReadKey();
                 }
 
                 if (showAlert)
