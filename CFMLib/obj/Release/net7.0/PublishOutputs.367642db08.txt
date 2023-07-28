@@ -1,0 +1,6 @@
+C:\VTC\Project-Beta-0.1.2\CFMLib.dll
+C:\VTC\Project-Beta-0.1.2\CFMLib.deps.json
+C:\VTC\Project-Beta-0.1.2\CFMLib.pdb
+C:\VTC\Project-Beta-0.1.2\MySql.Data.dll
+C:\VTC\Project-Beta-0.1.2\MySQLConnection.dll
+C:\VTC\Project-Beta-0.1.2\MySqlConnector.dll

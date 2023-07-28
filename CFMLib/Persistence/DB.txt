@@ -69,7 +69,7 @@ FOREIGN KEY (Update_By) REFERENCES Staffs(Staff_ID)
 
 SELECT * FROM coffeeshop.staffs;
 insert into Staffs(Staff_ID, Staff_Name, User_Name, Password, Staff_Status)
-value ('265204','Nguyen Ngoc Duc', 'duckhongngu', 'ducngu', '1');
+value ('265204','Nguyen Ngoc Duc', 'duckhongngu', 'A067A668279CD1BEA956DF8EF006C895', '1');
 insert into Staffs(Staff_ID, Staff_Name, User_Name, Password, Staff_Status)
 value ('111111','Nguyen Thi Khanh Ly', 'lykhongngu', 'lyngu', '1');
 

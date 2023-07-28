@@ -1,0 +1,11 @@
+C:\VTC\Project-Beta-0.1.2\CFMConsole.exe
+C:\VTC\Project-Beta-0.1.2\CFMConsole.dll
+C:\VTC\Project-Beta-0.1.2\CFMConsole.deps.json
+C:\VTC\Project-Beta-0.1.2\CFMConsole.runtimeconfig.json
+C:\VTC\Project-Beta-0.1.2\CFMConsole.pdb
+C:\VTC\Project-Beta-0.1.2\MySql.Data.dll
+C:\VTC\Project-Beta-0.1.2\MySQLConnection.dll
+C:\VTC\Project-Beta-0.1.2\MySqlConnector.dll
+C:\VTC\Project-Beta-0.1.2\Spectre.Console.dll
+C:\VTC\Project-Beta-0.1.2\CFMLib.dll
+C:\VTC\Project-Beta-0.1.2\CFMLib.pdb
