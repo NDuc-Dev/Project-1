@@ -15,7 +15,7 @@ public class Ults
     Staff? orderStaff;
     List<Persistence.Size> size;
     bool showAlert = false;
-    string[] MainMenu = { "Create Order", "Update Order", "Payment", "Check Out", "About" };
+    string[] MainMenu = { "Create Order", "Update Order", "Update Product", "Payment", "Check Out", "About" };
 
     public void Login()
     {
@@ -24,15 +24,8 @@ public class Ults
         while (active = true)
         {
             string UserName;
-            UI.Title(@"
-                ██╗      ██████╗  ██████╗ ██╗███╗   ██╗               
-                ██║     ██╔═══██╗██╔════╝ ██║████╗  ██║               
-                ██║     ██║   ██║██║  ███╗██║██╔██╗ ██║               
-                ██║     ██║   ██║██║   ██║██║██║╚██╗██║               
-                ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║               
-                ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝               
-                                                                 ");
-
+            UI.ApplicationLogo();
+            UI.Title("LOGIN");
             UI.GreenMessage("Input User name and password to LOGIN or input User Name = 0 to EXIT.");
             Console.Write("User Name: ");
             UserName = Console.ReadLine();
@@ -43,7 +36,8 @@ public class Ults
             }
             else
             {
-                orderStaff = staffBL.Login(UserName);
+                Console.Write("Password: ");
+                orderStaff = staffBL.GetPasswordAndCheckAuthorize(UserName);
             }
 
             if (orderStaff != null)
@@ -52,15 +46,8 @@ public class Ults
                 while (true)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
-                    string MainMenuChoice = UI.Menu(@"
-             ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗             
-            ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗            
-            ██║     ███████╗██╔████╔██║    ███████║██████╔╝██████╔╝            
-            ██║     ╚════██║██║╚██╔╝██║    ██╔══██║██╔═══╝ ██╔═══╝             
-            ╚██████╗███████║██║ ╚═╝ ██║    ██║  ██║██║     ██║                 
-             ╚═════╝╚══════╝╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                 
-            ----------------------------+--------------------------            
-", MainMenu, orderStaff);
+                    UI.ApplicationLogo();
+                    string MainMenuChoice = UI.Menu("MAIN MENU", MainMenu, orderStaff);
 
                     switch (MainMenuChoice)
                     {
@@ -70,6 +57,8 @@ public class Ults
                         case "Update Order":
                             break;
                         case "Payment":
+                            break;
+                        case "Update Product":
                             break;
                         case "Check Out":
                             break;
@@ -82,7 +71,7 @@ public class Ults
             else
             {
                 Console.WriteLine("");
-                UI.RedMessage("Invalid Username or Password !");
+                UI.RedMessage("Invalid Username or Password ! Please re-enter.");
             }
         }
     }
@@ -97,17 +86,10 @@ public class Ults
         {
             do
             {
-                UI.Title(@"
- ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗     ██████╗ ██████╗ ██████╗ ███████╗██████╗ 
-██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
-██║     ██████╔╝█████╗  ███████║   ██║   █████╗      ██║   ██║██████╔╝██║  ██║█████╗  ██████╔╝
-██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝      ██║   ██║██╔══██╗██║  ██║██╔══╝  ██╔══██╗
-╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗    ╚██████╔╝██║  ██║██████╔╝███████╗██║  ██║
- ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝     ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝
-");
+                UI.ApplicationLogo();
+                UI.Title("CREATE ORDER");
                 UI.CurrentStaff(orderStaff);
-                UI.PrintProducts(lstproduct);
-                AnsiConsole.Markup("Input [Green]ID[/] to add product to order or [Green]CHOOSE 0[/] to back main menu: ");
+                UI.PrintProductsTable(lstproduct);
                 int.TryParse(Console.ReadLine(), out productId);
                 if (productId < 0 || productId > lstproduct.Count())
                 {

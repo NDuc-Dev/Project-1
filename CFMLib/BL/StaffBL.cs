@@ -6,9 +6,8 @@ namespace BL
     public class StaffBL
     {
         StaffDAL staffDAL = new StaffDAL();
-        public Staff? Login(string UserName)
+        public Staff? GetPasswordAndCheckAuthorize(string UserName)
         {
-            Console.Write("Password: ");
             string Password = "";
             ConsoleKey key;
             do

@@ -15,7 +15,6 @@ namespace DAL
             size.SizeID = reader.GetInt32("size_id");
             size.SizeProduct = reader.GetChar("product_size");
             size.SizePrice = reader.GetDecimal("price");
-            size.Quantity = reader.GetInt32("quantity");
             return size;
         }
 
@@ -26,7 +25,6 @@ namespace DAL
             size.SizeID = reader.GetInt32("size_id");
             // size.SizeProduct = reader.GetChar("product_size");
             size.SizePrice = reader.GetDecimal("price");
-            size.Quantity = reader.GetInt32("quantity");
             return size;
         }
 

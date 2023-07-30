@@ -20,13 +20,6 @@ namespace Persistence
         public int OrderStatus { set; get; }
         public List<Product> ProductsList { set; get; }
 
-       
-        public Order()
-        {
-            ProductsList = new List<Product>();
-            OrderId = 0;
-            Status = 0;
-        }
 
         
     }

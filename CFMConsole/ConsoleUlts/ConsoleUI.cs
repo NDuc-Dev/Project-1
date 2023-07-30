@@ -3,18 +3,20 @@ using BL;
 using DAL;
 using Persistence;
 using Spectre.Console;
+using Spectre.Console.Extensions;
+using System.Collections.Generic;
 namespace UI
 {
     public class ConsoleUI
     {
         SizeBL sizeBL = new SizeBL();
+        ProductBL productBL = new ProductBL();
         // Line
         public void Line()
         {
             var rule = new Rule();
             AnsiConsole.Write(rule);
         }
-
         //PressAnyKeyToContinue
         public void PressAnyKeyToContinue()
         {
@@ -25,6 +27,21 @@ namespace UI
         }
 
         //Logo
+        public void ApplicationLogo()
+        {
+            Console.Clear();
+            var table = new Table();
+            table.AddColumn(new TableColumn(@"
+             ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗             
+            ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗            
+            ██║     ███████╗██╔████╔██║    ███████║██████╔╝██████╔╝            
+            ██║     ╚════██║██║╚██╔╝██║    ██╔══██║██╔═══╝ ██╔═══╝             
+            ╚██████╗███████║██║ ╚═╝ ██║    ██║  ██║██║     ██║                 
+             ╚═════╝╚══════╝╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                 
+            ----------------------------+--------------------------            ").Centered()).RoundedBorder().Centered();
+            AnsiConsole.Write(table);
+        }
+
         public void Introduction()
         {
             Console.Clear();
@@ -73,7 +90,6 @@ namespace UI
 
         public string Menu(string? title, string[] item, Staff staff)
         {
-            Console.Clear();
             if (title != null)
             {
                 Title(title);
@@ -92,7 +108,7 @@ namespace UI
         //Title
         public void Title(string title)
         {
-            Console.Clear();
+            // Console.Clear();
             var table = new Table();
             table.AddColumn(new TableColumn($"{title}").Centered()).RoundedBorder().Centered();
             AnsiConsole.Write(table);
@@ -108,39 +124,64 @@ namespace UI
 
 
         //Product Handle
-        public void PrintProducts(List<Product> prlst)
-        {
-            var table = new Table();
-            table.AddColumn(new TableColumn("Product ID").Centered());
-            table.AddColumn(new TableColumn("Product Name").LeftAligned());
-            table.AddColumn(new TableColumn("Size S").Centered());
-            table.AddColumn(new TableColumn("Size M").Centered());
-            table.AddColumn(new TableColumn("Size L").Centered());
-            foreach (var item in prlst)
-            {
-                decimal priceSize1 = sizeBL.GetSizeSByProductID(item.ProductId).SizePrice;
-                decimal priceSize2 = sizeBL.GetSizeMByProductID(item.ProductId).SizePrice;
-                decimal priceSize3 = sizeBL.GetSizeLByProductID(item.ProductId).SizePrice;
-                string pricesize1 = string.Format("{00:##'.'### VND}", priceSize1);
-                string pricesize2 = string.Format("{00:##'.'### VND}", priceSize2);
-                string pricesize3 = string.Format("{00:##'.'### VND}", priceSize3);
-                table.AddRow($"{item.ProductId}", $"{item.ProductName}", $"{pricesize1}", $"{pricesize2}", $"{pricesize3}");
-            }
-            AnsiConsole.Write(table.Centered());
-        }
 
+        public void PrintProductsTable(List<Product> prlst)
+        {
+            int pageSize = 5; // Số sản phẩm mỗi trang
+            int currentPage = 1; // Trang hiện tại
+
+            while (true)
+            {
+                Console.Clear();
+                var table = new Table();
+                table.AddColumn(new TableColumn("Product ID").Centered());
+                table.AddColumn(new TableColumn("Product Name").LeftAligned());
+                table.AddColumn(new TableColumn("Size S").Centered());
+                table.AddColumn(new TableColumn("Size M").Centered());
+                table.AddColumn(new TableColumn("Size L").Centered());
+                // Hiển thị sản phẩm trên trang hiện tại
+                int startIndex = (currentPage - 1) * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize - 1, prlst.Count - 1);
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    decimal priceSize1 = sizeBL.GetSizeSByProductID(prlst[i].ProductId).SizePrice;
+                    decimal priceSize2 = sizeBL.GetSizeMByProductID(prlst[i].ProductId).SizePrice;
+                    decimal priceSize3 = sizeBL.GetSizeLByProductID(prlst[i].ProductId).SizePrice;
+                    string pricesize1 = string.Format("{00:##'.'### VND}", priceSize1);
+                    string pricesize2 = string.Format("{00:##'.'### VND}", priceSize2);
+                    string pricesize3 = string.Format("{00:##'.'### VND}", priceSize3);
+                    table.AddRow($"{prlst[i].ProductId}", $"{prlst[i].ProductName}", $"{pricesize1}", $"{pricesize2}", $"{pricesize3}");
+                }
+                AnsiConsole.Write(table.Centered());
+                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page. Press Esc to exit.");
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                {
+                    if (currentPage > 1)
+                    {
+                        currentPage--;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    if (currentPage < Math.Ceiling((double)prlst.Count / pageSize))
+                    {
+                        currentPage++;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.Escape)
+                {
+                    break; // Thoát khỏi vòng lặp nếu nhấn Esc
+                }
+            }
+
+
+        }
         public void PrintProductInfo(Product product)
         {
 
-            Console.Clear();
-            Title(@"
-██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗    ██████╗ ███████╗████████╗ █████╗ ██╗██╗     ███████╗
-██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██║██║     ██╔════╝
-██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║       ██║  ██║█████╗     ██║   ███████║██║██║     ███████╗
-██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║       ██║  ██║██╔══╝     ██║   ██╔══██║██║██║     ╚════██║
-██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║       ██████╔╝███████╗   ██║   ██║  ██║██║███████╗███████║
-╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝       ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝
-");
+            ApplicationLogo();
+            Title("PRODUCT DETAILS");
             Console.WriteLine("Product ID: " + product.ProductId);
             Console.WriteLine("Product Name: " + product.ProductName);
         }
@@ -167,7 +208,7 @@ namespace UI
         public void PrintProductSizeInfo(Persistence.Size size)
         {
             string Size = string.Format("{00:##'.'### VND}", size.SizePrice);
-            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + Size + "  Quantity Instock :" + size.Quantity);
+            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + Size);
         }
 
         public void PrintSizes(List<Persistence.Size> lst)
@@ -183,7 +224,7 @@ namespace UI
         {
             var table = new Table();
             Console.ForegroundColor = ConsoleColor.Green;
-            table.AddColumn(new TableColumn($"{staff.StaffName}" + " - " + "ID:" + $"{staff.StaffId}")).Centered();
+            table.AddColumn(new TableColumn($"{staff.StaffName}" + " - " + "ID:" + $"{staff.StaffId}").Centered()).RightAligned();
             AnsiConsole.Write(table);
             Console.ForegroundColor = ConsoleColor.White;
         }
