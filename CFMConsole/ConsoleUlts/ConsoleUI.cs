@@ -160,6 +160,7 @@ namespace UI
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
+            bool status = false;
 
             while (true)
             {
@@ -189,10 +190,10 @@ namespace UI
                 AnsiConsole.Write(table.Centered());
                 var Pagination = new Table();
                 Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)prlst.Count / pageSize)}" + ">");
-                AnsiConsole.Write(Pagination.Centered().NoBorder());
+                AnsiConsole.Render(Pagination.Centered().NoBorder());
                 string content = TimeLineCreateOrderContent(1);
                 TimeLine(content);
-                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose product by PRODUCT ID. Press [Green]ESC[/] to exit.");
+                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose product by PRODUCT ID. Press [Green]ESC[/] to exit.\n");
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 if (keyInfo.Key == ConsoleKey.LeftArrow)
@@ -209,12 +210,11 @@ namespace UI
                         currentPage++;
                     }
                 }
-                else if (keyInfo.Key == ConsoleKey.Escape)
+                else if (keyInfo.Key == ConsoleKey.Enter)
                 {
                     break; // Thoát khỏi vòng lặp nếu nhấn Esc
                 }
             }
-
         }
         public void PrintProductInfo(Product product)
         {
@@ -274,6 +274,7 @@ namespace UI
             TitleNoBorder("Welcome " + staff.StaffName);
             Thread.Sleep(1000);
         }
+
         public int ChooseProductsize(Product product)
         {
             int sizeId = 0;
@@ -286,12 +287,9 @@ namespace UI
             {
                 do
                 {
-                    PrintProductInfo(product);
                     listsize = sizeBL.GetListProductSizeByProductID(product.ProductId);
-                    PrintSizes(listsize);
                     AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
                     int.TryParse(Console.ReadLine(), out sizeId);
-
                     if (sizeId < 0 || sizeId > listsize.Count())
                     {
                         showAlert = true;
@@ -315,5 +313,6 @@ namespace UI
             }
             return sizeId;
         }
+
     }
 }

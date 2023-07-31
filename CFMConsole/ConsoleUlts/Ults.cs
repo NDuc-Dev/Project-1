@@ -84,35 +84,47 @@ public class Ults
         lstproduct = productBL.GetAll();
         while (active)
         {
+            Order order = new Order();
+            order.OrderStaffID = orderStaff;
             do
             {
-                
                 UI.PrintProductsTable(lstproduct, orderStaff);
-                int.TryParse(Console.ReadLine(), out productId);
-                if (productId < 0 || productId > lstproduct.Count())
+                Console.WriteLine();
+                Console.Write("Product ID: ");
+                
+                if (int.TryParse(Console.ReadLine(), out productId))
                 {
-                    showAlert = true;
-                }
-                else if (productId == 0)
-                {
-                    active = false;
-                    break;
+                    if (productId < 0 || productId > lstproduct.Count())
+                    {
+                        showAlert = true;
+                    }
+                    else if(productId == 0)
+                    {
+                        active = false;
+                        break;
+                    }
+                    else
+                    {
+                        Order orders = new Order();
+                        showAlert = false;
+                        product = productBL.GetProductById(productId);
+                        orders.ProductsList.Add(product);
+                        int sizeChoice = UI.ChooseProductsize(product);
+                        Console.WriteLine(product.ProductId);
+                        Console.WriteLine(sizeChoice);
+                        Console.ReadKey();
+                    }
+                    if (showAlert)
+                    {
+                        UI.RedMessage("Invalid input, please re-enter");
+                    }
                 }
                 else
-                {
-                    showAlert = false;
-                    product = productBL.GetProductById(productId);
-                    int sizeChoice = UI.ChooseProductsize(product);
-                    Console.WriteLine(sizeChoice);
-                    Console.WriteLine(product.ProductId);
-                    Console.ReadKey();
-                }
-
-                if (showAlert)
-                {
-                    UI.RedMessage("Invalid input, please re-enter");
-                }
-            } while (productId < 0 || productId > lstproduct.Count());
+                        {
+                            UI.RedMessage("Invalid input, please re-enter");
+                            CreateOrder();
+                        }
+            } while (int.TryParse(Console.ReadLine(), out productId));
         }
 
     }
