@@ -83,6 +83,20 @@ insert into Products(Product_ID, Product_Name, Descriptions)
 value ('2', 'Ice Tea','');
 insert into Products(Product_ID, Product_Name, Descriptions)
 value ('3', 'Latte','');
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('4', 'Traditonal Coffee','');
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('5', 'Milk Tea','');
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('6', 'Tra Dao Cam Xa','');
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('7', 'Tra Chanh','');
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('8', 'Tra Tac','');
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('9', 'Tra Thach Dao','');
+insert into Products(Product_ID, Product_Name, Descriptions)
+value ('10', 'Tra Thach Vai','');
 
 -- INSERT SIZE INFO TO TABLE "SIZES'
 insert into Sizes(Size_ID, Product_Size)
@@ -111,6 +125,48 @@ insert into Product_Sizes(Product_ID, Size_ID, Price)
 value ('3','2','32000');
 insert into Product_Sizes(Product_ID, Size_ID, Price)
 value ('3','3','35000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('4','1','20000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('4','2','25000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('4','3','30000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('5','1','25000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('5','2','28000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('5','3','30000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('6','1','25000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('6','2','28000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('6','3','30000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('7','1','25000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('7','2','28000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('7','3','30000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('8','1','25000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('8','2','28000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('8','3','30000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('9','1','25000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('9','2','28000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('9','3','30000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('10','1','25000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('10','2','28000');
+insert into Product_Sizes(Product_ID, Size_ID, Price)
+value ('10','3','30000');
 
 -- INSERT UPDATE OF PRODUCTS TO TABLE "UPDATE_DETAILS"
 insert into update_details(Product_ID, Update_Des)
@@ -122,8 +178,14 @@ value ('2', 'Create Product Ice Tea');
 insert into update_details(Product_ID, Update_Des)
 value ('3', 'Create Product Latte');
 
+insert into update_details(Product_ID, Update_Des)
+value ('3', 'Create Product Traditional Coffee');
+
+insert into update_details(Product_ID, Update_Des)
+value ('5', 'Create Product Milk Tea');
+
+
+
 -- CREATE AN SUB ACCOUNT TO DATABASE 
 CREATE USER IF NOT exists 'nguyenngocduc'@'localhost' IDENTIFIED BY 'Duc265204@';
 GRANT ALL PRIVILEGES ON coffeeshop.* TO 'nguyenngocduc'@'localhost' WITH GRANT OPTION;
-
-
