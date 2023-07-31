@@ -38,15 +38,16 @@ namespace DAL
             try
             {
                 query = @"SELECT * FROM product_sizes ps
-                inner JOIN product p on ps.product_id = p.product_id
+                inner JOIN products p on ps.product_id = p.product_id
                 inner JOIN sizes s on ps.size_id = s.size_id
-                where ps.product_id=@product_id and ps.size_id=@size_id;";
+                where ps.product_id=@productId and ps.size_id=@sizeId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@productId", productId);
+                command.Parameters.AddWithValue("@sizeId", sizeId);
                 MySqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
-                    // product = GetProduct(reader);
+                    product = GetAllProductInfo(reader);
                 }
                 reader.Close();
             }
@@ -61,7 +62,8 @@ namespace DAL
             product.ProductName = reader.GetString("product_name");
             product.ProductPrice = reader.GetDecimal("price");
             product.ProductSize = reader.GetChar("Product_Size");
-            
+            product.ProductSizeId = reader.GetInt32("size_id");
+            return product;
         }
 
         internal Product GetProduct(MySqlDataReader reader)

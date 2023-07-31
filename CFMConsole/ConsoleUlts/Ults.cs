@@ -11,6 +11,7 @@ public class Ults
     StaffBL staffBL = new StaffBL();
     ProductBL productBL = new ProductBL();
     SizeBL sizeBL = new SizeBL();
+    OrderBL orderBL = new OrderBL();
     List<Product>? lstproduct;
     Staff? orderStaff;
     List<Persistence.Size> size;
@@ -80,51 +81,69 @@ public class Ults
     {
         int productId;
         bool active = true;
-        Product product = new Product();
+        Product? product = null;
         lstproduct = productBL.GetAll();
         while (active)
         {
             Order order = new Order();
-            order.OrderStaffID = orderStaff;
+            order.OrderStaffID = orderStaff.StaffId;
+            bool continuee = false;
             do
             {
-                UI.PrintProductsTable(lstproduct, orderStaff);
-                Console.WriteLine();
-                Console.Write("Product ID: ");
-                
-                if (int.TryParse(Console.ReadLine(), out productId))
+
+                do
                 {
-                    if (productId < 0 || productId > lstproduct.Count())
+                    UI.PrintProductsTable(lstproduct, orderStaff);
+                    Console.WriteLine();
+                    Console.Write("Product ID: ");
+
+                    if (int.TryParse(Console.ReadLine(), out productId))
                     {
-                        showAlert = true;
-                    }
-                    else if(productId == 0)
-                    {
-                        active = false;
-                        break;
+                        if (productId < 0 || productId > lstproduct.Count())
+                        {
+                            showAlert = true;
+                        }
+                        else if (productId == 0)
+                        {
+                            active = false;
+                            break;
+                        }
+                        else
+                        {
+                            showAlert = false;
+                            Order orders = new Order();
+                            int sizeId = UI.ChooseProductsize();
+                            product = productBL.GetProductByIdAndSize(productId, sizeId);
+                            orders.ProductsList.Add(product);
+                            int quantity = UI.InputQuantity();
+                            orders.ProductsList[orders.ProductsList.Count()-1].ProductQuantity = quantity;
+                            string ask = UI.AskToContinue();
+                            switch (ask)
+                            {
+                                case "Yes":
+                                    continuee = true;
+                                    break;
+                                case "No":
+                                    active = false;
+                                    continuee = false;
+                                    Console.WriteLine("Create Order: " + (orderBL.SaveOrder(order) ? "completed!" : "not complete!"));
+                                    UI.PressAnyKeyToContinue();
+                                    break;
+                            }
+                        }
+                        if (showAlert)
+                        {
+                            UI.RedMessage("Invalid input ! please re-enter");
+                        }
                     }
                     else
                     {
-                        Order orders = new Order();
-                        showAlert = false;
-                        product = productBL.GetProductById(productId);
-                        orders.ProductsList.Add(product);
-                        int sizeChoice = UI.ChooseProductsize(product);
-                        Console.WriteLine(product.ProductId);
-                        Console.WriteLine(sizeChoice);
-                        Console.ReadKey();
-                    }
-                    if (showAlert)
-                    {
                         UI.RedMessage("Invalid input, please re-enter");
+                        CreateOrder();
                     }
-                }
-                else
-                        {
-                            UI.RedMessage("Invalid input, please re-enter");
-                            CreateOrder();
-                        }
-            } while (int.TryParse(Console.ReadLine(), out productId));
+                } while (int.TryParse(Console.ReadLine(), out productId));
+
+            } while (continuee == false);
         }
 
     }

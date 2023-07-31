@@ -225,6 +225,24 @@ namespace UI
             Console.WriteLine("Product Name: " + product.ProductName);
         }
 
+        public int InputQuantity()
+        {
+            int quantity;
+            do
+            {
+                Console.Write("Input Quantity: ");
+                if (int.TryParse(Console.ReadLine(), out quantity))
+                {
+                    return quantity;
+                }
+                else
+                {
+                    RedMessage("Invalid quantity ! Please re-enter.");
+                }
+            } while (int.TryParse(Console.ReadLine(), out quantity));
+            return quantity;
+        }
+
         // Message Color
         public void RedMessage(string message)
         {
@@ -275,22 +293,19 @@ namespace UI
             Thread.Sleep(1000);
         }
 
-        public int ChooseProductsize(Product product)
+        public int ChooseProductsize()
         {
             int sizeId = 0;
             bool active = true;
             bool showAlert = false;
-            int sizeChoose;
-            List<Persistence.Size> listsize = new List<Persistence.Size>();
 
             while (active)
             {
                 do
                 {
-                    listsize = sizeBL.GetListProductSizeByProductID(product.ProductId);
                     AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
                     int.TryParse(Console.ReadLine(), out sizeId);
-                    if (sizeId < 0 || sizeId > listsize.Count())
+                    if (sizeId < 0 || sizeId > 3)
                     {
                         showAlert = true;
                     }
@@ -308,11 +323,21 @@ namespace UI
                         RedMessage("Invalid choice. Please Re-enter");
                     }
                 }
-                while (sizeId < 0 || sizeId > listsize.Count());
+                while (sizeId < 0 || sizeId > 3);
 
             }
             return sizeId;
         }
 
+        public string AskToContinue()
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("[Green]Add product to order complete[/], do you want to [Green]CONTINUE[/] to add product ?")
+               .PageSize(5)
+               .AddChoices(item));
+            return choice;
+        }
     }
 }

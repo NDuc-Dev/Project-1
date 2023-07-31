@@ -15,6 +15,7 @@ namespace Persistence
         public decimal ProductPrice { set; get; }
         public int ProductQuantity { set; get; }
         public string? ProductDescription { set; get; }
+        public int ProductSizeId {set; get;}
         public char ProductSize { set; get; }
         public int ProductStatus { set; get; }
         public Staff? CreateBy { set; get; }

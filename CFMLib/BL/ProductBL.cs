@@ -15,6 +15,10 @@ namespace BL
         {
             return new ProductDAL().GetProducts();
         } 
+        public Product GetProductByIdAndSize (int productId, int sizeId)
+        {
+            return productDal.GetProductByIdAndSize(productId, sizeId);
+        }
     }
 
 }
