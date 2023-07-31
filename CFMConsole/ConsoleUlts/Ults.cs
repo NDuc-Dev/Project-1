@@ -86,10 +86,8 @@ public class Ults
         {
             do
             {
-                UI.ApplicationLogo();
-                UI.Title("CREATE ORDER");
-                UI.CurrentStaff(orderStaff);
-                UI.PrintProductsTable(lstproduct);
+                
+                UI.PrintProductsTable(lstproduct, orderStaff);
                 int.TryParse(Console.ReadLine(), out productId);
                 if (productId < 0 || productId > lstproduct.Count())
                 {

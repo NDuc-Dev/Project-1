@@ -1,10 +1,9 @@
 using System.IO.Compression;
 using BL;
-using DAL;
 using Persistence;
 using Spectre.Console;
-using Spectre.Console.Extensions;
-using System.Collections.Generic;
+
+
 namespace UI
 {
     public class ConsoleUI
@@ -15,8 +14,40 @@ namespace UI
         public void Line()
         {
             var rule = new Rule();
-            AnsiConsole.Write(rule);
+            AnsiConsole.Write(rule.DoubleBorder());
         }
+
+        //Time Line
+        public string TimeLineCreateOrderContent(int step)
+        {
+            string content = "";
+            switch (step)
+            {
+                case 1:
+                    content = "[green]CHOOSE PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                    break;
+                case 2:
+                    content = "CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                    break;
+                case 3:
+                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ORDER";
+                    break;
+                case 4:
+                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ORDER[/]";
+                    break;
+            }
+            return content;
+        }
+
+        public void TimeLine(string content)
+        {
+            Line();
+            var table = new Table();
+            table.AddColumn($"{content}").Centered();
+            AnsiConsole.Write(table.NoBorder());
+            Line();
+        }
+
         //PressAnyKeyToContinue
         public void PressAnyKeyToContinue()
         {
@@ -125,7 +156,7 @@ namespace UI
 
         //Product Handle
 
-        public void PrintProductsTable(List<Product> prlst)
+        public void PrintProductsTable(List<Product> prlst, Staff orderStaff)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
@@ -133,6 +164,9 @@ namespace UI
             while (true)
             {
                 Console.Clear();
+                ApplicationLogo();
+                Title("CREATE ORDER");
+                CurrentStaff(orderStaff);
                 var table = new Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
@@ -153,7 +187,13 @@ namespace UI
                     table.AddRow($"{prlst[i].ProductId}", $"{prlst[i].ProductName}", $"{pricesize1}", $"{pricesize2}", $"{pricesize3}");
                 }
                 AnsiConsole.Write(table.Centered());
-                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page. Press Esc to exit.");
+                var Pagination = new Table();
+                Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)prlst.Count / pageSize)}" + ">");
+                AnsiConsole.Write(Pagination.Centered().NoBorder());
+                string content = TimeLineCreateOrderContent(1);
+                TimeLine(content);
+                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose product by PRODUCT ID. Press [Green]ESC[/] to exit.");
+
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 if (keyInfo.Key == ConsoleKey.LeftArrow)
                 {
@@ -174,7 +214,6 @@ namespace UI
                     break; // Thoát khỏi vòng lặp nếu nhấn Esc
                 }
             }
-
 
         }
         public void PrintProductInfo(Product product)
