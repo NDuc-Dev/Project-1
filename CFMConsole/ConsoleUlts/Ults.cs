@@ -25,7 +25,7 @@ public class Ults
         while (active = true)
         {
             string UserName;
-            UI.ApplicationLogo();
+            UI.ApplicationLogoBeforeLogin();
             UI.Title("LOGIN");
             UI.GreenMessage("Input User name and password to LOGIN or input User Name = 0 to EXIT.");
             Console.Write("User Name: ");
@@ -47,8 +47,8 @@ public class Ults
                 while (true)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
-                    UI.ApplicationLogo();
-                    string MainMenuChoice = UI.Menu("MAIN MENU", MainMenu, orderStaff);
+                    UI.ApplicationLogoAfterLogin(orderStaff);
+                    string MainMenuChoice = UI.Menu("MAIN MENU", MainMenu);
 
                     switch (MainMenuChoice)
                     {
@@ -87,62 +87,27 @@ public class Ults
         {
             // Order orders = new Order();
             bool continuee = false;
+            Order orders = new Order();
             do
             {
-
-                do
+                product = GetProduct(lstproduct, orderStaff,"Create Order");
+                orders.OrderStaffID = orderStaff.StaffId;
+                orders.ProductsList.Add(product);
+                int quantity = UI.InputQuantity(product, orderStaff, "Create Order");
+                orders.ProductsList[orders.ProductsList.Count() - 1].ProductQuantity = quantity;
+                string ask = UI.AskToContinue();
+                switch (ask)
                 {
-                    UI.PrintProductsTable(lstproduct, orderStaff);
-                    Console.WriteLine();
-                    Order orders = new Order();
-                    orders.OrderStaffID = orderStaff.StaffId;
-                    Console.Write("Product ID: ");
-
-                    if (int.TryParse(Console.ReadLine(), out productId))
-                    {
-                        if (productId < 0 || productId > lstproduct.Count())
-                        {
-                            showAlert = true;
-                        }
-                        else if (productId == 0)
-                        {
-                            active = false;
-                            break;
-                        }
-                        else
-                        {
-                            showAlert = false;
-                            int sizeId = UI.ChooseProductsize();
-                            product = productBL.GetProductByIdAndSize(productId, sizeId);
-                            orders.ProductsList.Add(product);
-                            int quantity = UI.InputQuantity();
-                            orders.ProductsList[orders.ProductsList.Count() - 1].ProductQuantity = quantity;
-                            string ask = UI.AskToContinue();
-                            switch (ask)
-                            {
-                                case "Yes":
-                                    continuee = true;
-                                    break;
-                                case "No":
-                                    active = false;
-                                    continuee = false;
-                                    Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
-                                    UI.PressAnyKeyToContinue();
-                                    break;
-                            }
-                        }
-                        if (showAlert)
-                        {
-                            UI.RedMessage("Invalid input ! please re-enter");
-                        }
-                    }
-                    else
-                    {
-                        UI.RedMessage("Invalid input, please re-enter");
-                        CreateOrder();
-                    }
-                } while (int.TryParse(Console.ReadLine(), out productId));
-
+                    case "Yes":
+                        continuee = true;
+                        break;
+                    case "No":
+                        active = false;
+                        continuee = false;
+                        Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
+                        UI.PressAnyKeyToContinue();
+                        break;
+                }
             } while (continuee == false);
         }
 
@@ -165,5 +130,40 @@ public class Ults
         Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
         Console.WriteLine("Instructor: Nguyen Xuan Sinh");
         UI.PressAnyKeyToContinue();
+    }
+
+    public Product GetProduct(List<Product> lstproduct, Staff orderStaff, string title)
+    {
+        bool active = true;
+        Product product = new Product();
+        do
+        {
+            UI.PrintProductsTable(lstproduct, orderStaff);
+            Console.Write("Product ID: ");
+            int productId;
+            if (int.TryParse(Console.ReadLine(), out productId))
+            {
+                foreach (var item in lstproduct)
+                {
+                    if (item.ProductId == productId)
+                    {
+                        int sizeId = UI.ChooseProductsize(orderStaff,productId,"Create Order");
+                        product = productBL.GetProductByIdAndSize(productId, sizeId);
+                        return product;
+                    }
+                    else
+                    {
+                        active = true;
+                        UI.RedMessage("Product not exist: ");
+                    }
+                }
+            }
+            else
+            {
+                UI.RedMessage("Invalid ID !");
+            }
+        }
+        while (active);
+        return product;
     }
 }

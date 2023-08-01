@@ -58,7 +58,25 @@ namespace UI
         }
 
         //Logo
-        public void ApplicationLogo()
+        public void ApplicationLogoAfterLogin(Staff staff)
+        {
+            Console.Clear();
+            var table = new Table();
+            table.AddColumn(new TableColumn(@"
+             ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗             
+            ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗            
+            ██║     ███████╗██╔████╔██║    ███████║██████╔╝██████╔╝            
+            ██║     ╚════██║██║╚██╔╝██║    ██╔══██║██╔═══╝ ██╔═══╝             
+            ╚██████╗███████║██║ ╚═╝ ██║    ██║  ██║██║     ██║                 
+             ╚═════╝╚══════╝╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                 
+            ----------------------------+--------------------------            ").Centered()).RoundedBorder().Centered();
+            table.AddRow($"[Green]{staff.StaffName +" - ID: " + staff.StaffId }[/]");
+            
+            AnsiConsole.Render(table);
+        }
+
+        
+        public void ApplicationLogoBeforeLogin()
         {
             Console.Clear();
             var table = new Table();
@@ -119,13 +137,13 @@ namespace UI
 
         //Menu Handle
 
-        public string Menu(string? title, string[] item, Staff staff)
+        public string Menu(string? title, string[] item)
         {
             if (title != null)
             {
                 Title(title);
             }
-            CurrentStaff(staff);
+            // CurrentStaff(staff);
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
@@ -156,7 +174,7 @@ namespace UI
 
         //Product Handle
 
-        public void PrintProductsTable(List<Product> prlst, Staff orderStaff)
+        public void PrintProductsTable(List<Product> prlst, Staff staff)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
@@ -165,9 +183,10 @@ namespace UI
             while (true)
             {
                 Console.Clear();
-                ApplicationLogo();
+                ApplicationLogoAfterLogin(staff);
                 Title("CREATE ORDER");
-                CurrentStaff(orderStaff);
+                // CurrentStaff(orderStaff);
+                TimeLine(TimeLineCreateOrderContent(1));
                 var table = new Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
@@ -191,8 +210,6 @@ namespace UI
                 var Pagination = new Table();
                 Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)prlst.Count / pageSize)}" + ">");
                 AnsiConsole.Render(Pagination.Centered().NoBorder());
-                string content = TimeLineCreateOrderContent(1);
-                TimeLine(content);
                 AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose product by PRODUCT ID. Press [Green]ESC[/] to exit.\n");
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
@@ -216,20 +233,20 @@ namespace UI
                 }
             }
         }
-        public void PrintProductInfo(Product product)
-        {
 
-            ApplicationLogo();
-            Title("PRODUCT DETAILS");
-            Console.WriteLine("Product ID: " + product.ProductId);
-            Console.WriteLine("Product Name: " + product.ProductName);
-        }
-
-        public int InputQuantity()
+        public int InputQuantity(Product product, Staff staff, string title)
         {
             int quantity;
             do
             {
+                Console.Clear();
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                TimeLine(TimeLineCreateOrderContent(3));
+                Console.WriteLine("Product ID : " + product.ProductId);
+                Console.WriteLine("Product Name : " + product.ProductName);
+                Console.WriteLine("Product Size : " + product.ProductSize);
+                Console.WriteLine("Unit Price : " + product.ProductPrice);
                 Console.Write("Input Quantity: ");
                 if (int.TryParse(Console.ReadLine(), out quantity))
                 {
@@ -277,14 +294,6 @@ namespace UI
         }
 
         //Staff
-        public void CurrentStaff(Staff staff)
-        {
-            var table = new Table();
-            Console.ForegroundColor = ConsoleColor.Green;
-            table.AddColumn(new TableColumn($"{staff.StaffName}" + " - " + "ID:" + $"{staff.StaffId}").Centered()).RightAligned();
-            AnsiConsole.Write(table);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
         public void WelcomeStaff(Staff staff)
         {
             Console.Clear();
@@ -293,39 +302,34 @@ namespace UI
             Thread.Sleep(1000);
         }
 
-        public int ChooseProductsize()
+        public int ChooseProductsize(Staff staff, int productId, string title)
         {
             int sizeId = 0;
-            bool active = true;
             bool showAlert = false;
-
-            while (active)
+            do
             {
-                do
+                Console.Clear();
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                TimeLine(TimeLineCreateOrderContent(2));
+                Product currentProduct = productBL.GetProductById(productId);
+                Console.WriteLine("Product ID: "+currentProduct.ProductId);
+                Console.WriteLine("Product Name: "+currentProduct.ProductName);
+                AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
+                int.TryParse(Console.ReadLine(), out sizeId);
+                if (sizeId <= 0 || sizeId > 3)
                 {
-                    AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
-                    int.TryParse(Console.ReadLine(), out sizeId);
-                    if (sizeId < 0 || sizeId > 3)
-                    {
-                        showAlert = true;
-                    }
-                    else if (sizeId == 0)
-                    {
-                        active = false;
-                        break;
-                    }
-                    else
-                    {
-                        return sizeId;
-                    }
-                    if (showAlert)
-                    {
-                        RedMessage("Invalid choice. Please Re-enter");
-                    }
+                    showAlert = true;
                 }
-                while (sizeId < 0 || sizeId > 3);
-
-            }
+                else
+                {
+                    return sizeId;
+                }
+                if (showAlert)
+                {
+                    RedMessage("Invalid choice. Please Re-enter");
+                }
+            } while (sizeId <= 0 || sizeId > 3);
             return sizeId;
         }
 
@@ -335,7 +339,7 @@ namespace UI
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title("[Green]Add product to order complete[/], do you want to [Green]CONTINUE[/] to add product ?")
-               .PageSize(5)
+               .PageSize(3)
                .AddChoices(item));
             return choice;
         }
