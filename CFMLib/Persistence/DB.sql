@@ -1,3 +1,4 @@
+DROP database if exists coffeeshop;
 CREATE DATABASE CoffeeShop;
 use CoffeeShop;
 -- drop database coffeeshop;
@@ -47,12 +48,13 @@ FOREIGN KEY (Size_ID) REFERENCES Sizes(Size_ID)
 create table Order_Details(
 Order_Details_ID int auto_increment,
 Order_ID int NOT NULL,
-Product_Size_ID int NOT NULL,
+Product_ID int NOT NULL,
+Size_ID int NOT NULL,
 Quantity int NOT NULL,
 Amount decimal NOT NULL,
 PRIMARY KEY (Order_Details_ID),
 FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),
-FOREIGN KEY (Product_Size_ID) REFERENCES Product_Sizes(Product_Size_ID)
+FOREIGN KEY (Size_ID) REFERENCES Product_Sizes(Size_ID)
 );
 
 create table Update_Details(

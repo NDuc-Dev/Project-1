@@ -85,8 +85,7 @@ public class Ults
         lstproduct = productBL.GetAll();
         while (active)
         {
-            Order order = new Order();
-            order.OrderStaffID = orderStaff.StaffId;
+            // Order orders = new Order();
             bool continuee = false;
             do
             {
@@ -95,6 +94,8 @@ public class Ults
                 {
                     UI.PrintProductsTable(lstproduct, orderStaff);
                     Console.WriteLine();
+                    Order orders = new Order();
+                    orders.OrderStaffID = orderStaff.StaffId;
                     Console.Write("Product ID: ");
 
                     if (int.TryParse(Console.ReadLine(), out productId))
@@ -111,12 +112,11 @@ public class Ults
                         else
                         {
                             showAlert = false;
-                            Order orders = new Order();
                             int sizeId = UI.ChooseProductsize();
                             product = productBL.GetProductByIdAndSize(productId, sizeId);
                             orders.ProductsList.Add(product);
                             int quantity = UI.InputQuantity();
-                            orders.ProductsList[orders.ProductsList.Count()-1].ProductQuantity = quantity;
+                            orders.ProductsList[orders.ProductsList.Count() - 1].ProductQuantity = quantity;
                             string ask = UI.AskToContinue();
                             switch (ask)
                             {
@@ -126,7 +126,7 @@ public class Ults
                                 case "No":
                                     active = false;
                                     continuee = false;
-                                    Console.WriteLine("Create Order: " + (orderBL.SaveOrder(order) ? "completed!" : "not complete!"));
+                                    Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
                                     UI.PressAnyKeyToContinue();
                                     break;
                             }

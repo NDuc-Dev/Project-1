@@ -8,10 +8,10 @@ namespace DAL
         private MySqlConnection connection = DbConfig.GetConnection();
         public bool CreateOrder(Order order)
         {
-            // if (order == null || order.ProductsList == null || order.ProductsList.Count() == 0)
-            // {
-            //     return false;
-            // }
+            if (order == null || order.ProductsList == null || order.ProductsList.Count() == 0)
+            {
+                return false;
+            }
             bool result = false;
             try
             {
@@ -21,7 +21,7 @@ namespace DAL
                 {
                     cmd.Connection = connection;
                     cmd.Transaction = trans;
-                    cmd.CommandText = "lock tables Orders write, Order_Details write;";
+                    cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, Order_Details write;";
                     cmd.ExecuteNonQuery();
 
                     MySqlDataReader? reader = null;
@@ -64,7 +64,7 @@ namespace DAL
                         reader.Close();
 
                         //insert to Order Details
-                        cmd.CommandText = @"insert into OrderDetails(order_id, product_id, size_id, quantity, amount) values 
+                        cmd.CommandText = @"insert into Order_Details(order_id, product_id, size_id, quantity, amount) values 
                             (" + order.OrderId + ", " + item.ProductId + ", "+ item.ProductSizeId+ ", " + item.ProductQuantity + ","+ (item.ProductQuantity*item.ProductPrice)+ ");";
                         cmd.ExecuteNonQuery();
                     }
@@ -76,7 +76,7 @@ namespace DAL
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR: {ex.Message}");
+                // Console.WriteLine($"ERROR: {ex.Message}");
             }
             return result;
         }
