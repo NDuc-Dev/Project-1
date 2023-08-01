@@ -2,6 +2,7 @@ using System.IO.Compression;
 using BL;
 using Persistence;
 using Spectre.Console;
+using System.Globalization;
 
 
 namespace UI
@@ -51,8 +52,7 @@ namespace UI
         //PressAnyKeyToContinue
         public void PressAnyKeyToContinue()
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Press any key to continue");
+            AnsiConsole.Markup("[Yellow]Press any key to continue[/]");
             Console.ForegroundColor = ConsoleColor.White;
             Console.ReadKey();
         }
@@ -70,12 +70,12 @@ namespace UI
             ╚██████╗███████║██║ ╚═╝ ██║    ██║  ██║██║     ██║                 
              ╚═════╝╚══════╝╚═╝     ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝                 
             ----------------------------+--------------------------            ").Centered()).RoundedBorder().Centered();
-            table.AddRow($"[Green]{staff.StaffName +" - ID: " + staff.StaffId }[/]");
-            
-            AnsiConsole.Render(table);
+            table.AddRow($"[Green]{staff.StaffName + " - ID: " + staff.StaffId}[/]");
+
+            AnsiConsole.Write(table);
         }
 
-        
+
         public void ApplicationLogoBeforeLogin()
         {
             Console.Clear();
@@ -178,7 +178,6 @@ namespace UI
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
-            bool status = false;
 
             while (true)
             {
@@ -201,16 +200,16 @@ namespace UI
                     decimal priceSize1 = sizeBL.GetSizeSByProductID(prlst[i].ProductId).SizePrice;
                     decimal priceSize2 = sizeBL.GetSizeMByProductID(prlst[i].ProductId).SizePrice;
                     decimal priceSize3 = sizeBL.GetSizeLByProductID(prlst[i].ProductId).SizePrice;
-                    string pricesize1 = string.Format("{00:##'.'### VND}", priceSize1);
-                    string pricesize2 = string.Format("{00:##'.'### VND}", priceSize2);
-                    string pricesize3 = string.Format("{00:##'.'### VND}", priceSize3);
-                    table.AddRow($"{prlst[i].ProductId}", $"{prlst[i].ProductName}", $"{pricesize1}", $"{pricesize2}", $"{pricesize3}");
+                    string formattepricesize1 = priceSize1.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                    string formattepricesize2 = priceSize2.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                    string formattepricesize3 = priceSize3.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                    table.AddRow($"{prlst[i].ProductId}", $"{prlst[i].ProductName}", $"{formattepricesize1 + " VND"}", $"{formattepricesize2 + " VND"}", $"{formattepricesize3 + " VND"}");
                 }
                 AnsiConsole.Write(table.Centered());
                 var Pagination = new Table();
                 Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)prlst.Count / pageSize)}" + ">");
-                AnsiConsole.Render(Pagination.Centered().NoBorder());
-                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose product by PRODUCT ID. Press [Green]ESC[/] to exit.\n");
+                AnsiConsole.Write(Pagination.Centered().NoBorder());
+                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose product by PRODUCT ID or input [Green]PRODUCT ID = 0[/] to exit.\n");
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 if (keyInfo.Key == ConsoleKey.LeftArrow)
@@ -229,7 +228,7 @@ namespace UI
                 }
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                    break; // Thoát khỏi vòng lặp nếu nhấn Esc
+                    break;
                 }
             }
         }
@@ -313,8 +312,8 @@ namespace UI
                 Title(title);
                 TimeLine(TimeLineCreateOrderContent(2));
                 Product currentProduct = productBL.GetProductById(productId);
-                Console.WriteLine("Product ID: "+currentProduct.ProductId);
-                Console.WriteLine("Product Name: "+currentProduct.ProductName);
+                Console.WriteLine("Product ID: " + currentProduct.ProductId);
+                Console.WriteLine("Product Name: " + currentProduct.ProductName);
                 AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
                 int.TryParse(Console.ReadLine(), out sizeId);
                 if (sizeId <= 0 || sizeId > 3)
@@ -333,7 +332,7 @@ namespace UI
             return sizeId;
         }
 
-        public string AskToContinue()
+        public string AskToContinueAdd()
         {
             string[] item = { "Yes", "No" };
             var choice = AnsiConsole.Prompt(
@@ -342,6 +341,40 @@ namespace UI
                .PageSize(3)
                .AddChoices(item));
             return choice;
+        }
+
+        public string AskToContinueCreate()
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Do you want to [Green]CREATE[/] this order ?")
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
+        public void PrintOrderDetails(List<Product> productList, Staff staff, string title)
+        {
+            Console.Clear();
+            ApplicationLogoAfterLogin(staff);
+            Title(title);
+            TimeLine(TimeLineCreateOrderContent(4));
+            var table = new Table();
+            table.Caption("Order Details");
+            table.AddColumn(new TableColumn("Product ID").Centered());
+            table.AddColumn(new TableColumn("Product Name").LeftAligned());
+            table.AddColumn(new TableColumn("Size").Centered());
+            table.AddColumn(new TableColumn("Unit Price").Centered());
+            table.AddColumn(new TableColumn("Quantity").Centered());
+            table.AddColumn(new TableColumn("Amount").Centered());
+            foreach (var item in productList)
+            {
+                decimal amount = item.ProductPrice * item.ProductQuantity;
+                string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                table.AddRow($"{item.ProductId}", $"{item.ProductName}", $"{item.ProductSize}", $"{item.ProductPrice}", $"{item.ProductQuantity}", $"{formattedAmount + " VND"}");
+            }
+            AnsiConsole.Write(table.Centered());
         }
     }
 }

@@ -10,12 +10,9 @@ public class Ults
     ConsoleUI UI = new ConsoleUI();
     StaffBL staffBL = new StaffBL();
     ProductBL productBL = new ProductBL();
-    SizeBL sizeBL = new SizeBL();
     OrderBL orderBL = new OrderBL();
     List<Product>? lstproduct;
     Staff? orderStaff;
-    List<Persistence.Size> size;
-    bool showAlert = false;
     string[] MainMenu = { "Create Order", "Update Order", "Update Product", "Payment", "Check Out", "About" };
 
     public void Login()
@@ -83,30 +80,57 @@ public class Ults
         bool active = true;
         Product? product = null;
         lstproduct = productBL.GetAll();
+        Order orders = new Order();
         while (active)
         {
-            // Order orders = new Order();
+            if (active == false)
+            {
+                break;
+            }
             bool continuee = false;
-            Order orders = new Order();
             do
             {
-                product = GetProduct(lstproduct, orderStaff,"Create Order");
-                orders.OrderStaffID = orderStaff.StaffId;
-                orders.ProductsList.Add(product);
-                int quantity = UI.InputQuantity(product, orderStaff, "Create Order");
-                orders.ProductsList[orders.ProductsList.Count() - 1].ProductQuantity = quantity;
-                string ask = UI.AskToContinue();
-                switch (ask)
+                if (active == false)
                 {
-                    case "Yes":
-                        continuee = true;
-                        break;
-                    case "No":
-                        active = false;
-                        continuee = false;
-                        Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
-                        UI.PressAnyKeyToContinue();
-                        break;
+                    break;
+                }
+                product = new Product();
+                product = GetProduct(lstproduct, orderStaff, "Create Order");
+                if (product != null)
+                {
+                    orders.OrderStaffID = orderStaff.StaffId;
+                    orders.ProductsList.Add(product);
+                    int quantity = UI.InputQuantity(product, orderStaff, "Create Order");
+                    orders.ProductsList[orders.ProductsList.Count() - 1].ProductQuantity = quantity;
+                    string addAsk = UI.AskToContinueAdd();
+                    switch (addAsk)
+                    {
+                        case "Yes":
+                            continuee = true;
+                            break;
+                        case "No":
+                            continuee = false;
+                            UI.PrintOrderDetails(orders.ProductsList, orderStaff, "Create Order");
+                            string createAsk = UI.AskToContinueCreate();
+                            switch (createAsk)
+                            {
+                                case "Yes":
+                                    Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
+                                    UI.PressAnyKeyToContinue();
+                                    break;
+                                case "No":
+                                    AnsiConsole.Markup("[Green]Canceling order successfully.[/]");
+                                    UI.PressAnyKeyToContinue();
+                                    active = false;
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    active = false;
+                    break;
                 }
             } while (continuee == false);
         }
@@ -141,27 +165,37 @@ public class Ults
             UI.PrintProductsTable(lstproduct, orderStaff);
             Console.Write("Product ID: ");
             int productId;
-            if (int.TryParse(Console.ReadLine(), out productId))
+            do
             {
-                foreach (var item in lstproduct)
+
+
+                if (int.TryParse(Console.ReadLine(), out productId))
                 {
-                    if (item.ProductId == productId)
+                    if (productId == 0)
                     {
-                        int sizeId = UI.ChooseProductsize(orderStaff,productId,"Create Order");
-                        product = productBL.GetProductByIdAndSize(productId, sizeId);
-                        return product;
+                        return product = null;
                     }
                     else
                     {
-                        active = true;
-                        UI.RedMessage("Product not exist: ");
+                        if (productBL.GetProductById(productId) != null)
+                        {
+                            int sizeId = UI.ChooseProductsize(orderStaff, productId, "Create Order");
+                            product = productBL.GetProductByIdAndSize(productId, sizeId);
+                            return product;
+                        }
+                        else
+                        {
+                            active = true;
+                            UI.RedMessage("Product not exist !");
+                        }
                     }
                 }
+                else
+                {
+                    UI.RedMessage("Invalid ID !");
+                }
             }
-            else
-            {
-                UI.RedMessage("Invalid ID !");
-            }
+            while (productBL.GetProductById(productId) != null);
         }
         while (active);
         return product;
