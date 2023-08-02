@@ -235,27 +235,35 @@ namespace UI
 
         public int InputQuantity(Product product, Staff staff, string title)
         {
-            int quantity;
-            do
+            int quantity = 0;
+            bool err = false;
+            bool active = true;
+            while (active)
             {
-                Console.Clear();
-                ApplicationLogoAfterLogin(staff);
-                Title(title);
-                TimeLine(TimeLineCreateOrderContent(3));
-                Console.WriteLine("Product ID : " + product.ProductId);
-                Console.WriteLine("Product Name : " + product.ProductName);
-                Console.WriteLine("Product Size : " + product.ProductSize);
-                Console.WriteLine("Unit Price : " + product.ProductPrice);
-                Console.Write("Input Quantity: ");
-                if (int.TryParse(Console.ReadLine(), out quantity))
+
+                do
                 {
-                    return quantity;
-                }
-                else
-                {
-                    RedMessage("Invalid quantity ! Please re-enter.");
-                }
-            } while (int.TryParse(Console.ReadLine(), out quantity));
+                    Console.Clear();
+                    ApplicationLogoAfterLogin(staff);
+                    Title(title);
+                    TimeLine(TimeLineCreateOrderContent(3));
+                    Console.WriteLine("Product ID : " + product.ProductId);
+                    Console.WriteLine("Product Name : " + product.ProductName);
+                    Console.WriteLine("Product Size : " + product.ProductSize);
+                    string formattepricesize = product.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                    Console.WriteLine("Unit Price : " + formattepricesize + " VND");
+                    Console.Write("Input Quantity: ");
+                    if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
+                    {
+                        return quantity;
+                    }
+                    else
+                    {
+                        err = true;
+                        RedMessage("Invalid quantity ! Please re-enter.");
+                    }
+                } while (err == false);
+            }
             return quantity;
         }
 
@@ -303,32 +311,52 @@ namespace UI
 
         public int ChooseProductsize(Staff staff, int productId, string title)
         {
+            string size;
             int sizeId = 0;
             bool showAlert = false;
-            do
+            bool active = true;
+            bool err = false;
+            while (active)
             {
-                Console.Clear();
-                ApplicationLogoAfterLogin(staff);
-                Title(title);
-                TimeLine(TimeLineCreateOrderContent(2));
-                Product currentProduct = productBL.GetProductById(productId);
-                Console.WriteLine("Product ID: " + currentProduct.ProductId);
-                Console.WriteLine("Product Name: " + currentProduct.ProductName);
-                AnsiConsole.Markup("Choose Product Size([Green]1 to choose S[/], [Green]2 to choose M[/], [Green]3 to choose L[/]):");
-                int.TryParse(Console.ReadLine(), out sizeId);
-                if (sizeId <= 0 || sizeId > 3)
+
+                do
                 {
-                    showAlert = true;
-                }
-                else
-                {
-                    return sizeId;
-                }
-                if (showAlert)
-                {
-                    RedMessage("Invalid choice. Please Re-enter");
-                }
-            } while (sizeId <= 0 || sizeId > 3);
+                    Console.Clear();
+                    ApplicationLogoAfterLogin(staff);
+                    Title(title);
+                    TimeLine(TimeLineCreateOrderContent(2));
+                    Product currentProduct = productBL.GetProductById(productId);
+                    Console.WriteLine("Product ID: " + currentProduct.ProductId);
+                    Console.WriteLine("Product Name: " + currentProduct.ProductName);
+                    AnsiConsole.Markup("Choose Product Size(Input [Green]S[/], [Green] M[/] or [Green] L[/] to choose [Green]PRODUCT SIZE[/]):");
+                    size = Console.ReadLine().ToUpper();
+                    if (size == "S" || size == "M" || size == "L")
+                    {
+
+                        switch (size)
+                        {
+                            case "S":
+                                err = false;
+                                return sizeId = 1;
+                            case "M":
+                                err = false;
+                                return sizeId = 2;
+                            case "L":
+                                err = false;
+                                return sizeId = 3;
+                        }
+                    }
+                    else
+                    {
+                        showAlert = true;
+                        err = true;
+                    }
+                    if (showAlert)
+                    {
+                        RedMessage("Invalid choice. Please Re-enter");
+                    }
+                } while (err == false);
+            }
             return sizeId;
         }
 

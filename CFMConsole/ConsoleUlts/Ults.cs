@@ -160,16 +160,16 @@ public class Ults
     {
         bool active = true;
         Product product = new Product();
-        do
+        bool err = false;
+        while (active)
         {
-            UI.PrintProductsTable(lstproduct, orderStaff);
-            Console.Write("Product ID: ");
-            int productId;
+
             do
             {
-
-
-                if (int.TryParse(Console.ReadLine(), out productId))
+                UI.PrintProductsTable(lstproduct, orderStaff);
+                Console.Write("Product ID: ");
+                int productId;
+                if (int.TryParse(Console.ReadLine(), out productId) && productId >= 0)
                 {
                     if (productId == 0)
                     {
@@ -193,11 +193,11 @@ public class Ults
                 else
                 {
                     UI.RedMessage("Invalid ID !");
+                    err = true;
                 }
             }
-            while (productBL.GetProductById(productId) != null);
+            while (err == false);
         }
-        while (active);
         return product;
     }
 }
