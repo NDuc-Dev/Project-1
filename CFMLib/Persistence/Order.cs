@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Persistence
 {
     public static class OrderStatus
@@ -16,6 +13,7 @@ namespace Persistence
         public DateTime OrderDate { set; get; }
         public decimal Amount { set; get; }
         public int OrderStatus { set; get; }
+        public int TableID {set; get; }
         public List<Product> ProductsList { set; get; } = new List<Product>();
         
     }

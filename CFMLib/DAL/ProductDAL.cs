@@ -6,7 +6,6 @@ namespace DAL
     public static class ProductFilter
     {
         public const int GET_ALL = 0;
-        public const int FILTER_BY_PRODUCT_NAME = 1;
     }
     public class ProductDAL
     {
@@ -76,7 +75,7 @@ namespace DAL
 
         public List<Product> GetProducts()
         {
-            List<Product> lst = new List<Product>();
+            List<Product> listProduct = new List<Product>();
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
@@ -85,12 +84,12 @@ namespace DAL
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    lst.Add(GetProduct(reader));
+                    listProduct.Add(GetProduct(reader));
                 }
                 reader.Close();
             }
             catch { }
-            return lst;
+            return listProduct;
         }
     }
 }

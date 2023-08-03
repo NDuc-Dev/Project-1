@@ -122,7 +122,8 @@ public class Ults
                             break;
                         case "No":
                             continuee = false;
-                            UI.PrintOrderDetails(orders.ProductsList, orderStaff, "Create Order");
+                            
+                            UI.PrintSaleReceipt(orders.ProductsList, orderStaff, "Create Order");
                             string createAsk = UI.AskToContinueCreate();
                             switch (createAsk)
                             {
@@ -153,17 +154,11 @@ public class Ults
     public void About()
     {
         Console.Clear();
-        UI.Title(@"
-         █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗        
-        ██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝        
-        ███████║██████╔╝██║   ██║██║   ██║   ██║           
-        ██╔══██║██╔══██╗██║   ██║██║   ██║   ██║           
-        ██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║           
-        ╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝           
-");
+        UI.ApplicationLogoAfterLogin(orderStaff);
+        UI.Title("ABOUT");
         Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine("Coffee Shop Management Application");
-        Console.WriteLine("Version: Beta_0.0.1");
+        Console.WriteLine("Version: Beta_0.2.2");
         Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
         Console.WriteLine("Instructor: Nguyen Xuan Sinh");
         UI.PressAnyKeyToContinue();

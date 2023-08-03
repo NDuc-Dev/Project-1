@@ -11,6 +11,7 @@ namespace UI
     {
         SizeBL sizeBL = new SizeBL();
         ProductBL productBL = new ProductBL();
+        TableBL tableBL = new TableBL();
         // Line
         public void Line()
         {
@@ -25,16 +26,19 @@ namespace UI
             switch (step)
             {
                 case 1:
-                    content = "[green]CHOOSE PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                    content = "[green]CHOOSE PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> CHOOSE TABLE ==> COMPLETE ORDER";
                     break;
                 case 2:
-                    content = "CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                    content = "CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> CHOOSE TABLE ==> COMPLETE ORDER";
                     break;
                 case 3:
-                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ORDER";
+                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> CHOOSE TABLE ==> COMPLETE ORDER";
                     break;
                 case 4:
-                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ORDER[/]";
+                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]CHOOSE TABLE[/] ==> COMPLETE ORDER";
+                    break;
+                case 5:
+                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> CHOOSE TABLE ==> [green]COMPLETE ORDER[/]";
                     break;
             }
             return content;
@@ -43,7 +47,7 @@ namespace UI
         public void TimeLine(string content)
         {
             Line();
-            var table = new Table();
+            var table = new Spectre.Console.Table();
             table.AddColumn($"{content}").Centered();
             AnsiConsole.Write(table.NoBorder());
             Line();
@@ -61,7 +65,7 @@ namespace UI
         public void ApplicationLogoAfterLogin(Staff staff)
         {
             Console.Clear();
-            var table = new Table();
+            var table = new Spectre.Console.Table();
             table.AddColumn(new TableColumn(@"
              ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗             
             ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗            
@@ -79,7 +83,7 @@ namespace UI
         public void ApplicationLogoBeforeLogin()
         {
             Console.Clear();
-            var table = new Table();
+            var table = new Spectre.Console.Table();
             table.AddColumn(new TableColumn(@"
              ██████╗███████╗███╗   ███╗     █████╗ ██████╗ ██████╗             
             ██╔════╝██╔════╝████╗ ████║    ██╔══██╗██╔══██╗██╔══██╗            
@@ -158,7 +162,7 @@ namespace UI
         public void Title(string title)
         {
             // Console.Clear();
-            var table = new Table();
+            var table = new Spectre.Console.Table();
             table.AddColumn(new TableColumn($"{title}").Centered()).RoundedBorder().Centered();
             AnsiConsole.Write(table);
         }
@@ -166,7 +170,7 @@ namespace UI
         public void TitleNoBorder(string title)
         {
             Console.Clear();
-            var table = new Table();
+            var table = new Spectre.Console.Table();
             table.AddColumn(new TableColumn($"{title}").Centered()).NoBorder().Centered();
             AnsiConsole.Write(table);
         }
@@ -186,7 +190,7 @@ namespace UI
                 Title("CREATE ORDER");
                 // CurrentStaff(orderStaff);
                 TimeLine(TimeLineCreateOrderContent(1));
-                var table = new Table();
+                var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
                 table.AddColumn(new TableColumn("Size S").Centered());
@@ -206,7 +210,7 @@ namespace UI
                     table.AddRow($"{prlst[i].ProductId}", $"{prlst[i].ProductName}", $"{formattepricesize1 + " VND"}", $"{formattepricesize2 + " VND"}", $"{formattepricesize3 + " VND"}");
                 }
                 AnsiConsole.Write(table.Centered());
-                var Pagination = new Table();
+                var Pagination = new Spectre.Console.Table();
                 Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)prlst.Count / pageSize)}" + ">");
                 AnsiConsole.Write(Pagination.Centered().NoBorder());
                 AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose product by PRODUCT ID or input [Green]PRODUCT ID = 0[/] to exit.\n");
@@ -309,6 +313,55 @@ namespace UI
             Thread.Sleep(1000);
         }
 
+        public void PrintTables(List<Persistence.Table> listTable)
+        {
+            Console.Write("Id of current empty tables:");
+            foreach (Persistence.Table table in listTable)
+            {
+                Console.Write(table.TableId);
+            }
+        }
+        public int ChooseTable(Staff staff, string title)
+        {
+            int tableId = 0;
+            bool active = true;
+            List<Persistence.Table> listTable = tableBL.GetAll();
+            while (active)
+            {
+
+
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                TimeLine(TimeLineCreateOrderContent(4));
+                if (listTable.Count == 0)
+                {
+                    AnsiConsole.Markup("There are currently no tables available, press [Green]ENTER[/] button to continue creating takeout order.");
+                    active = false;
+                    return 0;
+                }
+                else
+                {
+                    do
+                    {
+                        PrintTables(listTable);
+                        AnsiConsole.Markup("Input [Green]TABLE ID[/] to choose table: ");
+                        if (int.TryParse(Console.ReadLine(), out tableId) && tableId > 0)
+                        {
+                            if (tableBL.GetTableById(tableId) != null)
+                            {
+                                return tableId;
+                            }
+                            else
+                            {
+                                RedMessage("Invalid Id, please re-enter Table ID");
+                            }
+                        }
+                    }
+                    while (int.TryParse(Console.ReadLine(), out tableId) && tableId > 0);
+                }
+            }
+            return tableId;
+        }
         public int ChooseProductsize(Staff staff, int productId, string title)
         {
             string size;
@@ -328,7 +381,7 @@ namespace UI
                     Product currentProduct = productBL.GetProductById(productId);
                     Console.WriteLine("Product ID: " + currentProduct.ProductId);
                     Console.WriteLine("Product Name: " + currentProduct.ProductName);
-                    AnsiConsole.Markup("Choose Product Size(Input [Green]S[/], [Green] M[/] or [Green] L[/] to choose [Green]PRODUCT SIZE[/]):");
+                    AnsiConsole.Markup("Choose Product Size(Input [Green]S[/], [Green]M[/] or [Green]L[/] to choose [Green]PRODUCT SIZE[/]):");
                     size = Console.ReadLine().ToUpper();
                     if (size == "S" || size == "M" || size == "L")
                     {
@@ -336,14 +389,11 @@ namespace UI
                         switch (size)
                         {
                             case "S":
-                                err = false;
-                                return sizeId = 1;
+                                return 1;
                             case "M":
-                                err = false;
-                                return sizeId = 2;
+                                return 2;
                             case "L":
-                                err = false;
-                                return sizeId = 3;
+                                return 3;
                         }
                     }
                     else
@@ -360,6 +410,44 @@ namespace UI
             return sizeId;
         }
 
+        public void PrintSaleReceipt(List<Product> productList, Staff staff, string title)
+        {
+            Console.Clear();
+            ApplicationLogoAfterLogin(staff);
+            Title(title);
+            TimeLine(TimeLineCreateOrderContent(5));
+            var warp = new Spectre.Console.Table();
+            warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
+            var outerTable = new Spectre.Console.Table();
+            outerTable.AddColumn(new TableColumn("[Bold]VTCA Coffee[/]").Centered().NoWrap());
+            outerTable.AddRow("4th floor, VTC Building, 18 Tam Trinh, HBT, HN").Centered();
+            outerTable.AddRow("Email: VTCACoffee@gmail.com").Centered();
+            outerTable.AddRow("Order Staff" + $" {staff.StaffName}").Centered();
+            outerTable.AddRow("");
+            var innertable = new Spectre.Console.Table();
+            innertable.AddColumn(new TableColumn("Product Name").LeftAligned()).NoBorder();
+            innertable.AddColumn(new TableColumn("Size").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("Price").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("Quantity").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("Amount").Centered()).NoBorder();
+            decimal totalAmount = 0;
+            foreach (var item in productList)
+            {
+                decimal amount = item.ProductPrice * item.ProductQuantity;
+                string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                string formattedPrice = item.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                innertable.AddRow($"{item.ProductName}", $"({item.ProductSize})", $"{formattedPrice + " VND"}", $"x{item.ProductQuantity}", $"{formattedAmount + " VND"}").NoBorder();
+                totalAmount += item.ProductQuantity * item.ProductPrice;
+            }
+            string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+            innertable.AddRow("");
+            innertable.AddRow("[Bold]TOTAL AMOUNT[/]", "", "", "", $"{formattedTotal + " VND"}");
+            warp.AddRow(outerTable.NoBorder());
+            warp.AddRow(innertable.Centered());
+            AnsiConsole.Write(warp.Centered());
+        }
+
+        //ask
         public string AskToContinueAdd()
         {
             string[] item = { "Yes", "No" };
@@ -380,30 +468,6 @@ namespace UI
                .PageSize(3)
                .AddChoices(item));
             return choice;
-        }
-
-        public void PrintOrderDetails(List<Product> productList, Staff staff, string title)
-        {
-            Console.Clear();
-            ApplicationLogoAfterLogin(staff);
-            Title(title);
-            TimeLine(TimeLineCreateOrderContent(4));
-            var table = new Table();
-            table.Caption("Order Details");
-            table.AddColumn(new TableColumn("Product ID").Centered());
-            table.AddColumn(new TableColumn("Product Name").LeftAligned());
-            table.AddColumn(new TableColumn("Size").Centered());
-            table.AddColumn(new TableColumn("Unit Price").Centered());
-            table.AddColumn(new TableColumn("Quantity").Centered());
-            table.AddColumn(new TableColumn("Amount").Centered());
-            foreach (var item in productList)
-            {
-                decimal amount = item.ProductPrice * item.ProductQuantity;
-                string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                string formattedPrice = item.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                table.AddRow($"{item.ProductId}", $"{item.ProductName}", $"{item.ProductSize}", $"{formattedPrice + " VND"}", $"{item.ProductQuantity}", $"{formattedAmount + " VND"}");
-            }
-            AnsiConsole.Write(table.Centered());
         }
     }
 }

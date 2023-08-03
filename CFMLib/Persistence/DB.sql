@@ -13,13 +13,20 @@ Staff_Status int NOT NULL,
 PRIMARY KEY (Staff_ID)
 );
 
+create table Tables(
+Table_ID int NOT NULL,
+Table_Status int NOT NULL default '1',
+);
+
 create table Orders(
 Order_ID int NOT NULL auto_increment unique,
 Order_Staff_ID int NOT NULL,
 Order_Date datetime NOT NULL default current_timestamp(),
 Order_Status int NOT NULL,
+Order_Table int NOT NULL,
 PRIMARY KEY (Order_ID),
 FOREIGN KEY (Order_Staff_ID) REFERENCES Staffs(Staff_ID)
+FOREIGN KEY (Order_Table) REFERENCES Tables(Table_ID)
 );
 
 create table Products(
@@ -159,6 +166,28 @@ insert into Products(Product_ID, Product_Name, Descriptions)
 value ('39', 'Coffee Milkshake','');
 insert into Products(Product_ID, Product_Name, Descriptions)
 value ('40', 'Apricot Juice','');
+
+-- INSERT TABLE TO TABLE "TABLES"
+insert into Tables(Table_ID)
+value ('1');
+insert into Tables(Table_ID)
+value ('2');
+insert into Tables(Table_ID)
+value ('3');
+insert into Tables(Table_ID)
+value ('4');
+insert into Tables(Table_ID)
+value ('5');
+insert into Tables(Table_ID)
+value ('6');
+insert into Tables(Table_ID)
+value ('7');
+insert into Tables(Table_ID)
+value ('8');
+insert into Tables(Table_ID)
+value ('9');
+insert into Tables(Table_ID)
+value ('10');
 
 -- INSERT SIZE INFO TO TABLE "SIZES'
 insert into Sizes(Size_ID, Product_Size)
