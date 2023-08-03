@@ -12,24 +12,23 @@ public class Ults
     ProductBL productBL = new ProductBL();
     OrderBL orderBL = new OrderBL();
     List<Product>? lstproduct;
-    Staff? orderStaff;
+    Staff orderStaff;
     string[] MainMenu = { "Create Order", "Update Order", "Update Product", "Payment", "Check Out", "About" };
 
     public void Login()
     {
         bool active = true;
         UI.Introduction();
-        while (active = true)
+        while (active)
         {
             string UserName;
             UI.ApplicationLogoBeforeLogin();
             UI.Title("LOGIN");
             UI.GreenMessage("Input User name and password to LOGIN or input User Name = 0 to EXIT.");
             Console.Write("User Name: ");
-            UserName = Console.ReadLine();
+            UserName = Console.ReadLine() ?? "";
             if (UserName == "0")
             {
-                active = false;
                 break;
             }
             else
@@ -53,6 +52,7 @@ public class Ults
                             CreateOrder();
                             break;
                         case "Update Order":
+                            UpdateOrder();
                             break;
                         case "Payment":
                             break;
@@ -61,7 +61,7 @@ public class Ults
                         case "Check Out":
                             break;
                         case "About":
-                            About();
+                            UI.About(orderStaff);
                             break;
                     }
                 }
@@ -76,9 +76,8 @@ public class Ults
 
     public void CreateOrder()
     {
-        int productId;
         bool active = true;
-        Product? product = null;
+        Product product;
         lstproduct = productBL.GetAll();
         Order orders = new Order();
         while (active)
@@ -95,8 +94,7 @@ public class Ults
                     break;
                 }
                 bool checkDup = true;
-                product = new Product();
-                product = GetProduct(lstproduct, orderStaff, "Create Order");
+                product = GetProductToAddToOrder(lstproduct, orderStaff, "Create Order");
                 if (product != null)
                 {
                     orders.OrderStaffID = orderStaff.StaffId;
@@ -121,9 +119,16 @@ public class Ults
                             continuee = true;
                             break;
                         case "No":
+                            orders.TableID = UI.ChooseTable(orderStaff, "Create order");
+                            if (orders.TableID == 0)
+                            {
+                                UI.PrintSaleReceiptTakeAway(orders, orderStaff, "Create Order");
+                            }
+                            else
+                            {
+                                UI.PrintSaleReceipt(orders, orderStaff, "Create Order");
+                            }
                             continuee = false;
-                            
-                            UI.PrintSaleReceipt(orders.ProductsList, orderStaff, "Create Order");
                             string createAsk = UI.AskToContinueCreate();
                             switch (createAsk)
                             {
@@ -151,20 +156,7 @@ public class Ults
 
     }
 
-    public void About()
-    {
-        Console.Clear();
-        UI.ApplicationLogoAfterLogin(orderStaff);
-        UI.Title("ABOUT");
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine("Coffee Shop Management Application");
-        Console.WriteLine("Version: Beta_0.2.2");
-        Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
-        Console.WriteLine("Instructor: Nguyen Xuan Sinh");
-        UI.PressAnyKeyToContinue();
-    }
-
-    public Product GetProduct(List<Product> lstproduct, Staff orderStaff, string title)
+    public Product GetProductToAddToOrder(List<Product> lstproduct, Staff orderStaff, string title)
     {
         bool active = true;
         Product product = new Product();
@@ -181,11 +173,11 @@ public class Ults
                 {
                     if (productId == 0)
                     {
-                        return product = null;
+                        return null;
                     }
                     else
                     {
-                        if (productBL.GetProductById(productId) != null)
+                        if (productBL.GetProductById(productId).ProductId != 0)
                         {
                             int sizeId = UI.ChooseProductsize(orderStaff, productId, "Create Order");
                             product = productBL.GetProductByIdAndSize(productId, sizeId);
@@ -208,5 +200,26 @@ public class Ults
             while (err == false);
         }
         return product;
+    }
+
+    public void UpdateOrder()
+    {
+        string title = "UPDATE ORDER";
+        List<Persistence.Order> listOrder = orderBL.GetOrders();
+        bool active = true;
+        while (active)
+        {
+            if (listOrder.Count() == 0)
+            {
+                UI.ApplicationLogoAfterLogin(orderStaff);
+                UI.Title(title);
+                UI.RedMessage("No orders have been created yet !");
+                break;
+            }
+            else
+            {
+                UI.PrintListOrder(listOrder, orderStaff, title);
+            }
+        }
     }
 }

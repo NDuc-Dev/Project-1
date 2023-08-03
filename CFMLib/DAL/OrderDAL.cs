@@ -6,6 +6,8 @@ namespace DAL
     public class OrderDAL
     {
         private MySqlConnection connection = DbConfig.GetConnection();
+        private string query = "";
+
         public bool CreateOrder(Order order)
         {
             if (order == null || order.ProductsList == null || order.ProductsList.Count() == 0)
@@ -21,17 +23,18 @@ namespace DAL
                     {
                         cmd.Connection = connection;
                         cmd.Transaction = trans;
-                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, Order_Details write;";
+                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write;";
                         cmd.ExecuteNonQuery();
 
                         MySqlDataReader? reader = null;
 
 
                         //insert order
-                        cmd.CommandText = "insert into Orders(order_staff_id, order_status) values (@staffId, @orderStatus);";
+                        cmd.CommandText = "insert into Orders(order_staff_id, order_status, order_table) values (@staffId, @orderStatus, @orderTable);";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@staffId", order.OrderStaffID);
                         cmd.Parameters.AddWithValue("@orderStatus", OrderStatus.ORDER_INPROGRESS);
+                        cmd.Parameters.AddWithValue("@orderTable", order.TableID);
                         cmd.ExecuteNonQuery();
 
                         //get new Order_ID
@@ -67,11 +70,19 @@ namespace DAL
                             cmd.CommandText = @"insert into Order_Details(order_id, product_id, size_id, quantity, amount) values 
                             (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductSizeId + ", " + item.ProductQuantity + "," + (item.ProductQuantity * item.ProductPrice) + ");";
                             cmd.ExecuteNonQuery();
+
+                            //update table status
+                            // if(order.TableID != 0)
+                            // {}
+                            // cmd.CommandText = @"update Tables set table_status = 1 where table_id =" + order.TableID + ";";
+                            // cmd.Parameters.Clear();
+                            // cmd.ExecuteNonQuery();
+
                         }
                         //commit transaction
                         trans.Commit();
                         result = true;
-                        trans.Rollback();
+                        // trans.Rollback();
                     }
                     catch
                     {
@@ -93,6 +104,36 @@ namespace DAL
                 Console.WriteLine($"ERROR: {ex.Message}");
             }
             return result;
+        }
+
+        internal Order GetOrder(MySqlDataReader reader)
+        {
+            Order order = new Order();
+            order.OrderId = reader.GetInt32("order_id");
+            order.OrderStaffID = reader.GetInt32("Order_Staff_ID");
+            order.OrderDate = reader.GetDateTime("Order_Date");
+            order.OrderStatus = reader.GetInt32("Order_Status");
+            order.TableID = reader.GetInt32("Order_Table");
+            return order;
+        }
+
+        public List<Order> GetOrders()
+        {
+            List<Order> listOrder = new List<Order>();
+            try
+            {
+                MySqlCommand command = new MySqlCommand("", connection);
+                query = @"select * from orders where order_status = 1;";
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    listOrder.Add(GetOrder(reader));
+                }
+                reader.Close();
+            }
+            catch { }
+            return listOrder;
         }
     }
 }

@@ -147,7 +147,6 @@ namespace UI
             {
                 Title(title);
             }
-            // CurrentStaff(staff);
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
@@ -155,8 +154,6 @@ namespace UI
                .AddChoices(item));
             return choice;
         }
-
-
 
         //Title
         public void Title(string title)
@@ -175,7 +172,6 @@ namespace UI
             AnsiConsole.Write(table);
         }
 
-
         //Product Handle
 
         public void PrintProductsTable(List<Product> prlst, Staff staff)
@@ -188,7 +184,6 @@ namespace UI
                 Console.Clear();
                 ApplicationLogoAfterLogin(staff);
                 Title("CREATE ORDER");
-                // CurrentStaff(orderStaff);
                 TimeLine(TimeLineCreateOrderContent(1));
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
@@ -289,20 +284,12 @@ namespace UI
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-
         public void PrintProductSizeInfo(Persistence.Size size)
         {
             string Size = string.Format("{00:##'.'### VND}", size.SizePrice);
             Console.WriteLine("Size : " + size.SizeProduct + "  price :" + Size);
         }
 
-        public void PrintSizes(List<Persistence.Size> lst)
-        {
-            foreach (var item in lst)
-            {
-                PrintProductSizeInfo(item);
-            }
-        }
 
         //Staff
         public void WelcomeStaff(Staff staff)
@@ -318,7 +305,7 @@ namespace UI
             Console.Write("Id of current empty tables:");
             foreach (Persistence.Table table in listTable)
             {
-                Console.Write(table.TableId);
+                Console.Write(table.TableId + "  ");
             }
         }
         public int ChooseTable(Staff staff, string title)
@@ -326,38 +313,53 @@ namespace UI
             int tableId = 0;
             bool active = true;
             List<Persistence.Table> listTable = tableBL.GetAll();
+            bool checkTableId;
             while (active)
             {
 
-
-                ApplicationLogoAfterLogin(staff);
-                Title(title);
-                TimeLine(TimeLineCreateOrderContent(4));
-                if (listTable.Count == 0)
+                if (listTable.Count() == 0)
                 {
-                    AnsiConsole.Markup("There are currently no tables available, press [Green]ENTER[/] button to continue creating takeout order.");
-                    active = false;
+                    ApplicationLogoAfterLogin(staff);
+                    Title(title);
+                    TimeLine(TimeLineCreateOrderContent(4));
+                    AnsiConsole.Markup("There are currently no tables available, press [Green]ENTER[/] button to continue creating takeout order. ");
                     return 0;
                 }
                 else
                 {
                     do
                     {
+                        ApplicationLogoAfterLogin(staff);
+                        Title(title);
+                        TimeLine(TimeLineCreateOrderContent(4));
                         PrintTables(listTable);
-                        AnsiConsole.Markup("Input [Green]TABLE ID[/] to choose table: ");
-                        if (int.TryParse(Console.ReadLine(), out tableId) && tableId > 0)
+                        AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
+                        if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                         {
-                            if (tableBL.GetTableById(tableId) != null)
+                            if (tableId == 0)
                             {
-                                return tableId;
+                                return 0;
                             }
                             else
                             {
-                                RedMessage("Invalid Id, please re-enter Table ID");
+                                if (tableBL.GetTableById(tableId).TableId == 0)
+                                {
+                                    RedMessage("Invalid Id, please re-enter Table ID");
+                                    checkTableId = false;
+                                }
+                                else
+                                {
+                                    return tableBL.GetTableById(tableId).TableId;
+                                }
                             }
                         }
+                        else
+                        {
+                            checkTableId = false;
+                            RedMessage("Invalid Id, please re-enter Table ID");
+                        }
                     }
-                    while (int.TryParse(Console.ReadLine(), out tableId) && tableId > 0);
+                    while (checkTableId);
                 }
             }
             return tableId;
@@ -385,7 +387,6 @@ namespace UI
                     size = Console.ReadLine().ToUpper();
                     if (size == "S" || size == "M" || size == "L")
                     {
-
                         switch (size)
                         {
                             case "S":
@@ -410,7 +411,7 @@ namespace UI
             return sizeId;
         }
 
-        public void PrintSaleReceipt(List<Product> productList, Staff staff, string title)
+        public void PrintSaleReceipt(Order order, Staff staff, string title)
         {
             Console.Clear();
             ApplicationLogoAfterLogin(staff);
@@ -422,7 +423,8 @@ namespace UI
             outerTable.AddColumn(new TableColumn("[Bold]VTCA Coffee[/]").Centered().NoWrap());
             outerTable.AddRow("4th floor, VTC Building, 18 Tam Trinh, HBT, HN").Centered();
             outerTable.AddRow("Email: VTCACoffee@gmail.com").Centered();
-            outerTable.AddRow("Order Staff" + $" {staff.StaffName}").Centered();
+            outerTable.AddRow("Order Staff: " + $"{staff.StaffName}").Centered();
+            outerTable.AddRow("Table: " + $" {order.TableID}").Centered();
             outerTable.AddRow("");
             var innertable = new Spectre.Console.Table();
             innertable.AddColumn(new TableColumn("Product Name").LeftAligned()).NoBorder();
@@ -431,7 +433,45 @@ namespace UI
             innertable.AddColumn(new TableColumn("Quantity").Centered()).NoBorder();
             innertable.AddColumn(new TableColumn("Amount").Centered()).NoBorder();
             decimal totalAmount = 0;
-            foreach (var item in productList)
+            foreach (var item in order.ProductsList)
+            {
+                decimal amount = item.ProductPrice * item.ProductQuantity;
+                string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                string formattedPrice = item.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                innertable.AddRow($"{item.ProductName}", $"({item.ProductSize})", $"{formattedPrice + " VND"}", $"x{item.ProductQuantity}", $"{formattedAmount + " VND"}").NoBorder();
+                totalAmount += item.ProductQuantity * item.ProductPrice;
+            }
+            string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+            innertable.AddRow("");
+            innertable.AddRow("[Bold]TOTAL AMOUNT[/]", "", "", "", $"{formattedTotal + " VND"}");
+            warp.AddRow(outerTable.NoBorder());
+            warp.AddRow(innertable.Centered());
+            AnsiConsole.Write(warp.Centered());
+        }
+
+        public void PrintSaleReceiptTakeAway(Order order, Staff staff, string title)
+        {
+            Console.Clear();
+            ApplicationLogoAfterLogin(staff);
+            Title(title);
+            TimeLine(TimeLineCreateOrderContent(5));
+            var warp = new Spectre.Console.Table();
+            warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
+            var outerTable = new Spectre.Console.Table();
+            outerTable.AddColumn(new TableColumn("[Bold]VTCA Coffee[/]").Centered().NoWrap());
+            outerTable.AddRow("4th floor, VTC Building, 18 Tam Trinh, HBT, HN").Centered();
+            outerTable.AddRow("Email: VTCACoffee@gmail.com").Centered();
+            outerTable.AddRow("Order Staff: " + $"{staff.StaffName}").Centered();
+            outerTable.AddRow("TakeAway").Centered();
+            outerTable.AddRow("");
+            var innertable = new Spectre.Console.Table();
+            innertable.AddColumn(new TableColumn("Product Name").LeftAligned()).NoBorder();
+            innertable.AddColumn(new TableColumn("Size").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("Price").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("Quantity").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("Amount").Centered()).NoBorder();
+            decimal totalAmount = 0;
+            foreach (var item in order.ProductsList)
             {
                 decimal amount = item.ProductPrice * item.ProductQuantity;
                 string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
@@ -468,6 +508,77 @@ namespace UI
                .PageSize(3)
                .AddChoices(item));
             return choice;
+        }
+
+        public void About(Staff orderStaff)
+        {
+            Console.Clear();
+            ApplicationLogoAfterLogin(orderStaff);
+            Title("ABOUT");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Coffee Shop Management Application");
+            Console.WriteLine("Version: Beta_0.2.2");
+            Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
+            Console.WriteLine("Instructor: Nguyen Xuan Sinh");
+            PressAnyKeyToContinue();
+        }
+
+        public void PrintListOrder(List<Order> listOrder, Staff staff, string title)
+        {
+            int pageSize = 5; // Số sản phẩm mỗi trang
+            int currentPage = 1; // Trang hiện tại
+            while (true)
+            {
+                Console.Clear();
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                var table = new Spectre.Console.Table();
+                table.AddColumn(new TableColumn("Order ID").Centered());
+                table.AddColumn(new TableColumn("Order Staff ID").LeftAligned());
+                table.AddColumn(new TableColumn("Order Date").Centered());
+                table.AddColumn(new TableColumn("Order Table").Centered());
+                table.AddColumn(new TableColumn("Order Status").Centered());
+
+                // Hiển thị sản phẩm trên trang hiện tại
+                int startIndex = (currentPage - 1) * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize - 1, listOrder.Count - 1);
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    if (listOrder[i].TableID == 0)
+                    {
+                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", "Take Away", $"{listOrder[i].OrderStatus}");
+                    }
+                    else
+                    {
+                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", $"{listOrder[i].TableID}", $"{listOrder[i].OrderStatus}");
+                    }
+                }
+                AnsiConsole.Write(table.Centered());
+                var Pagination = new Spectre.Console.Table();
+                Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)listOrder.Count / pageSize)}" + ">");
+                AnsiConsole.Write(Pagination.Centered().NoBorder());
+                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose order by ORDER ID or input [Green]ORDEER ID = 0[/] to exit.\n");
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                {
+                    if (currentPage > 1)
+                    {
+                        currentPage--;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    if (currentPage < Math.Ceiling((double)listOrder.Count / pageSize))
+                    {
+                        currentPage++;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+            }
         }
     }
 }

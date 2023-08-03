@@ -1,6 +1,5 @@
 using MySqlConnector;
 using Persistence;
-using System.Text;
 
 namespace DAL
 {
@@ -29,12 +28,12 @@ namespace DAL
         }
         public Table GetTableById(int tableId)
         {
-            Table table= new Table();
+            Table table = new Table();
             try
             {
                 query = @"select * from tables where table_id=@tableId and table_status = 0;";
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@productId", tableId);
+                command.Parameters.AddWithValue("@tableId", tableId);
                 MySqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {

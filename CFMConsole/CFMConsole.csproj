@@ -5,7 +5,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="mysqlconnector" Version="2.2.6" />
+    <PackageReference Include="mysqlconnection" Version="1.0.1" />
+    <PackageReference Include="mysqlconnector" Version="2.2.7" />
     <PackageReference Include="spectre.console" Version="0.47.0" />
   </ItemGroup>
 

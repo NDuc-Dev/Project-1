@@ -23,7 +23,7 @@
           "lib/MySQLConnection.dll": {}
         }
       },
-      "MySqlConnector/2.2.6": {
+      "MySqlConnector/2.2.7": {
         "type": "package",
         "compile": {
           "lib/net7.0/MySqlConnector.dll": {
@@ -65,7 +65,6 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
-          "mysqlconnection": "1.0.1",
           "mysqlconnector": "2.2.6"
         },
         "compile": {
@@ -109,10 +108,10 @@
         "mysqlconnection.nuspec"
       ]
     },
-    "MySqlConnector/2.2.6": {
-      "sha512": "oYHl9TNhJXBEqfuiaEsOdBPkdULOcCCbqZJzYhy0rtREnMVoluG73GM8+gwBCMb1vbjv9K1ehQnhe0cxdxfOCA==",
+    "MySqlConnector/2.2.7": {
+      "sha512": "rwFa71MlOJ142S+BXDvtLRdAIn7l6PTNWu+Xehs2qRehK8dckjKqwvK8azEADCMkQyXS1LXgh9HkSvItpTi6WA==",
       "type": "package",
-      "path": "mysqlconnector/2.2.6",
+      "path": "mysqlconnector/2.2.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -132,7 +131,7 @@
         "lib/netstandard2.1/MySqlConnector.dll",
         "lib/netstandard2.1/MySqlConnector.xml",
         "logo.png",
-        "mysqlconnector.2.2.6.nupkg.sha512",
+        "mysqlconnector.2.2.7.nupkg.sha512",
         "mysqlconnector.nuspec"
       ]
     },
@@ -186,24 +185,25 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "CFMLib >= 1.0.0",
-      "mysqlconnector >= 2.2.6",
+      "mysqlconnection >= 1.0.1",
+      "mysqlconnector >= 2.2.7",
       "spectre.console >= 0.47.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ditvu\\.nuget\\packages\\": {}
+    "C:\\Users\\pc\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
+      "projectUniqueName": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
       "projectName": "CFMConsole",
-      "projectPath": "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
-      "packagesPath": "C:\\Users\\ditvu\\.nuget\\packages\\",
-      "outputPath": "c:\\VTC\\Project-1\\CFMConsole\\obj\\",
+      "projectPath": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
+      "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
+      "outputPath": "C:\\VTC\\Project-1\\CFMConsole\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\ditvu\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -215,8 +215,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj": {
-              "projectPath": "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj"
+            "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj": {
+              "projectPath": "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj"
             }
           }
         }
@@ -231,9 +231,13 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
+          "mysqlconnection": {
+            "target": "Package",
+            "version": "[1.0.1, )"
+          },
           "mysqlconnector": {
             "target": "Package",
-            "version": "[2.2.6, )"
+            "version": "[2.2.7, )"
           },
           "spectre.console": {
             "target": "Package",
