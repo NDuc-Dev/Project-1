@@ -400,7 +400,8 @@ namespace UI
             {
                 decimal amount = item.ProductPrice * item.ProductQuantity;
                 string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                table.AddRow($"{item.ProductId}", $"{item.ProductName}", $"{item.ProductSize}", $"{item.ProductPrice}", $"{item.ProductQuantity}", $"{formattedAmount + " VND"}");
+                string formattedPrice = item.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                table.AddRow($"{item.ProductId}", $"{item.ProductName}", $"{item.ProductSize}", $"{formattedPrice + " VND"}", $"{item.ProductQuantity}", $"{formattedAmount + " VND"}");
             }
             AnsiConsole.Write(table.Centered());
         }

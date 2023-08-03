@@ -94,14 +94,26 @@ public class Ults
                 {
                     break;
                 }
+                bool checkDup = true;
                 product = new Product();
                 product = GetProduct(lstproduct, orderStaff, "Create Order");
                 if (product != null)
                 {
                     orders.OrderStaffID = orderStaff.StaffId;
-                    orders.ProductsList.Add(product);
-                    int quantity = UI.InputQuantity(product, orderStaff, "Create Order");
-                    orders.ProductsList[orders.ProductsList.Count() - 1].ProductQuantity = quantity;
+
+                    foreach (Product item in orders.ProductsList)
+                    {
+                        if (item.ProductId == product.ProductId && item.ProductSizeId == product.ProductSizeId)
+                        {
+                            item.ProductQuantity += product.ProductQuantity;
+                            checkDup = false;
+                        }
+                    }
+                    if (checkDup == true)
+                    {
+                        orders.ProductsList.Add(product);
+
+                    }
                     string addAsk = UI.AskToContinueAdd();
                     switch (addAsk)
                     {
@@ -116,10 +128,11 @@ public class Ults
                             {
                                 case "Yes":
                                     Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
+                                    Console.WriteLine("Your Order Id is : " + orders.OrderId);
                                     UI.PressAnyKeyToContinue();
                                     break;
                                 case "No":
-                                    AnsiConsole.Markup("[Green]Canceling order successfully.[/]");
+                                    AnsiConsole.Markup("[Green]Canceling order successfully.[/]\n");
                                     UI.PressAnyKeyToContinue();
                                     active = false;
                                     break;
@@ -181,6 +194,7 @@ public class Ults
                         {
                             int sizeId = UI.ChooseProductsize(orderStaff, productId, "Create Order");
                             product = productBL.GetProductByIdAndSize(productId, sizeId);
+                            product.ProductQuantity = UI.InputQuantity(product, orderStaff, "Create Order");
                             return product;
                         }
                         else
