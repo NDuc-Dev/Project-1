@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "b/HszMwiU0/lsUglUhWnrX6nr8/U9JaRV0aWNc4HDTFW5qrmG2BRu3OUOuXv9OpzYUjCefBZOJULzlGpoZS0OA==",
+  "dgSpecHash": "TvCJf4pn0NjYGkJd6Sb9/vcw8K3oRyZAV499N85ljsUxbitVeh92jAWyrWNyei4XuY+fc8exCL+LxKxZcIx8jQ==",
   "success": true,
-  "projectFilePath": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
+  "projectFilePath": "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ditvu\\.nuget\\packages\\mysql.data\\6.9.8\\mysql.data.6.9.8.nupkg.sha512",
     "C:\\Users\\ditvu\\.nuget\\packages\\mysqlconnection\\1.0.1\\mysqlconnection.1.0.1.nupkg.sha512",

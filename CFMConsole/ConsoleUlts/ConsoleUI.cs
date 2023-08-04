@@ -26,19 +26,19 @@ namespace UI
             switch (step)
             {
                 case 1:
-                    content = "[green]CHOOSE PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> CHOOSE TABLE ==> COMPLETE ORDER";
+                    content = "[green]CHOOSE TABLE[/] ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
                     break;
                 case 2:
-                    content = "CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> CHOOSE TABLE ==> COMPLETE ORDER";
+                    content = "CHOOSE TABLE ==> [green]CHOOSE PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
                     break;
                 case 3:
-                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> CHOOSE TABLE ==> COMPLETE ORDER";
+                    content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ORDER";
                     break;
                 case 4:
-                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]CHOOSE TABLE[/] ==> COMPLETE ORDER";
+                    content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ORDER";
                     break;
                 case 5:
-                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> CHOOSE TABLE ==> [green]COMPLETE ORDER[/]";
+                    content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ORDER[/]";
                     break;
             }
             return content;
@@ -184,7 +184,7 @@ namespace UI
                 Console.Clear();
                 ApplicationLogoAfterLogin(staff);
                 Title("CREATE ORDER");
-                TimeLine(TimeLineCreateOrderContent(1));
+                TimeLine(TimeLineCreateOrderContent(2));
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
@@ -245,7 +245,7 @@ namespace UI
                     Console.Clear();
                     ApplicationLogoAfterLogin(staff);
                     Title(title);
-                    TimeLine(TimeLineCreateOrderContent(3));
+                    TimeLine(TimeLineCreateOrderContent(4));
                     Console.WriteLine("Product ID : " + product.ProductId);
                     Console.WriteLine("Product Name : " + product.ProductName);
                     Console.WriteLine("Product Size : " + product.ProductSize);
@@ -334,7 +334,7 @@ namespace UI
                 {
                     ApplicationLogoAfterLogin(staff);
                     Title(title);
-                    TimeLine(TimeLineCreateOrderContent(4));
+                    TimeLine(TimeLineCreateOrderContent(1));
                     PrintAllTables(listTable);
                     AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
                     if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
@@ -387,7 +387,7 @@ namespace UI
                     Console.Clear();
                     ApplicationLogoAfterLogin(staff);
                     Title(title);
-                    TimeLine(TimeLineCreateOrderContent(2));
+                    TimeLine(TimeLineCreateOrderContent(3));
                     Product currentProduct = productBL.GetProductById(productId);
                     Console.WriteLine("Product ID: " + currentProduct.ProductId);
                     Console.WriteLine("Product Name: " + currentProduct.ProductName);

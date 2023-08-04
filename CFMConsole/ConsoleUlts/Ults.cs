@@ -94,6 +94,7 @@ public class Ults
                     break;
                 }
                 bool checkDup = true;
+                orders.TableID = UI.ChooseTable(orderStaff, "Create order");
                 product = GetProductToAddToOrder(lstproduct, orderStaff, "Create Order");
                 if (product != null)
                 {
@@ -119,7 +120,6 @@ public class Ults
                             continuee = true;
                             break;
                         case "No":
-                            orders.TableID = UI.ChooseTable(orderStaff, "Create order");
                             if (orders.TableID == 0)
                             {
                                 UI.PrintSaleReceiptTakeAway(orders, orderStaff, "Create Order");
@@ -209,6 +209,10 @@ public class Ults
         bool active = true;
         while (active)
         {
+            if (active == false)
+            {
+                break;
+            }
             if (listOrder.Count() == 0)
             {
                 UI.ApplicationLogoAfterLogin(orderStaff);
