@@ -15,7 +15,8 @@ PRIMARY KEY (Staff_ID)
 
 create table Tables(
 Table_ID int NOT NULL,
-Table_Status int NOT NULL default '1',
+Table_Status int NOT NULL default '0',
+PRIMARY KEY (Table_ID)
 );
 
 create table Orders(
@@ -25,7 +26,7 @@ Order_Date datetime NOT NULL default current_timestamp(),
 Order_Status int NOT NULL,
 Order_Table int NOT NULL,
 PRIMARY KEY (Order_ID),
-FOREIGN KEY (Order_Staff_ID) REFERENCES Staffs(Staff_ID)
+FOREIGN KEY (Order_Staff_ID) REFERENCES Staffs(Staff_ID),
 FOREIGN KEY (Order_Table) REFERENCES Tables(Table_ID)
 );
 
@@ -168,6 +169,8 @@ insert into Products(Product_ID, Product_Name, Descriptions)
 value ('40', 'Apricot Juice','');
 
 -- INSERT TABLE TO TABLE "TABLES"
+insert into Tables(Table_ID)
+value ('0');
 insert into Tables(Table_ID)
 value ('1');
 insert into Tables(Table_ID)

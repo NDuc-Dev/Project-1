@@ -345,9 +345,14 @@ namespace UI
                         }
                         else
                         {
-                            if (tableBL.GetTableById(tableId).TableId == 0)
+                            if(tableBL.GetTableById(tableId).TableStatus == 1)
                             {
-                                RedMessage("Invalid Id, please re-enter Table ID");
+                                RedMessage("Table is using, please re-enter Table ID.");
+                                checkTableId = false;
+                            }
+                            else if (tableBL.GetTableById(tableId).TableId == 0 )
+                            {
+                                RedMessage("Invalid Id, please re-enter Table ID.");
                                 checkTableId = false;
                             }
                             else
