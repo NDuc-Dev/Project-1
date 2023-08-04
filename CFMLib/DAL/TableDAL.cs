@@ -14,7 +14,7 @@ namespace DAL
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from tables where table_status = 0 ;";
+                query = @"select * from tables where table_status = 0 and table_Id != 0 ;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())

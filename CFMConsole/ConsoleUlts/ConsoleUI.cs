@@ -300,13 +300,25 @@ namespace UI
             Thread.Sleep(1000);
         }
 
-        public void PrintTables(List<Persistence.Table> listTable)
+        public void PrintAllTables(List<Persistence.Table> listTable)
         {
-            Console.Write("Id of current empty tables:");
+            var tableprint = new Spectre.Console.Table();
+            tableprint.AddColumn(new TableColumn("Table ID").Centered());
+            tableprint.AddColumn(new TableColumn("Table Status").Centered());
             foreach (Persistence.Table table in listTable)
             {
-                Console.Write(table.TableId + "  ");
+                string status;
+                if (table.TableStatus == 1)
+                {
+                    status = "Using";
+                }
+                else
+                {
+                    status = "Empty Table";
+                }
+                tableprint.AddRow($"{table.TableId}", $"{status}");
             }
+            AnsiConsole.Write(tableprint.Centered());
         }
         public int ChooseTable(Staff staff, string title)
         {
@@ -317,50 +329,41 @@ namespace UI
             while (active)
             {
 
-                if (listTable.Count() == 0)
+
+                do
                 {
                     ApplicationLogoAfterLogin(staff);
                     Title(title);
                     TimeLine(TimeLineCreateOrderContent(4));
-                    AnsiConsole.Markup("There are currently no tables available, press [Green]ENTER[/] button to continue creating takeout order. ");
-                    return 0;
-                }
-                else
-                {
-                    do
+                    PrintAllTables(listTable);
+                    AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
+                    if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                     {
-                        ApplicationLogoAfterLogin(staff);
-                        Title(title);
-                        TimeLine(TimeLineCreateOrderContent(4));
-                        PrintTables(listTable);
-                        AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
-                        if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
+                        if (tableId == 0)
                         {
-                            if (tableId == 0)
-                            {
-                                return 0;
-                            }
-                            else
-                            {
-                                if (tableBL.GetTableById(tableId).TableId == 0)
-                                {
-                                    RedMessage("Invalid Id, please re-enter Table ID");
-                                    checkTableId = false;
-                                }
-                                else
-                                {
-                                    return tableBL.GetTableById(tableId).TableId;
-                                }
-                            }
+                            return 0;
                         }
                         else
                         {
-                            checkTableId = false;
-                            RedMessage("Invalid Id, please re-enter Table ID");
+                            if (tableBL.GetTableById(tableId).TableId == 0)
+                            {
+                                RedMessage("Invalid Id, please re-enter Table ID");
+                                checkTableId = false;
+                            }
+                            else
+                            {
+                                return tableBL.GetTableById(tableId).TableId;
+                            }
                         }
                     }
-                    while (checkTableId);
+                    else
+                    {
+                        checkTableId = false;
+                        RedMessage("Invalid Id, please re-enter Table ID");
+                    }
                 }
+                while (checkTableId);
+
             }
             return tableId;
         }
@@ -534,7 +537,7 @@ namespace UI
                 Title(title);
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Order ID").Centered());
-                table.AddColumn(new TableColumn("Order Staff ID").LeftAligned());
+                table.AddColumn(new TableColumn("Order Staff ID").Centered());
                 table.AddColumn(new TableColumn("Order Date").Centered());
                 table.AddColumn(new TableColumn("Order Table").Centered());
                 table.AddColumn(new TableColumn("Order Status").Centered());
@@ -546,11 +549,11 @@ namespace UI
                 {
                     if (listOrder[i].TableID == 0)
                     {
-                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", "Take Away", $"{listOrder[i].OrderStatus}");
+                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", "Take Away", "Inprogress");
                     }
                     else
                     {
-                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", $"{listOrder[i].TableID}", $"{listOrder[i].OrderStatus}");
+                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", $"{listOrder[i].TableID}", "Inprogress");
                     }
                 }
                 AnsiConsole.Write(table.Centered());
