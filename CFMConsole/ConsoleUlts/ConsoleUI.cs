@@ -273,7 +273,6 @@ namespace UI
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
             PressAnyKeyToContinue();
-            Console.Clear();
         }
 
         public void GreenMessage(string message)
@@ -328,14 +327,12 @@ namespace UI
             bool checkTableId;
             while (active)
             {
-
-
-                do
-                {
                     ApplicationLogoAfterLogin(staff);
                     Title(title);
                     TimeLine(TimeLineCreateOrderContent(1));
                     PrintAllTables(listTable);
+                do
+                {
                     AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
                     if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                     {
@@ -384,9 +381,8 @@ namespace UI
 
                 do
                 {
-                    Console.Clear();
-                    ApplicationLogoAfterLogin(staff);
-                    Title(title);
+                    // ApplicationLogoAfterLogin(staff);
+                    // Title(title);
                     TimeLine(TimeLineCreateOrderContent(3));
                     Product currentProduct = productBL.GetProductById(productId);
                     Console.WriteLine("Product ID: " + currentProduct.ProductId);

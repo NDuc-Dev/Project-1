@@ -163,11 +163,10 @@ public class Ults
         bool err = false;
         while (active)
         {
-
+                UI.PrintProductsTable(lstproduct, orderStaff);
             do
             {
-                UI.PrintProductsTable(lstproduct, orderStaff);
-                Console.Write("Product ID: ");
+                AnsiConsole.Markup("Product ID: ");
                 int productId;
                 if (int.TryParse(Console.ReadLine(), out productId) && productId >= 0)
                 {
