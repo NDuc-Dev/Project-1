@@ -13,9 +13,14 @@ namespace BL
             return result;
         }
 
-        public List<Order> GetOrders()
+        public List<Order> GetOrdersInprogress()
         {
-            return new OrderDAL().GetOrders();
+            return new OrderDAL().GetOrdersInprogress();
+        }
+
+        public Order GetOrderById(int orderId)
+        {
+            return new OrderDAL().GetOrderById(orderId);
         }
     }
 }

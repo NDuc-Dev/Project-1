@@ -94,7 +94,10 @@ public class Ults
                     break;
                 }
                 bool checkDup = true;
-                orders.TableID = UI.ChooseTable(orderStaff, "Create order");
+                if (orders.ProductsList.Count() == 0)
+                {
+                    orders.TableID = UI.ChooseTable(orderStaff, "Create order");
+                }
                 product = GetProductToAddToOrder(lstproduct, orderStaff, "Create Order");
                 if (product != null)
                 {
@@ -163,7 +166,7 @@ public class Ults
         bool err = false;
         while (active)
         {
-                UI.PrintProductsTable(lstproduct, orderStaff);
+            UI.PrintProductsTable(lstproduct, orderStaff);
             do
             {
                 AnsiConsole.Markup("Product ID: ");
@@ -204,7 +207,8 @@ public class Ults
     public void UpdateOrder()
     {
         string title = "UPDATE ORDER";
-        List<Persistence.Order> listOrder = orderBL.GetOrders();
+        List<Persistence.Order> listOrder = orderBL.GetOrdersInprogress();
+        Persistence.Order order;
         bool active = true;
         while (active)
         {
@@ -221,8 +225,50 @@ public class Ults
             }
             else
             {
-                UI.PrintListOrder(listOrder, orderStaff, title);
+                order = GetOrderToViewDetails(listOrder,orderStaff,title);
             }
         }
+    }
+
+    public Order GetOrderToViewDetails(List<Order> listOrder, Staff orderStaff, string title)
+    {
+        bool active = true;
+        Order order = new Order();
+        bool err = false;
+        while (active)
+        {
+            UI.PrintListOrder(listOrder, orderStaff, title);
+            do
+            {
+                AnsiConsole.Markup("Order ID: ");
+                int orderId;
+                if (int.TryParse(Console.ReadLine(), out orderId) && orderId >= 0)
+                {
+                    if (orderId == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        if (orderBL.GetOrderById(orderId).OrderId != 0)
+                        {
+                            return orderBL.GetOrderById(orderId);
+                        }
+                        else
+                        {
+                            active = true;
+                            UI.RedMessage("Order not exist !");
+                        }
+                    }
+                }
+                else
+                {
+                    UI.RedMessage("Invalid ID !");
+                    err = true;
+                }
+            }
+            while (err == false);
+        }
+        return order;
     }
 }

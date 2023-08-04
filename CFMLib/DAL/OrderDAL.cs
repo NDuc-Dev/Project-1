@@ -123,7 +123,7 @@ namespace DAL
             return order;
         }
 
-        public List<Order> GetOrders()
+        public List<Order> GetOrdersInprogress()
         {
             List<Order> listOrder = new List<Order>();
             try
@@ -140,6 +140,25 @@ namespace DAL
             }
             catch { }
             return listOrder;
+        }
+
+        public Order GetOrderById(int orderId)
+        {
+            Order order = new Order();
+           try
+            {
+                query = @"select product_id, product_name from products where order_id=@orderId;";
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@productId", orderId);
+                MySqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    order = GetOrder(reader);
+                }
+                reader.Close();
+            }
+            catch { }
+            return order;
         }
     }
 }

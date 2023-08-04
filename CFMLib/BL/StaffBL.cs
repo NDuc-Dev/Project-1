@@ -6,6 +6,10 @@ namespace BL
     public class StaffBL
     {
         StaffDAL staffDAL = new StaffDAL();
+        public Staff GetStaffById(int staffId)
+        {
+            return new StaffDAL().GetStaffById(staffId);
+        }
         public Staff? GetPasswordAndCheckAuthorize(string UserName)
         {
             string Password = "";

@@ -12,6 +12,7 @@ namespace UI
         SizeBL sizeBL = new SizeBL();
         ProductBL productBL = new ProductBL();
         TableBL tableBL = new TableBL();
+        StaffBL staffBL = new StaffBL();
         // Line
         public void Line()
         {
@@ -140,7 +141,6 @@ namespace UI
         }
 
         //Menu Handle
-
         public string Menu(string? title, string[] item)
         {
             if (title != null)
@@ -173,6 +173,23 @@ namespace UI
         }
 
         //Product Handle
+        public void PrintProductTable(Product product)
+        {
+            var table = new Spectre.Console.Table();
+            table.AddColumn(new TableColumn("Product ID").Centered());
+            table.AddColumn(new TableColumn("Product Name").LeftAligned());
+            table.AddColumn(new TableColumn("Size S").Centered());
+            table.AddColumn(new TableColumn("Size M").Centered());
+            table.AddColumn(new TableColumn("Size L").Centered());
+            decimal priceSize1 = sizeBL.GetSizeSByProductID(product.ProductId).SizePrice;
+            decimal priceSize2 = sizeBL.GetSizeMByProductID(product.ProductId).SizePrice;
+            decimal priceSize3 = sizeBL.GetSizeLByProductID(product.ProductId).SizePrice;
+            string formattepricesize1 = priceSize1.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+            string formattepricesize2 = priceSize2.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+            string formattepricesize3 = priceSize3.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+            table.AddRow($"{product.ProductId}", $"{product.ProductName}", $"{formattepricesize1 + " VND"}", $"{formattepricesize2 + " VND"}", $"{formattepricesize3 + " VND"}");
+            AnsiConsole.Write(table.Centered());
+        }
 
         public void PrintProductsTable(List<Product> prlst, Staff staff)
         {
@@ -273,6 +290,7 @@ namespace UI
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
             PressAnyKeyToContinue();
+            Console.Clear();
         }
 
         public void GreenMessage(string message)
@@ -282,13 +300,6 @@ namespace UI
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
-
-        public void PrintProductSizeInfo(Persistence.Size size)
-        {
-            string Size = string.Format("{00:##'.'### VND}", size.SizePrice);
-            Console.WriteLine("Size : " + size.SizeProduct + "  price :" + Size);
-        }
-
 
         //Staff
         public void WelcomeStaff(Staff staff)
@@ -319,6 +330,7 @@ namespace UI
             }
             AnsiConsole.Write(tableprint.Centered());
         }
+
         public int ChooseTable(Staff staff, string title)
         {
             int tableId = 0;
@@ -327,10 +339,10 @@ namespace UI
             bool checkTableId;
             while (active)
             {
-                    ApplicationLogoAfterLogin(staff);
-                    Title(title);
-                    TimeLine(TimeLineCreateOrderContent(1));
-                    PrintAllTables(listTable);
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                TimeLine(TimeLineCreateOrderContent(1));
+                PrintAllTables(listTable);
                 do
                 {
                     AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
@@ -342,12 +354,12 @@ namespace UI
                         }
                         else
                         {
-                            if(tableBL.GetTableById(tableId).TableStatus == 1)
+                            if (tableBL.GetTableById(tableId).TableStatus == 1)
                             {
                                 RedMessage("Table is using, please re-enter Table ID.");
                                 checkTableId = false;
                             }
-                            else if (tableBL.GetTableById(tableId).TableId == 0 )
+                            else if (tableBL.GetTableById(tableId).TableId == 0)
                             {
                                 RedMessage("Invalid Id, please re-enter Table ID.");
                                 checkTableId = false;
@@ -381,9 +393,10 @@ namespace UI
 
                 do
                 {
-                    // ApplicationLogoAfterLogin(staff);
-                    // Title(title);
+                    ApplicationLogoAfterLogin(staff);
+                    Title(title);
                     TimeLine(TimeLineCreateOrderContent(3));
+                    PrintProductTable(productBL.GetProductById(productId));
                     Product currentProduct = productBL.GetProductById(productId);
                     Console.WriteLine("Product ID: " + currentProduct.ProductId);
                     Console.WriteLine("Product Name: " + currentProduct.ProductName);
@@ -424,18 +437,18 @@ namespace UI
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
             var outerTable = new Spectre.Console.Table();
-            outerTable.AddColumn(new TableColumn("[Bold]VTCA Coffee[/]").Centered().NoWrap());
+            outerTable.AddColumn(new TableColumn("[Bold][Blue]VTCA Coffee[/][/]").Centered().NoWrap());
             outerTable.AddRow("4th floor, VTC Building, 18 Tam Trinh, HBT, HN").Centered();
             outerTable.AddRow("Email: VTCACoffee@gmail.com").Centered();
             outerTable.AddRow("Order Staff: " + $"{staff.StaffName}").Centered();
             outerTable.AddRow("Table: " + $" {order.TableID}").Centered();
             outerTable.AddRow("");
             var innertable = new Spectre.Console.Table();
-            innertable.AddColumn(new TableColumn("Product Name").LeftAligned()).NoBorder();
-            innertable.AddColumn(new TableColumn("Size").Centered()).NoBorder();
-            innertable.AddColumn(new TableColumn("Price").Centered()).NoBorder();
-            innertable.AddColumn(new TableColumn("Quantity").Centered()).NoBorder();
-            innertable.AddColumn(new TableColumn("Amount").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("[bold][Cyan]Product Name[/][/]").LeftAligned()).NoBorder();
+            innertable.AddColumn(new TableColumn("[bold][Cyan]Size[/][/]").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("[bold][Cyan]Price[/][/]").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("[bold][Cyan]Quantity[/][/]").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("[bold][Cyan]Amount[/][/]").Centered()).NoBorder();
             decimal totalAmount = 0;
             foreach (var item in order.ProductsList)
             {
@@ -538,7 +551,7 @@ namespace UI
                 Title(title);
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Order ID").Centered());
-                table.AddColumn(new TableColumn("Order Staff ID").Centered());
+                table.AddColumn(new TableColumn("Order Staff").Centered());
                 table.AddColumn(new TableColumn("Order Date").Centered());
                 table.AddColumn(new TableColumn("Order Table").Centered());
                 table.AddColumn(new TableColumn("Order Status").Centered());
@@ -548,13 +561,26 @@ namespace UI
                 int endIndex = Math.Min(startIndex + pageSize - 1, listOrder.Count - 1);
                 for (int i = startIndex; i <= endIndex; i++)
                 {
-                    if (listOrder[i].TableID == 0)
+                    string status;
+                    if (listOrder[i].OrderStatus == 1)
                     {
-                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", "Take Away", "Inprogress");
+                        status = "Inprogress";
+                    }
+                    else if (listOrder[i].OrderStatus == 2)
+                    {
+                        status = "Complete";
                     }
                     else
                     {
-                        table.AddRow($"{listOrder[i].OrderId}", $"{listOrder[i].OrderStaffID}", $"{listOrder[i].OrderDate}", $"{listOrder[i].TableID}", "Inprogress");
+                        status = "Has been paid";
+                    }
+                    if (listOrder[i].TableID == 0)
+                    {
+                        table.AddRow($"{listOrder[i].OrderId}", $"{staffBL.GetStaffById(listOrder[i].OrderStaffID).StaffName}", $"{listOrder[i].OrderDate}", "Take Away", status);
+                    }
+                    else
+                    {
+                        table.AddRow($"{listOrder[i].OrderId}", $"{staffBL.GetStaffById(listOrder[i].OrderStaffID).StaffName}", $"{listOrder[i].OrderDate}", $"{listOrder[i].TableID}", status);
                     }
                 }
                 AnsiConsole.Write(table.Centered());

@@ -37,6 +37,34 @@ namespace DAL
             return staff;
         }
 
+        public Staff GetStaffById(int staffId)
+        {
+             Staff staff = new Staff();
+            try
+            {
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+
+                }
+                string query = @"select * from Staffs where Staff_Id = @staffId";
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@staffId", staffId);
+                MySqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    staff = GetStaff(reader);
+                }
+                reader.Close();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return staff;
+        }
+
         public string ChangePasswordMD5(string password)
         {
             // Creates an instance of the default implementation of the MD5 hash algorithm.
