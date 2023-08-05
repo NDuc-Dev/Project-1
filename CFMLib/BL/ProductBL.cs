@@ -19,6 +19,11 @@ namespace BL
         {
             return productDal.GetProductByIdAndSize(productId, sizeId);
         }
+
+        public List<Product> GetListProductsInOrder (int orderId)
+        {
+            return productDal.GetListProductsInOrder(orderId);
+        }
     }
 
 }

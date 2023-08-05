@@ -34,6 +34,7 @@ create table Products(
 Product_ID int NOT NULL auto_increment,
 Product_Name varchar(50) NOT NULL,
 Descriptions varchar(50),
+Status_in_order int default 0 NOT NULL,
 PRIMARY KEY (Product_ID)
 );
 
@@ -60,6 +61,7 @@ Product_ID int NOT NULL,
 Size_ID int NOT NULL,
 Quantity int NOT NULL,
 Amount decimal NOT NULL,
+Status int default 1,
 PRIMARY KEY (Order_Details_ID),
 FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),
 FOREIGN KEY (Size_ID) REFERENCES Product_Sizes(Size_ID)

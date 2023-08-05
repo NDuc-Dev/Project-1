@@ -147,9 +147,9 @@ namespace DAL
             Order order = new Order();
            try
             {
-                query = @"select product_id, product_name from products where order_id=@orderId;";
+                query = @"select * from orders where order_id=@orderId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@productId", orderId);
+                command.Parameters.AddWithValue("@orderId", orderId);
                 MySqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {

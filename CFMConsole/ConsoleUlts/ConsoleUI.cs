@@ -441,7 +441,14 @@ namespace UI
             outerTable.AddRow("4th floor, VTC Building, 18 Tam Trinh, HBT, HN").Centered();
             outerTable.AddRow("Email: VTCACoffee@gmail.com").Centered();
             outerTable.AddRow("Order Staff: " + $"{staff.StaffName}").Centered();
-            outerTable.AddRow("Table: " + $" {order.TableID}").Centered();
+            if (order.TableID == 0)
+            {
+                outerTable.AddRow("TakeAway").Centered();
+            }
+            else
+            {
+                outerTable.AddRow("Table: " + $"{order.TableID}").Centered();
+            }
             outerTable.AddRow("");
             var innertable = new Spectre.Console.Table();
             innertable.AddColumn(new TableColumn("[bold][Cyan]Product Name[/][/]").LeftAligned()).NoBorder();
@@ -460,45 +467,7 @@ namespace UI
             }
             string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
             innertable.AddRow("");
-            innertable.AddRow("[Bold]TOTAL AMOUNT[/]", "", "", "", $"{formattedTotal + " VND"}");
-            warp.AddRow(outerTable.NoBorder());
-            warp.AddRow(innertable.Centered());
-            AnsiConsole.Write(warp.Centered());
-        }
-
-        public void PrintSaleReceiptTakeAway(Order order, Staff staff, string title)
-        {
-            Console.Clear();
-            ApplicationLogoAfterLogin(staff);
-            Title(title);
-            TimeLine(TimeLineCreateOrderContent(5));
-            var warp = new Spectre.Console.Table();
-            warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
-            var outerTable = new Spectre.Console.Table();
-            outerTable.AddColumn(new TableColumn("[Bold]VTCA Coffee[/]").Centered().NoWrap());
-            outerTable.AddRow("4th floor, VTC Building, 18 Tam Trinh, HBT, HN").Centered();
-            outerTable.AddRow("Email: VTCACoffee@gmail.com").Centered();
-            outerTable.AddRow("Order Staff: " + $"{staff.StaffName}").Centered();
-            outerTable.AddRow("TakeAway").Centered();
-            outerTable.AddRow("");
-            var innertable = new Spectre.Console.Table();
-            innertable.AddColumn(new TableColumn("Product Name").LeftAligned()).NoBorder();
-            innertable.AddColumn(new TableColumn("Size").Centered()).NoBorder();
-            innertable.AddColumn(new TableColumn("Price").Centered()).NoBorder();
-            innertable.AddColumn(new TableColumn("Quantity").Centered()).NoBorder();
-            innertable.AddColumn(new TableColumn("Amount").Centered()).NoBorder();
-            decimal totalAmount = 0;
-            foreach (var item in order.ProductsList)
-            {
-                decimal amount = item.ProductPrice * item.ProductQuantity;
-                string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                string formattedPrice = item.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                innertable.AddRow($"{item.ProductName}", $"({item.ProductSize})", $"{formattedPrice + " VND"}", $"x{item.ProductQuantity}", $"{formattedAmount + " VND"}").NoBorder();
-                totalAmount += item.ProductQuantity * item.ProductPrice;
-            }
-            string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-            innertable.AddRow("");
-            innertable.AddRow("[Bold]TOTAL AMOUNT[/]", "", "", "", $"{formattedTotal + " VND"}");
+            innertable.AddRow("[Bold][cyan]TOTAL AMOUNT[/][/]", "", "", "", $"[Bold][cyan]{formattedTotal + " VND"}[/][/]");
             warp.AddRow(outerTable.NoBorder());
             warp.AddRow(innertable.Centered());
             AnsiConsole.Write(warp.Centered());
@@ -609,6 +578,60 @@ namespace UI
                     break;
                 }
             }
+        }
+
+        public void PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName)
+        {
+
+            Console.Clear();
+            ApplicationLogoAfterLogin(currentstaff);
+            Title(title);
+            var warp = new Spectre.Console.Table();
+            warp.AddColumn(new TableColumn($"[Bold]ORDER DETAILS[/]").Centered());
+            if (order.TableID != 0)
+            {
+                warp.AddRow($"[Cyan]TABLE: {order.TableID}[/]").Centered();
+            }
+            else
+            {
+                warp.AddRow($"[Cyan]Take Away Order[/]").Centered();
+            }
+            var orderInfoTable = new Spectre.Console.Table();
+            orderInfoTable.AddColumn(new TableColumn($"{"Order Id: " + order.OrderId}").LeftAligned());
+            orderInfoTable.AddColumn(new TableColumn($"{"Order Staff: " + staffName}").RightAligned());
+            var datetimeTable = new Spectre.Console.Table();
+            datetimeTable.AddColumn(new TableColumn($"Order Date: {order.OrderDate}"));
+            if (order.OrderStatus == 1)
+            {
+                datetimeTable.AddRow($"[Bold][Yellow]Status: INPROGRESS[/][/]").Centered();
+                datetimeTable.AddRow("");
+            }
+            else
+            {
+                datetimeTable.AddRow($"[Bold][Green]Status: COMPLETE[/][/]").Centered();
+                datetimeTable.AddRow("");
+            }
+            var productTable = new Spectre.Console.Table();
+            productTable.AddColumn(new TableColumn("Product Name").LeftAligned());
+            productTable.AddColumn(new TableColumn("Product Size").Centered());
+            productTable.AddColumn(new TableColumn("Quantity").Centered());
+            productTable.AddColumn(new TableColumn("Status").Centered());
+            foreach (var product in listProducts)
+            {
+                if (product.StatusInOrder == 1)
+                {
+                    productTable.AddRow($"{productBL.GetProductById(product.ProductId).ProductName}", $"{sizeBL.GetSizeByID(product.ProductSizeId).SizeProduct}", $"{product.ProductQuantity}", "[bold][yellow]INPROGRESS[/][/]");
+                }
+                else
+                {
+                    productTable.AddRow($"{productBL.GetProductById(product.ProductId).ProductName}", $"{sizeBL.GetSizeByID(product.ProductSizeId).SizeProduct}", $"{product.ProductQuantity}", "[bold][green]INPROGRESS[/][/]");
+                }
+            }
+            warp.AddRow(orderInfoTable.Centered().NoBorder());
+            warp.AddRow(datetimeTable.Centered().NoBorder());
+            warp.AddRow(productTable.Centered());
+
+            AnsiConsole.Write(warp.Centered());
         }
     }
 }

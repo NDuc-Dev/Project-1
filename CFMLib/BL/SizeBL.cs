@@ -6,10 +6,6 @@ namespace BL
     public class SizeBL
     {
         private SizeDAL sizeDAL = new SizeDAL();
-        public List<Size> GetListProductSizeByProductID(int productId)
-        {
-            return new SizeDAL().GetListProductSizeByProductId(productId);
-        }
 
         public Size GetSizeSByProductID(int productId)
         {
@@ -25,5 +21,11 @@ namespace BL
         {
             return new SizeDAL().GetSizeLByProductID(productId);
         }
+
+        public Size GetSizeByID(int sizeId)
+        {
+            return new SizeDAL().GetSizeBySizeId(sizeId);
+        }
+        
     }
 }

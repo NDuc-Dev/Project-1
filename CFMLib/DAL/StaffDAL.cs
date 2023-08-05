@@ -17,7 +17,6 @@ namespace DAL
                 if (connection.State == System.Data.ConnectionState.Closed)
                 {
                     connection.Open();
-
                 }
                 string query = @"select * from Staffs where User_Name = @User_Name";
                 MySqlCommand command = new MySqlCommand(query, connection);
@@ -39,17 +38,11 @@ namespace DAL
 
         public Staff GetStaffById(int staffId)
         {
-             Staff staff = new Staff();
+            Staff staff = new Staff();
             try
             {
-                if (connection.State == System.Data.ConnectionState.Closed)
-                {
-                    connection.Open();
-
-                }
                 string query = @"select * from Staffs where Staff_Id = @staffId";
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.Clear();
                 command.Parameters.AddWithValue("@staffId", staffId);
                 MySqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
@@ -83,15 +76,15 @@ namespace DAL
             }
 
         }
-            public Staff GetStaff(MySqlDataReader reader)
-            {
-                Staff staff = new Staff();
-                staff.StaffId = reader.GetInt32("Staff_ID");
-                staff.StaffName = reader.GetString("Staff_Name");
-                staff.UserName = reader.GetString("User_Name");
-                staff.Password = reader.GetString("Password");
-                staff.StaffStatus = reader.GetInt32("Staff_Status");
-                return staff;
-            }
+        public Staff GetStaff(MySqlDataReader reader)
+        {
+            Staff staff = new Staff();
+            staff.StaffId = reader.GetInt32("Staff_ID");
+            staff.StaffName = reader.GetString("Staff_Name");
+            staff.UserName = reader.GetString("User_Name");
+            staff.Password = reader.GetString("Password");
+            staff.StaffStatus = reader.GetInt32("Staff_Status");
+            return staff;
+        }
     }
 }

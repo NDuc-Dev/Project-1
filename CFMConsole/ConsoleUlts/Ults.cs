@@ -123,14 +123,7 @@ public class Ults
                             continuee = true;
                             break;
                         case "No":
-                            if (orders.TableID == 0)
-                            {
-                                UI.PrintSaleReceiptTakeAway(orders, orderStaff, "Create Order");
-                            }
-                            else
-                            {
-                                UI.PrintSaleReceipt(orders, orderStaff, "Create Order");
-                            }
+                            UI.PrintSaleReceipt(orders, orderStaff, "Create Order");
                             continuee = false;
                             string createAsk = UI.AskToContinueCreate();
                             switch (createAsk)
@@ -184,6 +177,7 @@ public class Ults
                             int sizeId = UI.ChooseProductsize(orderStaff, productId, "Create Order");
                             product = productBL.GetProductByIdAndSize(productId, sizeId);
                             product.ProductQuantity = UI.InputQuantity(product, orderStaff, "Create Order");
+                            product.StatusInOrder = 0;
                             return product;
                         }
                         else
@@ -208,6 +202,7 @@ public class Ults
     {
         string title = "UPDATE ORDER";
         List<Persistence.Order> listOrder = orderBL.GetOrdersInprogress();
+        List<Persistence.Product> listProducts;
         Persistence.Order order;
         bool active = true;
         while (active)
@@ -225,7 +220,18 @@ public class Ults
             }
             else
             {
-                order = GetOrderToViewDetails(listOrder,orderStaff,title);
+                order = GetOrderToViewDetails(listOrder, orderStaff, title);
+                // Console.WriteLine(order.OrderId);
+                Staff staff = staffBL.GetStaffById(order.OrderStaffID);
+                // Console.WriteLine(staff.StaffName);
+                listProducts = productBL.GetListProductsInOrder(order.OrderId);
+                // Console.WriteLine(listProducts.Count);
+                if (order != null)
+                {
+                    UI.PrintOrderDetails(listProducts,orderStaff, order, title, staff.StaffName);
+                    Console.ReadKey();
+                }
+                Console.ReadKey();
             }
         }
     }
@@ -233,13 +239,13 @@ public class Ults
     public Order GetOrderToViewDetails(List<Order> listOrder, Staff orderStaff, string title)
     {
         bool active = true;
-        Order order = new Order();
+        Order order = null;
         bool err = false;
         while (active)
         {
-            UI.PrintListOrder(listOrder, orderStaff, title);
             do
             {
+                UI.PrintListOrder(listOrder, orderStaff, title);
                 AnsiConsole.Markup("Order ID: ");
                 int orderId;
                 if (int.TryParse(Console.ReadLine(), out orderId) && orderId >= 0)
@@ -252,7 +258,8 @@ public class Ults
                     {
                         if (orderBL.GetOrderById(orderId).OrderId != 0)
                         {
-                            return orderBL.GetOrderById(orderId);
+                            order = orderBL.GetOrderById(orderId);
+                            return order;
                         }
                         else
                         {

@@ -50,7 +50,10 @@ namespace DAL
                 }
                 reader.Close();
             }
-            catch { }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
             return product;
         }
 
@@ -73,6 +76,17 @@ namespace DAL
             return product;
         }
 
+        internal Product GetProductInOrder(MySqlDataReader reader)
+        {
+            Product product = new Product();
+            product.ProductId = reader.GetInt32("product_id");
+            product.ProductSizeId = reader.GetInt32("size_id");
+            product.ProductQuantity = reader.GetInt32("quantity");
+            product.ProductPrice =  reader.GetDecimal("amount");
+            product.StatusInOrder = reader.GetInt32("status");
+            return product;
+        }
+
         public List<Product> GetProducts()
         {
             List<Product> listProduct = new List<Product>();
@@ -88,7 +102,32 @@ namespace DAL
                 }
                 reader.Close();
             }
-            catch { }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return listProduct;
+        }
+
+        public List<Product> GetListProductsInOrder(int orderId)
+        {
+            List<Product> listProduct = new List<Product>();
+            try
+            {
+                query = "select * from order_details where order_id = @orderId;";
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@orderId", orderId);
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    listProduct.Add(GetProductInOrder(reader));
+                }
+                reader.Close();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
             return listProduct;
         }
     }

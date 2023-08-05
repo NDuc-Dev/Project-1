@@ -18,6 +18,7 @@ namespace Persistence
         public int ProductSizeId {set; get;}
         public char ProductSize { set; get; }
         public int ProductStatus { set; get; }
+        public int StatusInOrder { set; get; }
         public Staff? CreateBy { set; get; }
         public Staff? UpdateBy { set; get; }
         public DateTime? CreateTime { set; get; }
