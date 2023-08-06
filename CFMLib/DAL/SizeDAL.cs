@@ -60,28 +60,28 @@ namespace DAL
             return ProductSizeID;
         }
 
-        public List<Size> GetListProductSizeByProductId(int productId)
-        {
-            List<Size> lst = new List<Size>();
-            try
-            {
-                query = @"select s.*, ps.* from sizes s INNER JOIN product_sizes ps on s.size_id = ps.size_id where ps.product_id=@productId;";
-                MySqlCommand command = new MySqlCommand("", connection);
-                command.Parameters.AddWithValue("@productId", productId);
-                command.CommandText = query;
-                MySqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    lst.Add(GetSizes(reader));
-                }
-                reader.Close();
-            }
-            catch (MySqlException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return lst;
-        }
+        // public Size GetSizeBySizeId(int sizeId)
+        // {
+        //     Size size = new Size();
+        //     try
+        //     {
+        //         query = @"select * from sizes where size_Id = @sizeId";
+        //         MySqlCommand command = new MySqlCommand("", connection);
+        //         command.Parameters.AddWithValue("@sizeId", sizeId);
+        //         command.CommandText = query;
+        //         MySqlDataReader reader = command.ExecuteReader();
+        //         while (reader.Read())
+        //         {
+        //             size = GetSize(reader);
+        //         }
+        //         reader.Close();
+        //     }
+        //     catch (MySqlException ex)
+        //     {
+        //         Console.WriteLine(ex.Message);
+        //     }
+        //     return size;
+        // }
 
         public Size GetSizeSByProductID(int productId)
         {

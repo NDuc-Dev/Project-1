@@ -96,9 +96,9 @@ public class Ults
                 bool checkDup = true;
                 if (orders.ProductsList.Count() == 0)
                 {
-                    orders.TableID = UI.ChooseTable(orderStaff, "Create order");
+                    orders.TableID = UI.ChooseTable(orderStaff, "CREATE ORDER");
                 }
-                product = GetProductToAddToOrder(lstproduct, orderStaff, "Create Order");
+                product = GetProductToAddToOrder(lstproduct, orderStaff, "CREATE ORDER");
                 if (product != null)
                 {
                     orders.OrderStaffID = orderStaff.StaffId;
@@ -114,7 +114,6 @@ public class Ults
                     if (checkDup == true)
                     {
                         orders.ProductsList.Add(product);
-
                     }
                     string addAsk = UI.AskToContinueAdd();
                     switch (addAsk)
@@ -152,6 +151,120 @@ public class Ults
 
     }
 
+
+
+    public void UpdateOrder()
+    {
+        string title = "UPDATE ORDER";
+        List<Persistence.Order> listOrder = orderBL.GetOrdersInprogress();
+        // List<Persistence.Product> listProducts;
+        List<Persistence.Product> listAllProducts = productBL.GetAll();
+        Persistence.Product product;
+        Persistence.Order order;
+        bool checkDup = true;
+        bool active = true;
+        bool continuee = false;
+        while (active)
+        {
+            if (active == false)
+            {
+                break;
+            }
+            if (listOrder.Count() == 0)
+            {
+                UI.ApplicationLogoAfterLogin(orderStaff);
+                UI.Title(title);
+                UI.RedMessage("No orders have been created yet !");
+                break;
+            }
+            else
+            {
+                order = GetOrderToViewDetails(listOrder, orderStaff, title);
+                Staff staff = staffBL.GetStaffById(order.OrderStaffID);
+                order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
+                if (order != null)
+                {
+                    string updateChoice;
+                    updateChoice = UI.PrintOrderDetails(order.ProductsList, orderStaff, order, title, staff.StaffName);
+                    switch (updateChoice)
+                    {
+                        case "Add product to order":
+                            while (active)
+                            {
+                                if (active == false)
+                                {
+                                    break;
+                                }
+                                do
+                                {
+                                    if (active == false)
+                                    {
+                                        break;
+                                    }
+                                    product = GetProductToAddToOrder(listAllProducts, orderStaff, "UPDATE ORDER");
+                                    if (product != null)
+                                    {
+                                        foreach (Product item in order.ProductsList)
+                                        {
+                                            if (item.ProductId == product.ProductId && item.ProductSizeId == product.ProductSizeId)
+                                            {
+                                                item.ProductQuantity += product.ProductQuantity;
+                                                checkDup = false;
+                                            }
+                                        }
+                                        if (checkDup == true)
+                                        {
+                                            order.ProductsList.Add(product);
+                                        }
+                                        string addAsk = UI.AskToContinueAdd();
+                                        switch (addAsk)
+                                        {
+                                            case "Yes":
+                                                continuee = true;
+                                                break;
+                                            case "No":
+                                                UI.PrintSaleReceipt(order, orderStaff, "UPDATE ORDER");
+                                                continuee = false;
+                                                string updateAsk = UI.AskToContinueUpdate();
+                                                switch (updateAsk)
+                                                {
+                                                    case "Yes":
+                                                        // Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
+                                                        // Console.WriteLine("Your Order Id is : " + orders.OrderId);
+                                                        UI.PressAnyKeyToContinue();
+                                                        break;
+                                                    case "No":
+                                                        AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                                        UI.PressAnyKeyToContinue();
+                                                        active = false;
+                                                        break;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        active = false;
+                                        break;
+                                    }
+                                }
+                                while (continuee == false);
+                            }
+                            while (continuee == false) ;
+                            break;
+                        case "Remove an unfinished product from the order":
+                            break;
+                        case "Confirm product in order":
+                            break;
+                        case "Confirm order":
+                            break;
+                    }
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+
     public Product GetProductToAddToOrder(List<Product> lstproduct, Staff orderStaff, string title)
     {
         bool active = true;
@@ -159,7 +272,7 @@ public class Ults
         bool err = false;
         while (active)
         {
-            UI.PrintProductsTable(lstproduct, orderStaff);
+            UI.PrintProductsTable(lstproduct, orderStaff, title);
             do
             {
                 AnsiConsole.Markup("Product ID: ");
@@ -196,44 +309,6 @@ public class Ults
             while (err == false);
         }
         return product;
-    }
-
-    public void UpdateOrder()
-    {
-        string title = "UPDATE ORDER";
-        List<Persistence.Order> listOrder = orderBL.GetOrdersInprogress();
-        List<Persistence.Product> listProducts;
-        Persistence.Order order;
-        bool active = true;
-        while (active)
-        {
-            if (active == false)
-            {
-                break;
-            }
-            if (listOrder.Count() == 0)
-            {
-                UI.ApplicationLogoAfterLogin(orderStaff);
-                UI.Title(title);
-                UI.RedMessage("No orders have been created yet !");
-                break;
-            }
-            else
-            {
-                order = GetOrderToViewDetails(listOrder, orderStaff, title);
-                // Console.WriteLine(order.OrderId);
-                Staff staff = staffBL.GetStaffById(order.OrderStaffID);
-                // Console.WriteLine(staff.StaffName);
-                listProducts = productBL.GetListProductsInOrder(order.OrderId);
-                // Console.WriteLine(listProducts.Count);
-                if (order != null)
-                {
-                    UI.PrintOrderDetails(listProducts,orderStaff, order, title, staff.StaffName);
-                    Console.ReadKey();
-                }
-                Console.ReadKey();
-            }
-        }
     }
 
     public Order GetOrderToViewDetails(List<Order> listOrder, Staff orderStaff, string title)

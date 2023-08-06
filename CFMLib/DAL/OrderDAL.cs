@@ -112,6 +112,111 @@ namespace DAL
             return result;
         }
 
+        public bool UpdateOrder(Order order)
+        {
+            if (order == null || order.ProductsList == null || order.ProductsList.Count() == 0)
+            {
+                return false;
+            }
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write;";
+                        cmd.ExecuteNonQuery();
+
+                        MySqlDataReader? reader = null;
+
+                        //delete old order
+                        cmd.CommandText = "Delete * from Order_Details where order_Id = @orderId ;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+
+                        cmd.CommandText = "Delete * from Orders where order_Id = @orderId ;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+
+
+                        //insert new order after update
+                        cmd.CommandText = "insert into Orders(order_Id, order_staff_id, order_status, order_table) values (@orderId, @staffId, @orderStatus, @orderTable);";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.Parameters.AddWithValue("@staffId", order.OrderStaffID);
+                        cmd.Parameters.AddWithValue("@orderStatus", order.OrderStaffID);
+                        cmd.Parameters.AddWithValue("@orderTable", order.TableID);
+                        cmd.ExecuteNonQuery();
+
+                        //insert Order Details table
+                        foreach (var item in order.ProductsList)
+                        {
+                            if (item.ProductId == 0 || item.ProductQuantity <= 0)
+                            {
+                                throw new Exception("Not Exists Product");
+                            }
+                            //get unit_price
+                            cmd.CommandText = "select price from product_sizes where product_id=@productId and size_id=@sizeId";
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddWithValue("@productId", item.ProductId);
+                            cmd.Parameters.AddWithValue("@sizeId", item.ProductSizeId);
+                            reader = cmd.ExecuteReader();
+                            if (!reader.Read())
+                            {
+                                throw new Exception("Not Exists Item");
+                            }
+                            item.ProductPrice = reader.GetDecimal("price");
+                            reader.Close();
+
+                            //insert to Order Details
+                            cmd.CommandText = @"insert into Order_Details(order_id, product_id, size_id, quantity, amount) values 
+                            (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductSizeId + ", " + item.ProductQuantity + "," + (item.ProductQuantity * item.ProductPrice) + ");";
+                            cmd.ExecuteNonQuery();
+
+                            // update table status
+                            if (order.TableID != 0)
+                            {
+                                cmd.CommandText = @"update Tables set table_status = 1 where table_id =" + order.TableID + ";";
+                                cmd.Parameters.Clear();
+                                cmd.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                trans.Commit();
+                                result = true;
+                            }
+
+                        }
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                        // trans.Rollback();
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            trans.Rollback();
+                        }
+                        catch { }
+                    }
+                    finally
+                    {
+                        //unlock all tables;
+                        cmd.CommandText = "unlock tables;";
+                        cmd.ExecuteNonQuery();
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
+        }
+
         internal Order GetOrder(MySqlDataReader reader)
         {
             Order order = new Order();

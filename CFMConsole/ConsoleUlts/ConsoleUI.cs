@@ -45,6 +45,27 @@ namespace UI
             return content;
         }
 
+        public string TimeLineUpdateOrderContent(int step)
+        {
+            string content = "";
+            switch (step)
+            {
+                case 1:
+                    content = "[green]CHOOSE PRODUCT[/]  ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ADD";
+                    break;
+                case 2:
+                    content = "CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ADD";
+                    break;
+                case 3:
+                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ADD";
+                    break;
+                case 4:
+                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ADD[/]";
+                    break;
+            }
+            return content;
+        }
+
         public void TimeLine(string content)
         {
             Line();
@@ -191,7 +212,7 @@ namespace UI
             AnsiConsole.Write(table.Centered());
         }
 
-        public void PrintProductsTable(List<Product> prlst, Staff staff)
+        public void PrintProductsTable(List<Product> prlst, Staff staff, string title)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
@@ -200,8 +221,15 @@ namespace UI
             {
                 Console.Clear();
                 ApplicationLogoAfterLogin(staff);
-                Title("CREATE ORDER");
-                TimeLine(TimeLineCreateOrderContent(2));
+                Title(title);
+                if (title == "CREATE ORDER")
+                {
+                    TimeLine(TimeLineCreateOrderContent(2));
+                }
+                else if (title == "UPDATE ORDER")
+                {
+                    TimeLine(TimeLineUpdateOrderContent(1));
+                }
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
@@ -262,7 +290,14 @@ namespace UI
                     Console.Clear();
                     ApplicationLogoAfterLogin(staff);
                     Title(title);
-                    TimeLine(TimeLineCreateOrderContent(4));
+                    if (title == "CREATE ORDER")
+                    {
+                        TimeLine(TimeLineCreateOrderContent(4));
+                    }
+                    else if (title == "UPDATE ORDER")
+                    {
+                        TimeLine(TimeLineUpdateOrderContent(3));
+                    }
                     Console.WriteLine("Product ID : " + product.ProductId);
                     Console.WriteLine("Product Name : " + product.ProductName);
                     Console.WriteLine("Product Size : " + product.ProductSize);
@@ -395,7 +430,14 @@ namespace UI
                 {
                     ApplicationLogoAfterLogin(staff);
                     Title(title);
-                    TimeLine(TimeLineCreateOrderContent(3));
+                    if (title == "CREATE ORDER")
+                    {
+                        TimeLine(TimeLineCreateOrderContent(3));
+                    }
+                    else if (title == "UPDATE ORDER")
+                    {
+                        TimeLine(TimeLineUpdateOrderContent(2));
+                    }
                     PrintProductTable(productBL.GetProductById(productId));
                     Product currentProduct = productBL.GetProductById(productId);
                     Console.WriteLine("Product ID: " + currentProduct.ProductId);
@@ -433,7 +475,14 @@ namespace UI
             Console.Clear();
             ApplicationLogoAfterLogin(staff);
             Title(title);
-            TimeLine(TimeLineCreateOrderContent(5));
+            if (title == "CREATE ORDER")
+            {
+                TimeLine(TimeLineCreateOrderContent(5));
+            }
+            else if (title == "UPDATE ORDER")
+            {
+                TimeLine(TimeLineUpdateOrderContent(4));
+            }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
             var outerTable = new Spectre.Console.Table();
@@ -459,11 +508,11 @@ namespace UI
             decimal totalAmount = 0;
             foreach (var item in order.ProductsList)
             {
-                decimal amount = item.ProductPrice * item.ProductQuantity;
+                decimal amount = productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice * item.ProductQuantity;
                 string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                string formattedPrice = item.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                innertable.AddRow($"{item.ProductName}", $"({item.ProductSize})", $"{formattedPrice + " VND"}", $"x{item.ProductQuantity}", $"{formattedAmount + " VND"}").NoBorder();
-                totalAmount += item.ProductQuantity * item.ProductPrice;
+                string formattedPrice = productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                innertable.AddRow($"{productBL.GetProductById(item.ProductId).ProductName}", $"({sizeBL.GetSizeByID(item.ProductSizeId).SizeProduct})", $"{formattedPrice + " VND"}", $"x{item.ProductQuantity}", $"{formattedAmount + " VND"}").NoBorder();
+                totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
             }
             string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
             innertable.AddRow("");
@@ -491,6 +540,17 @@ namespace UI
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title("Do you want to [Green]CREATE[/] this order ?")
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
+        public string AskToContinueUpdate()
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Do you want to [Green]UPDATE[/] this order ?")
                .PageSize(3)
                .AddChoices(item));
             return choice;
@@ -580,14 +640,14 @@ namespace UI
             }
         }
 
-        public void PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName)
+        public string PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName)
         {
-
+            string[] item = { "Add product to order", "Remove an unfinished product from the order", "Confirm product in order", "Confirm order" };
             Console.Clear();
             ApplicationLogoAfterLogin(currentstaff);
             Title(title);
             var warp = new Spectre.Console.Table();
-            warp.AddColumn(new TableColumn($"[Bold]ORDER DETAILS[/]").Centered());
+            warp.AddColumn(new TableColumn($"[Bold]{"Order Id: " + order.OrderId}[/]").Centered());
             if (order.TableID != 0)
             {
                 warp.AddRow($"[Cyan]TABLE: {order.TableID}[/]").Centered();
@@ -597,18 +657,17 @@ namespace UI
                 warp.AddRow($"[Cyan]Take Away Order[/]").Centered();
             }
             var orderInfoTable = new Spectre.Console.Table();
-            orderInfoTable.AddColumn(new TableColumn($"{"Order Id: " + order.OrderId}").LeftAligned());
-            orderInfoTable.AddColumn(new TableColumn($"{"Order Staff: " + staffName}").RightAligned());
+            orderInfoTable.AddColumn(new TableColumn($"{"Order Staff: " + staffName}"));
             var datetimeTable = new Spectre.Console.Table();
-            datetimeTable.AddColumn(new TableColumn($"Order Date: {order.OrderDate}"));
+            datetimeTable.AddColumn(new TableColumn($"Order Date: {order.OrderDate}").Centered()).Centered();
             if (order.OrderStatus == 1)
             {
-                datetimeTable.AddRow($"[Bold][Yellow]Status: INPROGRESS[/][/]").Centered();
+                datetimeTable.AddRow($"[Bold][Yellow]Order Status: INPROGRESS[/][/]").Centered();
                 datetimeTable.AddRow("");
             }
             else
             {
-                datetimeTable.AddRow($"[Bold][Green]Status: COMPLETE[/][/]").Centered();
+                datetimeTable.AddRow($"[Bold][Green]Order Status: CONFIRMED[/][/]").Centered();
                 datetimeTable.AddRow("");
             }
             var productTable = new Spectre.Console.Table();
@@ -632,6 +691,13 @@ namespace UI
             warp.AddRow(productTable.Centered());
 
             AnsiConsole.Write(warp.Centered());
+
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
+               .PageSize(10)
+               .AddChoices(item));
+            return choice;
         }
     }
 }
