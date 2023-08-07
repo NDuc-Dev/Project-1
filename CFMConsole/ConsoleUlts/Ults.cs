@@ -157,7 +157,6 @@ public class Ults
     {
         string title = "UPDATE ORDER";
         List<Persistence.Order> listOrder = orderBL.GetOrdersInprogress();
-        // List<Persistence.Product> listProducts;
         List<Persistence.Product> listAllProducts = productBL.GetAll();
         Persistence.Product product;
         Persistence.Order order;
@@ -255,6 +254,7 @@ public class Ults
                             }
                             break;
                         case "Remove an unfinished product from the order":
+                            RemoveProductsFromOrder(order.ProductsList,order, title, orderStaff);
                             break;
                         case "Confirm product in order":
                             break;
@@ -368,16 +368,29 @@ public class Ults
             bool checkSize;
             int productId = 0;
             int sizeId = 0;
-            bool equal = false;
+            bool equal = true;
             do
             {
+                if (equal == false)
+                {
+                    break;
+                }
                 do
                 {
+                    if (equal == false)
+                    {
+                        break;
+                    }
                     UI.PrintOrderDetails(listProductInOrder, orderStaff, order, title, staff.StaffName);
-                    AnsiConsole.Markup("Product ID: ");
+                    AnsiConsole.Markup("Product ID (Input [green]0[/] to exit): ");
                     if (int.TryParse(Console.ReadLine(), out productId) && productId > 0)
                     {
                         checkProductId = true;
+                    }
+                    else if (productId == 0)
+                    {
+                        equal = false;
+                        break;
                     }
                     else
                     {
@@ -424,11 +437,11 @@ public class Ults
                     equal = true;
                     UI.RedMessage("Product Not Found");
                 }
-                else 
+                else
                 {
                     return newList;
                 }
-            } while (equal);
+            } while (equal == false);
 
 
         }
