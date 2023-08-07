@@ -133,22 +133,9 @@ namespace DAL
                         MySqlDataReader? reader = null;
 
                         //delete old order
-                        cmd.CommandText = "Delete * from Order_Details where order_Id = @orderId ;";
+                        cmd.CommandText = "Delete from Order_Details where order_Id = @orderId ;";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@orderId", order.OrderId);
-
-                        cmd.CommandText = "Delete * from Orders where order_Id = @orderId ;";
-                        cmd.Parameters.Clear();
-                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
-
-
-                        //insert new order after update
-                        cmd.CommandText = "insert into Orders(order_Id, order_staff_id, order_status, order_table) values (@orderId, @staffId, @orderStatus, @orderTable);";
-                        cmd.Parameters.Clear();
-                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
-                        cmd.Parameters.AddWithValue("@staffId", order.OrderStaffID);
-                        cmd.Parameters.AddWithValue("@orderStatus", order.OrderStaffID);
-                        cmd.Parameters.AddWithValue("@orderTable", order.TableID);
                         cmd.ExecuteNonQuery();
 
                         //insert Order Details table
@@ -195,10 +182,12 @@ namespace DAL
                         result = true;
                         // trans.Rollback();
                     }
-                    catch
+                    catch (Exception ex)
                     {
+
                         try
                         {
+                            Console.WriteLine($"ERROR: {ex.Message}");
                             trans.Rollback();
                         }
                         catch { }

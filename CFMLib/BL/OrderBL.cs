@@ -22,5 +22,11 @@ namespace BL
         {
             return new OrderDAL().GetOrderById(orderId);
         }
+
+        public bool UpdateOrder(Order order)
+        {
+            bool result = orderDAL.UpdateOrder(order);
+            return result;
+        }
     }
 }

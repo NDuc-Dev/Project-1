@@ -640,9 +640,8 @@ namespace UI
             }
         }
 
-        public string PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName)
+        public void PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName)
         {
-            string[] item = { "Add product to order", "Remove an unfinished product from the order", "Confirm product in order", "Confirm order" };
             Console.Clear();
             ApplicationLogoAfterLogin(currentstaff);
             Title(title);
@@ -691,7 +690,10 @@ namespace UI
             warp.AddRow(productTable.Centered());
 
             AnsiConsole.Write(warp.Centered());
+        }
 
+        public string SellectFunction(string[] item)
+        {
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
