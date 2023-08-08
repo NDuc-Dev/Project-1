@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using BL;
 using Persistence;
 using Spectre.Console;
@@ -545,6 +544,28 @@ namespace UI
             return choice;
         }
 
+        public string AskToContinueDelete()
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("This is your order after update, do you want to [Green]CONINUE[/] ?")
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
+         public string AskToContinueConfirm()
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Do you want to [Green]CONINUE[/] ?")
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
         public string AskToContinueUpdate()
         {
             string[] item = { "Yes", "No" };
@@ -666,23 +687,24 @@ namespace UI
             }
             else
             {
-                datetimeTable.AddRow($"[Bold][Green]Order Status: CONFIRMED[/][/]").Centered();
+                datetimeTable.AddRow($"[Bold][Green]Order Status: CONFIRMED]]][/][/]").Centered();
                 datetimeTable.AddRow("");
             }
             var productTable = new Spectre.Console.Table();
+            productTable.AddColumn(new TableColumn("NO").LeftAligned());
             productTable.AddColumn(new TableColumn("Product Name").LeftAligned());
             productTable.AddColumn(new TableColumn("Product Size").Centered());
             productTable.AddColumn(new TableColumn("Quantity").Centered());
             productTable.AddColumn(new TableColumn("Status").Centered());
-            foreach (var product in listProducts)
+            for (int i = 0; i < listProducts.Count(); i++)
             {
-                if (product.StatusInOrder == 1)
+                if (listProducts[i].StatusInOrder == 1)
                 {
-                    productTable.AddRow($"{productBL.GetProductById(product.ProductId).ProductName}", $"{sizeBL.GetSizeByID(product.ProductSizeId).SizeProduct}", $"{product.ProductQuantity}", "[bold][yellow]INPROGRESS[/][/]");
+                    productTable.AddRow($"{i+1}",$"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][yellow]INPROGRESS[/][/]");
                 }
                 else
                 {
-                    productTable.AddRow($"{productBL.GetProductById(product.ProductId).ProductName}", $"{sizeBL.GetSizeByID(product.ProductSizeId).SizeProduct}", $"{product.ProductQuantity}", "[bold][green]INPROGRESS[/][/]");
+                    productTable.AddRow($"{i+1}",$"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][green]COMPLTETE[/][/]");
                 }
             }
             warp.AddRow(orderInfoTable.Centered().NoBorder());

@@ -82,7 +82,7 @@ namespace DAL
             product.ProductId = reader.GetInt32("product_id");
             product.ProductSizeId = reader.GetInt32("size_id");
             product.ProductQuantity = reader.GetInt32("quantity");
-            product.ProductPrice =  reader.GetDecimal("amount");
+            product.ProductPrice = reader.GetDecimal("amount");
             product.StatusInOrder = reader.GetInt32("status");
             return product;
         }
@@ -107,6 +107,47 @@ namespace DAL
                 Console.WriteLine(e.Message);
             }
             return listProduct;
+        }
+
+        public bool UpdateProductStatusInOrder(Product product, Order order)
+        {
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "update order_details set status = 2 where order_id =@orderId and product_id =@productId and size_id =@sizeId ;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@productId", product.ProductId);
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.Parameters.AddWithValue("@sizeId", product.ProductSizeId);
+                        cmd.ExecuteNonQuery();
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            trans.Rollback();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"ERROR: {ex.Message}");
+                        }
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
         }
 
         public List<Product> GetListProductsInOrder(int orderId)

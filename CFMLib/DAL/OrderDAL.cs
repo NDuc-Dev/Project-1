@@ -159,8 +159,8 @@ namespace DAL
                             reader.Close();
 
                             //insert to Order Details
-                            cmd.CommandText = @"insert into Order_Details(order_id, product_id, size_id, quantity, amount) values 
-                            (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductSizeId + ", " + item.ProductQuantity + "," + (item.ProductQuantity * item.ProductPrice) + ");";
+                            cmd.CommandText = @"insert into Order_Details(order_id, product_id, size_id, quantity, amount, status) values 
+                            (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductSizeId + ", " + item.ProductQuantity + "," + (item.ProductQuantity * item.ProductPrice) + "," + item.StatusInOrder +");";
                             cmd.ExecuteNonQuery();
 
                             // update table status

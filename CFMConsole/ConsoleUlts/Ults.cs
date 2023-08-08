@@ -26,7 +26,7 @@ public class Ults
             UI.Title("LOGIN");
             UI.GreenMessage("Input User name and password to LOGIN or input User Name = 0 to EXIT.");
             Console.Write("User Name: ");
-            UserName = Console.ReadLine() ?? "";
+            UserName = Console.ReadLine();
             if (UserName == "0")
             {
                 break;
@@ -178,11 +178,11 @@ public class Ults
             else
             {
                 order = GetOrderToViewDetails(listOrder, orderStaff, title);
-                Staff staff = staffBL.GetStaffById(order.OrderStaffID);
-                order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
                 if (order != null)
                 {
-                    string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Confirm product in order", "Confirm order", "Exit" };
+                    Staff staff = staffBL.GetStaffById(order.OrderStaffID);
+                    order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
+                    string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Confirm product in order", "Change Table", "Confirm order", "Exit" };
                     string updateChoice;
                     UI.PrintOrderDetails(order.ProductsList, orderStaff, order, title, staff.StaffName);
                     updateChoice = UI.SellectFunction(functionsItem);
@@ -210,6 +210,7 @@ public class Ults
                                             if (item.ProductId == product.ProductId && item.ProductSizeId == product.ProductSizeId)
                                             {
                                                 item.ProductQuantity += product.ProductQuantity;
+                                                item.StatusInOrder = 1;
                                                 checkDup = false;
                                             }
                                         }
@@ -254,9 +255,42 @@ public class Ults
                             }
                             break;
                         case "Remove an unfinished product from the order":
-                            RemoveProductsFromOrder(order.ProductsList,order, title, orderStaff);
+                            List<Product> listProductafter = GetProductsToRemoveProductsFromOrder(order.ProductsList, order, title, staff);
+                            order.ProductsList = listProductafter;
+                            UI.PrintSaleReceipt(order, orderStaff, "UPDATE ORDER");
+                            string deleteAsk = UI.AskToContinueDelete();
+                            switch (deleteAsk)
+                            {
+                                case "Yes":
+                                    Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                                    UI.PressAnyKeyToContinue();
+                                    active = false;
+                                    break;
+                                case "No":
+                                    AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                    UI.PressAnyKeyToContinue();
+                                    active = false;
+                                    break;
+                            }
                             break;
                         case "Confirm product in order":
+                                Persistence.Product productConfirm = ChangeProductStatusToComplete(order.ProductsList, order, title, staff); 
+                                string continueAsk = UI.AskToContinueConfirm();
+                                switch (continueAsk)
+                                {
+                                    case "Yes":
+                                    Console.WriteLine("Update Order: " + (productBL.UpdateProductStatusInOrder(productConfirm, order) ? "completed!" : "not complete!"));
+                                    UI.PressAnyKeyToContinue();
+                                    active = false;
+                                    break;
+                                case "No":
+                                    AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                    UI.PressAnyKeyToContinue();
+                                    active = false;
+                                    break;
+                                }
+                            break;
+                        case "Change Table":
                             break;
                         case "Confirm order":
                             break;
@@ -264,7 +298,11 @@ public class Ults
                             break;
                     }
                 }
-                Console.ReadKey();
+                else
+                {
+                    break;
+                }
+
             }
         }
     }
@@ -358,94 +396,126 @@ public class Ults
         return order;
     }
 
-    public List<Product> RemoveProductsFromOrder(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
+    public List<Product> GetProductsToRemoveProductsFromOrder(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
     {
         bool active = true;
         List<Product> newList = new List<Product>();
         while (active)
         {
-            bool checkProductId;
+
+            bool checkProductNumber;
             bool checkSize;
-            int productId = 0;
-            int sizeId = 0;
-            bool equal = true;
+            int productNumber = 0;
+            int productId;
+            int sizeId;
+
             do
             {
-                if (equal == false)
+                checkProductNumber = true;
+                productId = 0;
+                sizeId = 0;
+                UI.PrintOrderDetails(listProductInOrder, orderStaff, order, title, staff.StaffName);
+                AnsiConsole.Markup(" Input the order number of the product in the order to delete (Input [green]0[/] to exit): ");
+                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= listProductInOrder.Count())
                 {
-                    break;
-                }
-                do
-                {
-                    if (equal == false)
+                    if (productNumber == 0)
                     {
+                        active = false;
                         break;
                     }
-                    UI.PrintOrderDetails(listProductInOrder, orderStaff, order, title, staff.StaffName);
-                    AnsiConsole.Markup("Product ID (Input [green]0[/] to exit): ");
-                    if (int.TryParse(Console.ReadLine(), out productId) && productId > 0)
+                    else if (listProductInOrder[productNumber - 1].StatusInOrder == 1)
                     {
-                        checkProductId = true;
-                    }
-                    else if (productId == 0)
-                    {
-                        equal = false;
-                        break;
+                        for (int i = 0; i < listProductInOrder.Count(); i++)
+                        {
+                            if (listProductInOrder[i].ProductId == listProductInOrder[productNumber - 1].ProductId && listProductInOrder[i].ProductSizeId == listProductInOrder[productNumber - 1].ProductSizeId)
+                            {
+                                productId = listProductInOrder[i].ProductId;
+                                sizeId = listProductInOrder[i].ProductSizeId;
+                                // break;
+                            }
+                        }
+
+                        foreach (Product item in listProductInOrder)
+                        {
+                            if (item.ProductId == productId && item.ProductSizeId != sizeId)
+                            {
+                                newList.Add(item);
+
+                            }
+                            else if (item.ProductId != productId && item.ProductSizeId == sizeId)
+                            {
+                                newList.Add(item);
+
+                            }
+                            else if (item.ProductId != productId && item.ProductSizeId != sizeId)
+                            {
+                                newList.Add(item);
+
+                            }
+                        }
+                        return newList;
                     }
                     else
                     {
-                        UI.RedMessage("Invalid ID");
-                        checkProductId = false;
+                        UI.RedMessage("Product is Complete! Can't remove. Please re-enter");
                     }
-                } while (checkProductId);
-
-                do
-                {
-                    AnsiConsole.Markup("Input size[Green](S, M or L)[/]: ");
-                    string size = Console.ReadLine().ToUpper();
-                    if (size == "S")
-                    {
-                        sizeId = 1;
-                        checkSize = true;
-                    }
-                    else if (size == "M")
-                    {
-                        sizeId = 2;
-                        checkSize = true;
-                    }
-                    else if (size == "L")
-                    {
-                        sizeId = 3;
-                        checkSize = true;
-                    }
-                    else
-                    {
-                        UI.RedMessage("Invalid Size");
-                        checkSize = false;
-                    }
-
-                }
-                while (checkSize);
-
-                foreach (var item in listProductInOrder)
-                {
-                    if (item.ProductId != productId || item.ProductSizeId != sizeId)
-                        newList.Add(item);
-                }
-                if (newList.Count() == listProductInOrder.Count())
-                {
-                    equal = true;
-                    UI.RedMessage("Product Not Found");
                 }
                 else
                 {
-                    return newList;
+                    UI.RedMessage("Product Not Exits! Please re-enter");
                 }
-            } while (equal == false);
+            } while (true);
 
+            if (productNumber == 0) break;
+        }
+        return newList;
+    }
+
+    public Product ChangeProductStatusToComplete(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
+    {
+        Product product = new Product();
+        bool active = true;
+
+        while (active)
+        {
+            bool checkProductNumber;
+            int productNumber;
+            int productId;
+            int sizeId;
+            do
+            {
+                UI.PrintOrderDetails(listProductInOrder, orderStaff, order, title, staff.StaffName);
+                AnsiConsole.Markup(" Input the order number of the product in the order to change status to complete (Input [green]0[/] to exit): ");
+                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= listProductInOrder.Count())
+                {
+                    if (productNumber == 0)
+                    {
+                        active = false;
+                        break;
+                    }
+                    else if (listProductInOrder[productNumber - 1].StatusInOrder == 1)
+                    {
+                        for (int i = 0; i < listProductInOrder.Count(); i++)
+                        {
+                            if (listProductInOrder[i].ProductId == listProductInOrder[productNumber - 1].ProductId && listProductInOrder[i].ProductSizeId == listProductInOrder[productNumber - 1].ProductSizeId)
+                            {
+                                return listProductInOrder[i];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        UI.RedMessage("Product is Complete! No need to rework . Please re-enter");
+                    }
+                }
+                else
+                {
+                    UI.RedMessage("Product Not Exits! Please re-enter");
+                }
+            }
+            while (true);
 
         }
-
-        return newList;
+        return product;
     }
 }
