@@ -1,0 +1,11 @@
+C:\VTC\Project-1\PublishVersion-v0.3.1\CFMConsole.exe
+C:\VTC\Project-1\PublishVersion-v0.3.1\CFMConsole.dll
+C:\VTC\Project-1\PublishVersion-v0.3.1\CFMConsole.deps.json
+C:\VTC\Project-1\PublishVersion-v0.3.1\CFMConsole.runtimeconfig.json
+C:\VTC\Project-1\PublishVersion-v0.3.1\CFMConsole.pdb
+C:\VTC\Project-1\PublishVersion-v0.3.1\MySql.Data.dll
+C:\VTC\Project-1\PublishVersion-v0.3.1\MySQLConnection.dll
+C:\VTC\Project-1\PublishVersion-v0.3.1\MySqlConnector.dll
+C:\VTC\Project-1\PublishVersion-v0.3.1\Spectre.Console.dll
+C:\VTC\Project-1\PublishVersion-v0.3.1\CFMLib.dll
+C:\VTC\Project-1\PublishVersion-v0.3.1\CFMLib.pdb

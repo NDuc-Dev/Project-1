@@ -20,7 +20,7 @@ PRIMARY KEY (Table_ID)
 );
 
 create table Orders(
-Order_ID int NOT NULL auto_increment unique,
+Order_ID int NOT NULL auto_increment,
 Order_Staff_ID int NOT NULL,
 Order_Date datetime NOT NULL default current_timestamp(),
 Order_Status int NOT NULL,

@@ -44,6 +44,21 @@ namespace UI
             return content;
         }
 
+        public string TimeLineDeleteProductInOrderContent(int step)
+        {
+            string content = "";
+            switch (step)
+            {
+                case 1:
+                    content = "[green]CHOOSE PRODUCT[/] ==> COMPLETE ORDER";
+                    break;
+                case 2:
+                    content = "CHOOSE PRODUCT ==> [green]COMPLETE ORDER[/]";
+                    break;
+            }
+            return content;
+        }
+
         public string TimeLineUpdateOrderContent(int step)
         {
             string content = "";
@@ -225,7 +240,7 @@ namespace UI
                 {
                     TimeLine(TimeLineCreateOrderContent(2));
                 }
-                else if (title == "UPDATE ORDER")
+                else if (title == "ADD PRODUCT TO ORDER")
                 {
                     TimeLine(TimeLineUpdateOrderContent(1));
                 }
@@ -424,7 +439,6 @@ namespace UI
             bool err = false;
             while (active)
             {
-
                 do
                 {
                     ApplicationLogoAfterLogin(staff);
@@ -481,6 +495,10 @@ namespace UI
             else if (title == "UPDATE ORDER")
             {
                 TimeLine(TimeLineUpdateOrderContent(4));
+            }
+            else if (title == "DELETE PRODUCT IN ORDER")
+            {
+                TimeLine(TimeLineDeleteProductInOrderContent(2));
             }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
@@ -549,13 +567,13 @@ namespace UI
             string[] item = { "Yes", "No" };
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
-               .Title("This is your order after update, do you want to [Green]CONINUE[/] ?")
+               .Title("This is your order after update, do you want to [Green]CONINUE[/] compltete ?")
                .PageSize(3)
                .AddChoices(item));
             return choice;
         }
 
-         public string AskToContinueConfirm()
+        public string AskToContinueConfirm()
         {
             string[] item = { "Yes", "No" };
             var choice = AnsiConsole.Prompt(
@@ -666,6 +684,10 @@ namespace UI
             Console.Clear();
             ApplicationLogoAfterLogin(currentstaff);
             Title(title);
+            if (title == "REMOVE PRODUCT IN ORDER")
+            {
+                TimeLine(TimeLineDeleteProductInOrderContent(1));
+            }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn($"[Bold]{"Order Id: " + order.OrderId}[/]").Centered());
             if (order.TableID != 0)
@@ -700,11 +722,11 @@ namespace UI
             {
                 if (listProducts[i].StatusInOrder == 1)
                 {
-                    productTable.AddRow($"{i+1}",$"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][yellow]INPROGRESS[/][/]");
+                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][yellow]INPROGRESS[/][/]");
                 }
                 else
                 {
-                    productTable.AddRow($"{i+1}",$"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][green]COMPLTETE[/][/]");
+                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][green]COMPLTETE[/][/]");
                 }
             }
             warp.AddRow(orderInfoTable.Centered().NoBorder());

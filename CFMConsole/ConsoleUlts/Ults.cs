@@ -122,7 +122,7 @@ public class Ults
                             continuee = true;
                             break;
                         case "No":
-                            UI.PrintSaleReceipt(orders, orderStaff, "Create Order");
+                            UI.PrintSaleReceipt(orders, orderStaff, "CREATE ORDER");
                             continuee = false;
                             string createAsk = UI.AskToContinueCreate();
                             switch (createAsk)
@@ -214,11 +214,11 @@ public class Ults
                             }
                             break;
                         case "Remove an unfinished product from the order":
-                            List<Product> listProductafter = GetProductsToRemoveProductsFromOrder(order.ProductsList, order, title, staff);
+                            List<Product> listProductafter = GetProductsToRemoveProductsFromOrder(order.ProductsList, order, "REMOVE PRODUCT IN ORDER", staff);
                             if (listProductafter == null)
                                 break;
                             order.ProductsList = listProductafter;
-                            UI.PrintSaleReceipt(order, orderStaff, "UPDATE ORDER");
+                            UI.PrintSaleReceipt(order, orderStaff, "REMOVE PRODUCT IN ORDER");
                             string deleteAsk = UI.AskToContinueDelete();
                             switch (deleteAsk)
                             {
@@ -492,7 +492,7 @@ public class Ults
                 {
                     break;
                 }
-                product = GetProductToAddToOrder(listAllProducts, orderStaff, "UPDATE ORDER");
+                product = GetProductToAddToOrder(listAllProducts, orderStaff, "ADD PRODUCT TO ORDER");
                 if (product != null)
                 {
                     foreach (Product item in productsList)
