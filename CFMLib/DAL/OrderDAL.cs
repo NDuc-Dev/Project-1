@@ -160,21 +160,8 @@ namespace DAL
 
                             //insert to Order Details
                             cmd.CommandText = @"insert into Order_Details(order_id, product_id, size_id, quantity, amount, status) values 
-                            (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductSizeId + ", " + item.ProductQuantity + "," + (item.ProductQuantity * item.ProductPrice) + "," + item.StatusInOrder +");";
+                            (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductSizeId + ", " + item.ProductQuantity + "," + (item.ProductQuantity * item.ProductPrice) + "," + item.StatusInOrder + ");";
                             cmd.ExecuteNonQuery();
-
-                            // update table status
-                            // if (order.TableID != 0)
-                            // {
-                            //     cmd.CommandText = @"update Tables set table_status = 1 where table_id =" + order.TableID + ";";
-                            //     cmd.Parameters.Clear();
-                            //     cmd.ExecuteNonQuery();
-                            // }
-                            // else
-                            // {
-                            //     trans.Commit();
-                            //     result = true;
-                            // }
 
                         }
                         //commit transaction
@@ -206,6 +193,54 @@ namespace DAL
             return result;
         }
 
+        public bool ConfirmOrder(Order order)
+        {
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write;";
+                        cmd.ExecuteNonQuery();
+
+                        //delete old order
+                        cmd.CommandText = "update Orders set order_status = 2 where order_Id = @orderId ;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.ExecuteNonQuery();
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                        // trans.Rollback();
+                    }
+                    catch (Exception ex)
+                    {
+
+                        try
+                        {
+                            Console.WriteLine($"ERROR: {ex.Message}");
+                            trans.Rollback();
+                        }
+                        catch { }
+                    }
+                    finally
+                    {
+                        //unlock all tables;
+                        cmd.CommandText = "unlock tables;";
+                        cmd.ExecuteNonQuery();
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
+        }
         internal Order GetOrder(MySqlDataReader reader)
         {
             Order order = new Order();
@@ -223,7 +258,26 @@ namespace DAL
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from orders where order_status = 1;";
+                query = @"select * from orders where order_status = 1 or order_status = 2;";
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    listOrder.Add(GetOrder(reader));
+                }
+                reader.Close();
+            }
+            catch { }
+            return listOrder;
+        }
+
+        public List<Order> GetOrdersConfirmed()
+        {
+            List<Order> listOrder = new List<Order>();
+            try
+            {
+                MySqlCommand command = new MySqlCommand("", connection);
+                query = @"select * from orders where order_status = 2;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -239,7 +293,7 @@ namespace DAL
         public Order GetOrderById(int orderId)
         {
             Order order = new Order();
-           try
+            try
             {
                 query = @"select * from orders where order_id=@orderId;";
                 MySqlCommand command = new MySqlCommand(query, connection);

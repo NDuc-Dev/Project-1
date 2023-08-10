@@ -28,5 +28,16 @@ namespace BL
             bool result = orderDAL.UpdateOrder(order);
             return result;
         }
+
+        public bool ConfirmOrder(Order order)
+        {
+            bool result = orderDAL.ConfirmOrder(order);
+            return result;
+        }
+
+        public List<Order> GetOrdersConfirmed()
+        {
+            return new OrderDAL().GetOrdersConfirmed();
+        }
     }
 }

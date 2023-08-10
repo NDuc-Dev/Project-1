@@ -12,14 +12,12 @@ namespace UI
         ProductBL productBL = new ProductBL();
         TableBL tableBL = new TableBL();
         StaffBL staffBL = new StaffBL();
-        // Line
         public void Line()
         {
             var rule = new Rule();
             AnsiConsole.Write(rule.DoubleBorder());
         }
 
-        //Time Line
         public string TimeLineCreateOrderContent(int step)
         {
             string content = "";
@@ -74,7 +72,7 @@ namespace UI
             return content;
         }
 
-        public string TimeLineUpdateOrderContent(int step)
+        public string TimeLineAddProductToOrder(int step)
         {
             string content = "";
             switch (step)
@@ -257,7 +255,7 @@ namespace UI
                 }
                 else if (title == "ADD PRODUCT TO ORDER")
                 {
-                    TimeLine(TimeLineUpdateOrderContent(1));
+                    TimeLine(TimeLineAddProductToOrder(1));
                 }
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
@@ -325,7 +323,7 @@ namespace UI
                     }
                     else if (title == "UPDATE ORDER")
                     {
-                        TimeLine(TimeLineUpdateOrderContent(3));
+                        TimeLine(TimeLineAddProductToOrder(3));
                     }
                     Console.WriteLine("Product ID : " + product.ProductId);
                     Console.WriteLine("Product Name : " + product.ProductName);
@@ -405,11 +403,7 @@ namespace UI
             {
                 ApplicationLogoAfterLogin(staff);
                 Title(title);
-                if (title == "CHANGE ORDER TABLE")
-                {
-                    TimeLine(TimeLineChangeOrderTableContent(1));
-                }
-                else
+                if (title == "CREATE ORDER")
                 {
                     TimeLine(TimeLineCreateOrderContent(1));
                 }
@@ -479,7 +473,7 @@ namespace UI
                     }
                     else if (title == "UPDATE ORDER")
                     {
-                        TimeLine(TimeLineUpdateOrderContent(2));
+                        TimeLine(TimeLineAddProductToOrder(2));
                     }
                     PrintProductTable(productBL.GetProductById(productId));
                     Product currentProduct = productBL.GetProductById(productId);
@@ -521,14 +515,6 @@ namespace UI
             if (title == "CREATE ORDER")
             {
                 TimeLine(TimeLineCreateOrderContent(5));
-            }
-            else if (title == "UPDATE ORDER")
-            {
-                TimeLine(TimeLineUpdateOrderContent(4));
-            }
-            else if (title == "DELETE PRODUCT IN ORDER")
-            {
-                TimeLine(TimeLineDeleteProductInOrderContent(2));
             }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
@@ -608,7 +594,7 @@ namespace UI
             string[] item = { "Yes", "No" };
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
-               .Title("Do you want to [Green]CONINUE[/] ?")
+               .Title("Do you want to [Green]CONINUE[/] confirm this product ?")
                .PageSize(3)
                .AddChoices(item));
             return choice;
@@ -625,6 +611,29 @@ namespace UI
             return choice;
         }
 
+        public string AskToContinueConfirmOrder()
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Do you want to [Green]CONFIRM[/] this order ?")
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
+
+        public string AskToContinueUpdateTable(int newTable, int currentTable)
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title($"Do you want to [Green]CONTINUE[/] change table {currentTable} to table {newTable} ?")
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
         public void About(Staff orderStaff)
         {
             Console.Clear();
@@ -632,7 +641,7 @@ namespace UI
             Title("ABOUT");
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Coffee Shop Management Application");
-            Console.WriteLine("Version: Beta_0.2.2");
+            Console.WriteLine("Version: Beta_0.3.2");
             Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
             Console.WriteLine("Instructor: Nguyen Xuan Sinh");
             PressAnyKeyToContinue();
@@ -662,15 +671,15 @@ namespace UI
                     string status;
                     if (listOrder[i].OrderStatus == 1)
                     {
-                        status = "Inprogress";
+                        status = "[yellow]INPROGRESS[/]";
                     }
                     else if (listOrder[i].OrderStatus == 2)
                     {
-                        status = "Complete";
+                        status = "[Green]CONFIRMED[/]";
                     }
                     else
                     {
-                        status = "Has been paid";
+                        status = "[red]COMPLETE[/]";
                     }
                     if (listOrder[i].TableID == 0)
                     {
@@ -709,14 +718,18 @@ namespace UI
             }
         }
 
-        public void PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName)
+        public void PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName, int step)
         {
             Console.Clear();
             ApplicationLogoAfterLogin(currentstaff);
             Title(title);
             if (title == "REMOVE PRODUCT IN ORDER")
             {
-                TimeLine(TimeLineDeleteProductInOrderContent(1));
+                TimeLine(TimeLineDeleteProductInOrderContent(step));
+            }
+            else if (title == "ADD PRODUCT TO ORDER")
+            {
+                TimeLine(TimeLineAddProductToOrder(1));
             }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn($"[Bold]{"Order Id: " + order.OrderId}[/]").Centered());
