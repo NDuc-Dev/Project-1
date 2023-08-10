@@ -164,17 +164,17 @@ namespace DAL
                             cmd.ExecuteNonQuery();
 
                             // update table status
-                            if (order.TableID != 0)
-                            {
-                                cmd.CommandText = @"update Tables set table_status = 1 where table_id =" + order.TableID + ";";
-                                cmd.Parameters.Clear();
-                                cmd.ExecuteNonQuery();
-                            }
-                            else
-                            {
-                                trans.Commit();
-                                result = true;
-                            }
+                            // if (order.TableID != 0)
+                            // {
+                            //     cmd.CommandText = @"update Tables set table_status = 1 where table_id =" + order.TableID + ";";
+                            //     cmd.Parameters.Clear();
+                            //     cmd.ExecuteNonQuery();
+                            // }
+                            // else
+                            // {
+                            //     trans.Commit();
+                            //     result = true;
+                            // }
 
                         }
                         //commit transaction

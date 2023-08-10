@@ -53,5 +53,65 @@ namespace DAL
             return table;
         }
 
+        public bool ChangeTableOrder(int newtableId, Order order)
+        {
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "lock tables tables write;";
+                        cmd.ExecuteNonQuery();
+
+                        //change table id in current order to new table id
+                        cmd.CommandText = "UPDATE coffeeshop.orders SET order_table = @newTableId WHERE order_id = @orderId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@newTableId", newtableId);
+                        cmd.ExecuteNonQuery();
+
+                        //change status old table to 0
+                        cmd.CommandText = "UPDATE coffeeshop.tables SET table_status = 0 WHERE table_id = @tableId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@tableId", order.TableID);
+                        cmd.ExecuteNonQuery();
+
+                        //change status new table to 1
+                        cmd.CommandText = "UPDATE coffeeshop.tables SET table_status = 1 WHERE table_id = @tableId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@tableId",newtableId);
+                        cmd.ExecuteNonQuery();
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                        // trans.Rollback();
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            trans.Rollback();
+                        }
+                        catch { }
+                    }
+                    finally
+                    {
+                        //unlock all tables;
+                        cmd.CommandText = "unlock tables;";
+                        cmd.ExecuteNonQuery();
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
+        }
+
+
     }
 }

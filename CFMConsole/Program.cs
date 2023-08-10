@@ -1,12 +1,4 @@
-﻿using BL;
-using UI;
-using System.Text;
-using Persistence;
-using Spectre.Console;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using Ultilities;
-using DAL;
+﻿using Ultilities;
 
 public class Program
 {

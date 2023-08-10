@@ -44,6 +44,21 @@ namespace UI
             return content;
         }
 
+        public string TimeLineChangeOrderTableContent(int step)
+        {
+            string content = "";
+            switch (step)
+            {
+                case 1:
+                    content = "[green]CHOOSE TABLE[/] ==> COMPLETE ";
+                    break;
+                case 2:
+                    content = "CHOOSE TABLE ==> [green]COMPLETE[/]";
+                    break;
+            }
+            return content;
+        }
+
         public string TimeLineDeleteProductInOrderContent(int step)
         {
             string content = "";
@@ -380,7 +395,7 @@ namespace UI
             AnsiConsole.Write(tableprint.Centered());
         }
 
-        public int ChooseTable(Staff staff, string title)
+        public int ChooseTable(Staff staff, string title, int tableOrder)
         {
             int tableId = 0;
             bool active = true;
@@ -390,11 +405,26 @@ namespace UI
             {
                 ApplicationLogoAfterLogin(staff);
                 Title(title);
-                TimeLine(TimeLineCreateOrderContent(1));
+                if (title == "CHANGE ORDER TABLE")
+                {
+                    TimeLine(TimeLineChangeOrderTableContent(1));
+                }
+                else
+                {
+                    TimeLine(TimeLineCreateOrderContent(1));
+                }
                 PrintAllTables(listTable);
                 do
                 {
-                    AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
+                    if (title == "CHANGE ORDER TABLE")
+                    {
+                        AnsiConsole.Markup($"\nCurrent [Green]TABLE ID[/] of this order is [green]{tableOrder}[/].");
+                        AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table to change or input [green]0[/] to exit: ");
+                    }
+                    else
+                    {
+                        AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [green]0[/] to creating takeout order: ");
+                    }
                     if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                     {
                         if (tableId == 0)
@@ -521,7 +551,7 @@ namespace UI
             innertable.AddColumn(new TableColumn("[bold][Cyan]Size[/][/]").Centered()).NoBorder();
             innertable.AddColumn(new TableColumn("[bold][Cyan]Price[/][/]").Centered()).NoBorder();
             innertable.AddColumn(new TableColumn("[bold][Cyan]Quantity[/][/]").Centered()).NoBorder();
-            innertable.AddColumn(new TableColumn("[bold][Cyan]Amount[/][/]").Centered()).NoBorder();
+            innertable.AddColumn(new TableColumn("[bold][Cyan]Amount[/][/]").RightAligned()).NoBorder();
             decimal totalAmount = 0;
             foreach (var item in order.ProductsList)
             {
@@ -707,7 +737,7 @@ namespace UI
                 datetimeTable.AddRow($"[Bold][Yellow]Order Status: INPROGRESS[/][/]").Centered();
                 datetimeTable.AddRow("");
             }
-            else
+            else if (order.OrderStatus == 2)
             {
                 datetimeTable.AddRow($"[Bold][Green]Order Status: CONFIRMED]]][/][/]").Centered();
                 datetimeTable.AddRow("");
