@@ -138,6 +138,12 @@ namespace DAL
                         cmd.Parameters.AddWithValue("@orderId", order.OrderId);
                         cmd.ExecuteNonQuery();
 
+                        cmd.CommandText = "update orders set order_status = @orderStatus where order_id=@orderId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderStatus", order.OrderStatus);
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.ExecuteNonQuery();
+
                         //insert Order Details table
                         foreach (var item in order.ProductsList)
                         {
@@ -162,7 +168,6 @@ namespace DAL
                             cmd.CommandText = @"insert into Order_Details(order_id, product_id, size_id, quantity, amount, status) values 
                             (" + order.OrderId + ", " + item.ProductId + ", " + item.ProductSizeId + ", " + item.ProductQuantity + "," + (item.ProductQuantity * item.ProductPrice) + "," + item.StatusInOrder + ");";
                             cmd.ExecuteNonQuery();
-
                         }
                         //commit transaction
                         trans.Commit();
@@ -290,6 +295,51 @@ namespace DAL
             return listOrder;
         }
 
+        public bool CompleteOrder(Order order)
+        {
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write;";
+                        cmd.ExecuteNonQuery();
+
+                        //set order status = 3
+                        cmd.CommandText = "update Orders set order_status = 3 where order_id = @orderId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.ExecuteNonQuery();
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            trans.Rollback();
+                        }
+                        catch { }
+                    }
+                    finally
+                    {
+                        //unlock all tables;
+                        cmd.CommandText = "unlock tables;";
+                        cmd.ExecuteNonQuery();
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
+        }
         public Order GetOrderById(int orderId)
         {
             Order order = new Order();

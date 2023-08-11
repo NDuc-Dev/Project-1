@@ -321,7 +321,7 @@ namespace UI
                     {
                         TimeLine(TimeLineCreateOrderContent(4));
                     }
-                    else if (title == "UPDATE ORDER")
+                    else if (title == "ADD PRODUCT TO ORDER")
                     {
                         TimeLine(TimeLineAddProductToOrder(3));
                     }
@@ -471,7 +471,7 @@ namespace UI
                     {
                         TimeLine(TimeLineCreateOrderContent(3));
                     }
-                    else if (title == "UPDATE ORDER")
+                    else if (title == "ADD PRODUCT TO ORDER")
                     {
                         TimeLine(TimeLineAddProductToOrder(2));
                     }
@@ -507,10 +507,10 @@ namespace UI
             return sizeId;
         }
 
-        public void PrintSaleReceipt(Order order, Staff staff, string title)
+        public void PrintSaleReceipt(Order order, Staff currentstaff,Staff staff, string title)
         {
             Console.Clear();
-            ApplicationLogoAfterLogin(staff);
+            ApplicationLogoAfterLogin(currentstaff);
             Title(title);
             if (title == "CREATE ORDER")
             {
@@ -552,6 +552,8 @@ namespace UI
             innertable.AddRow("[Bold][cyan]TOTAL AMOUNT[/][/]", "", "", "", $"[Bold][cyan]{formattedTotal + " VND"}[/][/]");
             warp.AddRow(outerTable.NoBorder());
             warp.AddRow(innertable.Centered());
+            if (title == "PAYMENT")
+            warp.AddRow("[Green]THANK YOU AND SEE YOU AGAIN[/]");
             AnsiConsole.Write(warp.Centered());
         }
 
@@ -606,6 +608,17 @@ namespace UI
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title("Do you want to [Green]UPDATE[/] this order ?")
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
+        public string AskToContinueComplete()
+        {
+            string[] item = { "Yes", "No" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Do you want to [Green]COMPLETE[/] this order ?")
                .PageSize(3)
                .AddChoices(item));
             return choice;
@@ -729,7 +742,7 @@ namespace UI
             }
             else if (title == "ADD PRODUCT TO ORDER")
             {
-                TimeLine(TimeLineAddProductToOrder(1));
+                TimeLine(TimeLineAddProductToOrder(step));
             }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn($"[Bold]{"Order Id: " + order.OrderId}[/]").Centered());
@@ -752,7 +765,7 @@ namespace UI
             }
             else if (order.OrderStatus == 2)
             {
-                datetimeTable.AddRow($"[Bold][Green]Order Status: CONFIRMED]]][/][/]").Centered();
+                datetimeTable.AddRow($"[Bold][Green]Order Status: CONFIRMED[/][/]").Centered();
                 datetimeTable.AddRow("");
             }
             var productTable = new Spectre.Console.Table();

@@ -39,5 +39,10 @@ namespace BL
         {
             return new OrderDAL().GetOrdersConfirmed();
         }
+
+        public bool CompleteOrder(Order order)
+        {
+            return new OrderDAL().CompleteOrder(order);
+        }
     }
 }
