@@ -715,7 +715,20 @@ public class Ults
                         newProduct = GetProductToAddToOrder(productBL.GetAll(), currentStaff, title);
                         if (newProduct != null)
                         {
-                            newList.Add(newProduct);
+                            bool checkDup = false;
+                            foreach (Product item in newList)
+                            {
+                                if (item.ProductId == newProduct.ProductId && item.ProductSizeId == newProduct.ProductSizeId)
+                                {
+                                    item.ProductQuantity += newProduct.ProductQuantity;
+                                    item.StatusInOrder = 1;
+                                    checkDup = false;
+                                }
+                            }
+                            if (checkDup == true)
+                            {
+                                newList.Add(newProduct);
+                            }
                         }
                         else
                         {
