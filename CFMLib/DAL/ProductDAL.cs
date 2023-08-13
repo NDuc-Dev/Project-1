@@ -17,7 +17,26 @@ namespace DAL
             Product product = new Product();
             try
             {
-                query = @"select product_id, product_name from products where product_id=@productId and status = 1;";
+                query = @"select * from products where product_id=@productId and status = 1;";
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@productId", productId);
+                MySqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    product = GetProduct(reader);
+                }
+                reader.Close();
+            }
+            catch { }
+            return product;
+        }
+
+        public Product GetProductInstockById(int productId)
+        {
+            Product product = new Product();
+            try
+            {
+                query = @"select * from products where product_id=@productId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@productId", productId);
                 MySqlDataReader reader = command.ExecuteReader();
@@ -73,6 +92,7 @@ namespace DAL
             Product product = new Product();
             product.ProductId = reader.GetInt32("product_id");
             product.ProductName = reader.GetString("product_name");
+            product.ProductStatus = reader.GetInt32("status");
             return product;
         }
 
@@ -93,7 +113,7 @@ namespace DAL
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select product_id, product_name from products where status = 1 ;";
+                query = @"select * from products where status = 1 ;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -182,7 +202,7 @@ namespace DAL
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    listProduct.Add(GetProductInOrder(reader));
+                    listProduct.Add(GetProduct(reader));
                 }
                 reader.Close();
             }
@@ -191,6 +211,46 @@ namespace DAL
                 Console.WriteLine(e.Message);
             }
             return listProduct;
+        }
+
+        public bool ChangeProductStatus(int newStatus, int productId)
+        {
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "update products set status = @newStatus where product_id =@productId";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@productId", productId);
+                        cmd.Parameters.AddWithValue("@newStatus", newStatus);
+                        cmd.ExecuteNonQuery();
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            trans.Rollback();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"ERROR: {ex.Message}");
+                        }
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
         }
     }
 }

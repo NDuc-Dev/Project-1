@@ -11,6 +11,11 @@ namespace BL
         {
             return productDAL.GetProductById(productId);
         }
+
+        public Product GetProductInstockById(int productId)
+        {
+            return productDAL.GetProductInstockById(productId);
+        }
         public List<Product> GetAll()
         {
             return productDAL.GetProducts();
@@ -34,6 +39,11 @@ namespace BL
         public List<Product> GetListAllProductInStock()
         {
             return productDAL.GetListAllProductInstock();
+        }
+
+        public bool ChangeProductStatus(int newStatus, int productId)
+        {
+            return productDAL.ChangeProductStatus(newStatus, productId);
         }
     }
 

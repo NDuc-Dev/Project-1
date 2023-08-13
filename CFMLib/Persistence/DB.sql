@@ -20,7 +20,7 @@ PRIMARY KEY (Table_ID)
 );
 
 create table Orders(
-Order_ID int NOT NULL auto_increment,
+Order_ID int NOT NULL auto_increment unique,
 Order_Staff_ID int NOT NULL,
 Order_Date datetime NOT NULL default current_timestamp(),
 Order_Status int NOT NULL,
@@ -34,7 +34,7 @@ create table Products(
 Product_ID int NOT NULL auto_increment,
 Product_Name varchar(50) NOT NULL,
 Descriptions varchar(50),
-Status_in_order int default 0 NOT NULL,
+Status int default 1 NOT NULL,
 PRIMARY KEY (Product_ID)
 );
 

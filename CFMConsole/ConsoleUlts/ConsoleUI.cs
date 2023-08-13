@@ -656,6 +656,16 @@ namespace UI
             return choice;
         }
 
+        public string AskChangeStatus()
+        {
+            string[] item = { "Change Product Status to Out Of Stock", "Change Product Status to In Stock", "Exit" };
+            var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .PageSize(3)
+               .AddChoices(item));
+            return choice;
+        }
+
         public string AskToContinueUpdateTable(int newTable, int currentTable)
         {
             string[] item = { "Yes", "No" };
@@ -727,7 +737,15 @@ namespace UI
                 var Pagination = new Spectre.Console.Table();
                 Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)listOrder.Count / pageSize)}" + ">");
                 AnsiConsole.Write(Pagination.Centered().NoBorder());
-                AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose order by ORDER ID or input [Green]ORDEER ID = 0[/] to exit.\n");
+                if (title == "CHECK OUT")
+                {
+                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page\n");
+
+                }
+                else
+                {
+                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose order by ORDER ID or input [Green]ORDER ID = 0[/] to exit.\n");
+                }
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
 
                 if (keyInfo.Key == ConsoleKey.LeftArrow)

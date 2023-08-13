@@ -3,6 +3,7 @@ using Spectre.Console;
 using UI;
 using BL;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace Ultilities;
 
@@ -15,7 +16,7 @@ public class Ults
     TableBL tableBL = new TableBL();
     List<Product>? lstproduct;
     Staff currentStaff;
-    string[] MainMenu = { "Create Order", "Update Order", "Update Product Status Instok", "Payment", "Check Out", "About" };
+    string[] MainMenu = { "Create Order", "Update Order", "Update Product Status Instock", "Payment", "Check Out", "About" };
 
     public void Login()
     {
@@ -41,8 +42,9 @@ public class Ults
 
             if (currentStaff != null)
             {
+                bool login = true;
                 UI.WelcomeStaff(currentStaff);
-                while (true)
+                while (login)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
                     UI.ApplicationLogoAfterLogin(currentStaff);
@@ -60,8 +62,41 @@ public class Ults
                             Payment();
                             break;
                         case "Update Product Status Instock":
+                            UpdateProductStatusInstock();
                             break;
                         case "Check Out":
+                            List<Order> listOrderUnComplete = orderBL.GetOrdersInprogress();
+                            if (listOrderUnComplete.Count() != 0)
+                            {
+                                UI.PrintListOrder(listOrderUnComplete, currentStaff, "CHECK OUT");
+                            }
+                            else
+                            {
+                                UI.ApplicationLogoAfterLogin(currentStaff);
+                                UI.Title("CHECK OUT");
+                            }
+                            AnsiConsole.Markup($"You have [green]{listOrderUnComplete.Count}[/] unpaid orders\n");
+                            List<Order> listOrderCompleted = orderBL.GetOrdersCompleted();
+                            decimal amountInShop = 0;
+                            foreach (Order order in listOrderCompleted)
+                            {
+                                order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
+                                foreach (Product product in order.ProductsList)
+                                {
+                                    amountInShop += product.ProductQuantity * productBL.GetProductByIdAndSize(product.ProductId, product.ProductSizeId).ProductPrice;
+                                }
+                            }
+                            string formattedTotal = amountInShop.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                            AnsiConsole.Markup($"Total amount in shop: [green]{formattedTotal} VND[/]\n");
+                            string checkOut = UI.Ask("Do you want to check out ?");
+                            switch (checkOut)
+                            {
+                                case "Yes":
+                                    login = false;
+                                    break;
+                                case "No":
+                                    break;
+                            }
                             break;
                         case "About":
                             UI.About(currentStaff);
@@ -527,9 +562,9 @@ public class Ults
         bool err = false;
         while (active)
         {
-            UI.PrintProductsTable(lstproduct, orderStaff, title);
             do
             {
+                UI.PrintProductsTable(lstproduct, orderStaff, title);
                 AnsiConsole.Markup("Product ID: ");
                 int productId;
                 if (int.TryParse(Console.ReadLine(), out productId) && productId >= 0)
@@ -575,7 +610,7 @@ public class Ults
         {
             do
             {
-                UI.PrintListOrder(listOrder, orderStaff, title);
+                UI.PrintListOrder(listOrder, currentStaff, title);
                 AnsiConsole.Markup("Order ID: ");
                 int orderId;
                 if (int.TryParse(Console.ReadLine(), out orderId) && orderId >= 0)
@@ -821,11 +856,75 @@ public class Ults
 
     public void UpdateProductStatusInstock()
     {
-        while (true)
+        bool active = true;
+        while (active)
         {
-            List<Product> listProductInstock = productBL.GetListAllProductInStock();
-            UI.PrintAllProductsInstock(listProductInstock, currentStaff,"UPDATE PRODUCT STATUS IN STOCK");
-            
+            if (active == false)
+                break;
+            bool err = false;
+            do
+            {
+                List<Product> listProductInstock = productBL.GetListAllProductInStock();
+                UI.PrintAllProductsInstock(listProductInstock, currentStaff, "UPDATE PRODUCT STATUS IN STOCK");
+                AnsiConsole.Markup("Product ID: ");
+                int productId;
+                if (int.TryParse(Console.ReadLine(), out productId) && productId >= 0)
+                {
+                    if (productId == 0)
+                    {
+                        active = false;
+                        break;
+                    }
+                    else
+                    {
+                        Product product = productBL.GetProductInstockById(productId);
+                        if (product.ProductId != 0)
+                        {
+                            UI.PrintProductTable(productBL.GetProductInstockById(productId));
+                            string change = UI.AskChangeStatus();
+                            switch (change)
+                            {
+                                case "Change Product Status to Out Of Stock":
+                                    if (product.ProductStatus == 0)
+                                    {
+                                        UI.RedMessage("The product is already in this state, no need to change");
+                                    }
+                                    else
+                                    {
+                                        int newStatus = 0;
+                                        UI.GreenMessage("Change status " + (productBL.ChangeProductStatus(newStatus, product.ProductId) ? "completed!" : "not complete!"));
+                                        UI.PressAnyKeyToContinue();
+                                    }
+                                    break;
+                                case "Change Product Status to In Stock":
+                                    if (product.ProductStatus == 1)
+                                    {
+                                        UI.RedMessage("The product is already in this state, no need to change");
+                                    }
+                                    else
+                                    {
+                                        int newStatus = 1;
+                                        UI.GreenMessage("Change status " + (productBL.ChangeProductStatus(newStatus, product.ProductId) ? "completed!" : "not complete!"));
+                                        UI.PressAnyKeyToContinue();
+                                    }
+                                    break;
+                                case "Exit":
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            UI.RedMessage("Product not exist !");
+                        }
+                    }
+                }
+                else
+                {
+                    UI.RedMessage("Invalid ID !");
+                    err = true;
+                }
+            }
+            while (err == false);
         }
 
     }

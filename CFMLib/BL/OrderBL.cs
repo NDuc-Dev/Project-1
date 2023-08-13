@@ -49,5 +49,10 @@ namespace BL
         {
             return orderDAL.DeleteOrder(order);
         }
+
+        public List<Order> GetOrdersCompleted()
+        {
+            return orderDAL.GetOrdersCompleted();
+        }
     }
 }
