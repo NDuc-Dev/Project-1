@@ -42,16 +42,25 @@ namespace UI
             return content;
         }
 
-        public string TimeLineChangeOrderTableContent(int step)
+        public string TimeLineChangeProductInOrderContent(int step)
         {
             string content = "";
             switch (step)
             {
                 case 1:
-                    content = "[green]CHOOSE TABLE[/] ==> COMPLETE ";
+                    content = "[green]CHOOSE PRODUCT REMOVE[/]  ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE";
                     break;
                 case 2:
-                    content = "CHOOSE TABLE ==> [green]COMPLETE[/]";
+                    content = "CHOOSE PRODUCT REMOVE ==> [green]CHOOSE NEW PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE";
+                    break;
+                case 3:
+                    content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE";
+                    break;
+                case 4:
+                    content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE";
+                    break;
+                case 5:
+                    content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE[/]";
                     break;
             }
             return content;
@@ -257,6 +266,10 @@ namespace UI
                 {
                     TimeLine(TimeLineAddProductToOrder(1));
                 }
+                else if (title == "CHANGE PRODUCT IN ORDER")
+                {
+                    TimeLine(TimeLineChangeProductInOrderContent(2));
+                }
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("Product ID").Centered());
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
@@ -324,6 +337,10 @@ namespace UI
                     else if (title == "ADD PRODUCT TO ORDER")
                     {
                         TimeLine(TimeLineAddProductToOrder(3));
+                    }
+                    else if (title == "CHANGE PRODUCT IN ORDER")
+                    {
+                        TimeLine(TimeLineChangeProductInOrderContent(4));
                     }
                     Console.WriteLine("Product ID : " + product.ProductId);
                     Console.WriteLine("Product Name : " + product.ProductName);
@@ -475,6 +492,10 @@ namespace UI
                     {
                         TimeLine(TimeLineAddProductToOrder(2));
                     }
+                    else if (title == "CHANGE PRODUCT IN ORDER")
+                    {
+                        TimeLine(TimeLineChangeProductInOrderContent(3));
+                    }
                     PrintProductTable(productBL.GetProductById(productId));
                     Product currentProduct = productBL.GetProductById(productId);
                     Console.WriteLine("Product ID: " + currentProduct.ProductId);
@@ -507,7 +528,7 @@ namespace UI
             return sizeId;
         }
 
-        public void PrintSaleReceipt(Order order, Staff currentstaff,Staff staff, string title)
+        public void PrintSaleReceipt(Order order, Staff currentstaff, Staff staff, string title)
         {
             Console.Clear();
             ApplicationLogoAfterLogin(currentstaff);
@@ -553,88 +574,22 @@ namespace UI
             warp.AddRow(outerTable.NoBorder());
             warp.AddRow(innertable.Centered());
             if (title == "PAYMENT")
-            warp.AddRow("[Green]THANK YOU AND SEE YOU AGAIN[/]");
+                warp.AddRow("[Green]THANK YOU AND SEE YOU AGAIN[/]");
             AnsiConsole.Write(warp.Centered());
         }
 
         //ask
-        public string AskToContinueAdd()
+
+        public string Ask(string ask)
         {
-            string[] item = { "Yes", "No" };
+             string[] item = { "Yes", "No" };
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
-               .Title("[Green]Add product to order complete[/], do you want to [Green]CONTINUE[/] to add product ?")
+               .Title($"{ask}")
                .PageSize(3)
                .AddChoices(item));
             return choice;
         }
-
-        public string AskToContinueCreate()
-        {
-            string[] item = { "Yes", "No" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("Do you want to [Green]CREATE[/] this order ?")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
-        public string AskToContinueDelete()
-        {
-            string[] item = { "Yes", "No" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("This is your order after update, do you want to [Green]CONINUE[/] compltete ?")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
-        public string AskToContinueConfirm()
-        {
-            string[] item = { "Yes", "No" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("Do you want to [Green]CONINUE[/] confirm this product ?")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
-        public string AskToContinueUpdate()
-        {
-            string[] item = { "Yes", "No" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("Do you want to [Green]UPDATE[/] this order ?")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
-        public string AskToContinueComplete()
-        {
-            string[] item = { "Yes", "No" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("Do you want to [Green]COMPLETE[/] this order ?")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
-        public string AskToContinueConfirmOrder()
-        {
-            string[] item = { "Yes", "No" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("Do you want to [Green]CONFIRM[/] this order ?")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
 
         public string AskToContinueUpdateTable(int newTable, int currentTable)
         {
@@ -743,6 +698,10 @@ namespace UI
             else if (title == "ADD PRODUCT TO ORDER")
             {
                 TimeLine(TimeLineAddProductToOrder(step));
+            }
+            else if (title == "CHANGE PRODUCT IN ORDER")
+            {
+                TimeLine(TimeLineChangeProductInOrderContent(step));
             }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn($"[Bold]{"Order Id: " + order.OrderId}[/]").Centered());

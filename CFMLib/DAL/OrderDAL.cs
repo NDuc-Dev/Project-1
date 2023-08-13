@@ -198,6 +198,61 @@ namespace DAL
             return result;
         }
 
+        public bool DeleteOrder(Order order)
+        {
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write;";
+                        cmd.ExecuteNonQuery();
+
+                        //delete order
+                        cmd.CommandText = "Delete from Order_Details where order_Id = @orderId ;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.ExecuteNonQuery();
+
+                        cmd.CommandText = "Delete from Orders where order_Id = @orderId ;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.ExecuteNonQuery();
+
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                        // trans.Rollback();
+                    }
+                    catch (Exception ex)
+                    {
+
+                        try
+                        {
+                            Console.WriteLine($"ERROR: {ex.Message}");
+                            trans.Rollback();
+                        }
+                        catch { }
+                    }
+                    finally
+                    {
+                        //unlock all tables;
+                        cmd.CommandText = "unlock tables;";
+                        cmd.ExecuteNonQuery();
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
+        }
+
         public bool ConfirmOrder(Order order)
         {
             bool result = false;
@@ -314,6 +369,11 @@ namespace DAL
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@orderId", order.OrderId);
                         cmd.ExecuteNonQuery();
+                        
+                        cmd.CommandText = "update tables set table_status = 0 where table_id = @tableId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@tableId", order.TableID);
+                        cmd.ExecuteNonQuery();
 
                         //commit transaction
                         trans.Commit();
@@ -340,6 +400,7 @@ namespace DAL
             }
             return result;
         }
+
         public Order GetOrderById(int orderId)
         {
             Order order = new Order();

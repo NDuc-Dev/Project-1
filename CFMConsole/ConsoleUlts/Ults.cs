@@ -59,7 +59,7 @@ public class Ults
                         case "Payment":
                             Payment();
                             break;
-                        case "Update Product Status Instok":
+                        case "Update Product Status Instock":
                             break;
                         case "Check Out":
                             break;
@@ -118,7 +118,7 @@ public class Ults
                     {
                         orders.ProductsList.Add(product);
                     }
-                    string addAsk = UI.AskToContinueAdd();
+                    string addAsk = UI.Ask("[Green]Add product to order complete[/], do you want to [Green]CONTINUE[/] to add product ?");
                     switch (addAsk)
                     {
                         case "Yes":
@@ -127,7 +127,7 @@ public class Ults
                         case "No":
                             UI.PrintSaleReceipt(orders, currentStaff, currentStaff, "CREATE ORDER");
                             continuee = false;
-                            string createAsk = UI.AskToContinueCreate();
+                            string createAsk = UI.Ask("Do you want to [Green]CREATE[/] this order ?");
                             switch (createAsk)
                             {
                                 case "Yes":
@@ -157,14 +157,14 @@ public class Ults
     public void UpdateOrder()
     {
         string title = "UPDATE ORDER";
-        List<Persistence.Product> listAllProducts = productBL.GetAll();
-        Persistence.Product product;
-        Persistence.Order order;
+        List<Product> listAllProducts = productBL.GetAll();
+        Product product;
+        Order order;
         bool active = true;
         bool continuee = false;
         while (active)
         {
-            List<Persistence.Order> listOrderInprogress = orderBL.GetOrdersInprogress();
+            List<Order> listOrderInprogress = orderBL.GetOrdersInprogress();
             if (active == false)
             {
                 break;
@@ -183,7 +183,7 @@ public class Ults
                 {
                     Staff staff = staffBL.GetStaffById(order.OrderStaffID);
                     order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
-                    string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Confirm product in order", "Change Table", "Confirm order", "Exit" };
+                    string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Change product in order", "Remove Order", "Confirm product in order", "Change Table", "Confirm order", "Exit" };
                     string updateChoice;
                     UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, staff.StaffName, 0);
                     updateChoice = UI.SellectFunction(functionsItem);
@@ -220,7 +220,7 @@ public class Ults
                                         {
                                             order.ProductsList.Add(product);
                                         }
-                                        string addAsk = UI.AskToContinueAdd();
+                                        string addAsk = UI.Ask("[Green]Add product to order complete[/], do you want to [Green]CONTINUE[/] to add product ?");
                                         switch (addAsk)
                                         {
                                             case "Yes":
@@ -229,7 +229,7 @@ public class Ults
                                             case "No":
                                                 UI.PrintOrderDetails(order.ProductsList, currentStaff, order, "ADD PRODUCT TO ORDER", staff.StaffName, 4);
                                                 continuee = false;
-                                                string updateAsk = UI.AskToContinueUpdate();
+                                                string updateAsk = UI.Ask("Do you want to [Green]UPDATE[/] this order ?");
                                                 switch (updateAsk)
                                                 {
                                                     case "Yes":
@@ -256,12 +256,29 @@ public class Ults
                             }
                             break;
                         case "Remove an unfinished product from the order":
+                            if (order.ProductsList.Count() == 1)
+                            {
+                                AnsiConsole.Markup("[Red]The order has only 1 product left[/]\n");
+                                string deleteOrderAsk = UI.Ask("Do you want to [Green]DELETE[/] this order?");
+                                switch (deleteOrderAsk)
+                                {
+                                    case "Yes":
+                                        Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
+                                        UI.PressAnyKeyToContinue();
+                                        break;
+                                    case "No":
+                                        AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                        UI.PressAnyKeyToContinue();
+                                        break;
+                                }
+
+                            }
                             List<Product> listProductafter = GetProductsToRemoveProductsFromOrder(order.ProductsList, order, "REMOVE PRODUCT IN ORDER", staff);
                             if (listProductafter == null)
                                 break;
                             order.ProductsList = listProductafter;
                             UI.PrintOrderDetails(listProductafter, currentStaff, order, "REMOVE PRODUCT IN ORDER", staff.StaffName, 2);
-                            string deleteAsk = UI.AskToContinueDelete();
+                            string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
                             switch (deleteAsk)
                             {
                                 case "Yes":
@@ -274,13 +291,61 @@ public class Ults
                                     break;
                             }
                             break;
+                        case "Change product in order":
+                            List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff);
+                            if (listProductChange == null)
+                                break;
+                            order.ProductsList = listProductChange;
+                            UI.PrintOrderDetails(listProductChange, currentStaff, order, "CHANGE PRODUCT IN ORDER", staff.StaffName, 2);
+                            string changeAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
+                            switch (changeAsk)
+                            {
+                                case "Yes":
+                                    Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                                    UI.PressAnyKeyToContinue();
+                                    break;
+                                case "No":
+                                    AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                    UI.PressAnyKeyToContinue();
+                                    break;
+                            }
+                            break;
+                        case "Remove Order":
+                            int checkProductComplete = 0;
+                            for (int i = 0; i < order.ProductsList.Count(); i++)
+                            {
+                                if (order.ProductsList[i].StatusInOrder == 2)
+                                {
+                                    checkProductComplete++;
+                                }
+                            }
+                            if (checkProductComplete == 0)
+                            {
+                                string deleteOrderAsk = UI.Ask("Do you want to [Green]DELETE[/] this order?");
+                                switch (deleteOrderAsk)
+                                {
+                                    case "Yes":
+                                        Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
+                                        UI.PressAnyKeyToContinue();
+                                        break;
+                                    case "No":
+                                        AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                        UI.PressAnyKeyToContinue();
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                UI.RedMessage("The order already has a finished product, cannot be deleted");
+                            }
+                            break;
                         case "Confirm product in order":
                             Persistence.Product productConfirm = ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff);
                             if (productConfirm == null)
                             {
                                 break;
                             }
-                            string continueAsk = UI.AskToContinueConfirm();
+                            string continueAsk = UI.Ask("Do you want to [Green]CONINUE[/] confirm this product ?");
                             switch (continueAsk)
                             {
                                 case "Yes":
@@ -326,7 +391,7 @@ public class Ults
                             }
                             if (checkComplete == order.ProductsList.Count())
                             {
-                                string continueComplete = UI.AskToContinueConfirmOrder();
+                                string continueComplete = UI.Ask("Do you want to [Green]CONFIRM[/] this order ?");
                                 switch (continueComplete)
                                 {
                                     case "Yes":
@@ -398,7 +463,7 @@ public class Ults
                     else
                     {
                         UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                        string complete = UI.AskToContinueComplete();
+                        string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
                         switch (complete)
                         {
                             case "Yes":
@@ -411,10 +476,10 @@ public class Ults
                                     }
                                     string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
                                     UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                    AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].");
-                                    Console.WriteLine("Enter the amount receivedvinput [green]0[/] to exit: ");
+                                    AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
+                                    AnsiConsole.Markup("Enter the amount received input [green]0[/] to exit: ");
                                     decimal amountReceived;
-                                    if (decimal.TryParse(Console.ReadLine(), out amountReceived) && amountReceived > 0)
+                                    if (decimal.TryParse(Console.ReadLine(), out amountReceived) && amountReceived >= 0)
                                     {
                                         if (amountReceived == 0)
                                         {
@@ -425,13 +490,18 @@ public class Ults
                                             if ((amountReceived - totalAmount) >= 0)
                                             {
                                                 string formattedreturn = (amountReceived - totalAmount).ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                                                AnsiConsole.Markup($"Return amount: [green]{formattedreturn} VND[/]");
+                                                AnsiConsole.Markup($"Return amount: [green]{formattedreturn} VND[/]\n");
                                                 UI.PressAnyKeyToContinue();
                                                 orderChoose.OrderStatus = 3;
                                                 UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                Console.WriteLine("Payment "+ (orderBL.CompleteOrder(orderChoose) ? "completed!" : "not complete!"));
+                                                Console.WriteLine("Payment " + (orderBL.CompleteOrder(orderChoose) ? "completed!" : "not complete!"));
                                                 UI.PressAnyKeyToContinue();
                                                 break;
+                                            }
+                                            else
+                                            {
+                                                AnsiConsole.Markup("[red]the amount received cannot be less than the total amount in the sale recipt.[/]\n");
+                                                UI.PressAnyKeyToContinue();
                                             }
                                         }
                                     }
@@ -516,15 +586,31 @@ public class Ults
                     }
                     else
                     {
-                        if (orderBL.GetOrderById(orderId).OrderId != 0)
+                        if (title == "PAYMENT")
                         {
-                            order = orderBL.GetOrderById(orderId);
-                            return order;
+                            if (orderBL.GetOrderById(orderId).OrderId != 0 && orderBL.GetOrderById(orderId).OrderStatus != 3 && orderBL.GetOrderById(orderId).OrderStatus != 1)
+                            {
+                                order = orderBL.GetOrderById(orderId);
+                                return order;
+                            }
+                            else
+                            {
+                                active = true;
+                                UI.RedMessage("Order not exist !");
+                            }
                         }
-                        else
+                        else if (title == "UPDATE ORDER")
                         {
-                            active = true;
-                            UI.RedMessage("Order not exist !");
+                            if (orderBL.GetOrderById(orderId).OrderId != 0 && orderBL.GetOrderById(orderId).OrderStatus != 3)
+                            {
+                                order = orderBL.GetOrderById(orderId);
+                                return order;
+                            }
+                            else
+                            {
+                                active = true;
+                                UI.RedMessage("Order not exist!");
+                            }
                         }
                     }
                 }
@@ -537,6 +623,85 @@ public class Ults
             while (err == false);
         }
         return order;
+    }
+
+    public List<Product> GetProductToChange(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
+    {
+        bool active = true;
+        List<Product> newList = new List<Product>();
+        while (active)
+        {
+            int productNumber = 0;
+            int productId;
+            int sizeId;
+            Product newProduct = new Product();
+
+            do
+            {
+                productId = 0;
+                sizeId = 0;
+                UI.PrintOrderDetails(listProductInOrder, currentStaff, order, title, staff.StaffName, 1);
+                AnsiConsole.Markup(" Input the order number of the product in the order to change (Input [green]0[/] to exit): ");
+                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= listProductInOrder.Count())
+                {
+                    if (productNumber == 0)
+                    {
+                        return null;
+                    }
+                    else if (listProductInOrder[productNumber - 1].StatusInOrder == 1)
+                    {
+                        for (int i = 0; i < listProductInOrder.Count(); i++)
+                        {
+                            if (listProductInOrder[i].ProductId == listProductInOrder[productNumber - 1].ProductId && listProductInOrder[i].ProductSizeId == listProductInOrder[productNumber - 1].ProductSizeId)
+                            {
+                                productId = listProductInOrder[i].ProductId;
+                                sizeId = listProductInOrder[i].ProductSizeId;
+                            }
+                        }
+
+                        foreach (Product item in listProductInOrder)
+                        {
+                            if (item.ProductId == productId && item.ProductSizeId != sizeId)
+                            {
+                                newList.Add(item);
+
+                            }
+                            else if (item.ProductId != productId && item.ProductSizeId == sizeId)
+                            {
+                                newList.Add(item);
+
+                            }
+                            else if (item.ProductId != productId && item.ProductSizeId != sizeId)
+                            {
+                                newList.Add(item);
+
+                            }
+                        }
+                        newProduct = GetProductToAddToOrder(productBL.GetAll(), currentStaff, title);
+                        if (newProduct != null)
+                        {
+                            newList.Add(newProduct);
+                        }
+                        else
+                        {
+                            UI.GreenMessage("Cancel Change Complete !");
+                            break;
+                        }
+                        return newList;
+                    }
+                    else
+                    {
+                        UI.RedMessage("Product is Complete! Can't change. Please re-enter");
+                    }
+                }
+                else
+                {
+                    UI.RedMessage("Product Not Exits! Please re-enter");
+                }
+            }
+            while (true);
+        }
+        return newList;
     }
 
     public List<Product> GetProductsToRemoveProductsFromOrder(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
@@ -602,6 +767,7 @@ public class Ults
                 {
                     UI.RedMessage("Product Not Exits! Please re-enter");
                 }
+
             } while (true);
         }
         return newList;

@@ -15,12 +15,12 @@ namespace BL
 
         public List<Order> GetOrdersInprogress()
         {
-            return new OrderDAL().GetOrdersInprogress();
+            return orderDAL.GetOrdersInprogress();
         }
 
         public Order GetOrderById(int orderId)
         {
-            return new OrderDAL().GetOrderById(orderId);
+            return orderDAL.GetOrderById(orderId);
         }
 
         public bool UpdateOrder(Order order)
@@ -37,12 +37,17 @@ namespace BL
 
         public List<Order> GetOrdersConfirmed()
         {
-            return new OrderDAL().GetOrdersConfirmed();
+            return orderDAL.GetOrdersConfirmed();
         }
 
         public bool CompleteOrder(Order order)
         {
-            return new OrderDAL().CompleteOrder(order);
+            return orderDAL.CompleteOrder(order);
+        }
+
+        public bool DeleteOrder(Order order)
+        {
+            return orderDAL.DeleteOrder(order);
         }
     }
 }
