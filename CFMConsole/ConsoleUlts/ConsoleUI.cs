@@ -739,7 +739,7 @@ namespace UI
                 AnsiConsole.Write(Pagination.Centered().NoBorder());
                 if (title == "CHECK OUT")
                 {
-                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page\n");
+                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to continue.\n");
 
                 }
                 else
