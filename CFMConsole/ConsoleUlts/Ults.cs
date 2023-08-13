@@ -818,4 +818,15 @@ public class Ults
         }
         return product;
     }
+
+    public void UpdateProductStatusInstock()
+    {
+        while (true)
+        {
+            List<Product> listProductInstock = productBL.GetListAllProductInStock();
+            UI.PrintAllProductsInstock(listProductInstock, currentStaff,"UPDATE PRODUCT STATUS IN STOCK");
+            
+        }
+
+    }
 }

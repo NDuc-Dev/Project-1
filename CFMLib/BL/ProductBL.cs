@@ -13,7 +13,7 @@ namespace BL
         }
         public List<Product> GetAll()
         {
-            return new ProductDAL().GetProducts();
+            return productDAL.GetProducts();
         }
         public Product GetProductByIdAndSize(int productId, int sizeId)
         {
@@ -29,6 +29,11 @@ namespace BL
         {
             bool result = productDAL.UpdateProductStatusInOrder(product, order);
             return result;
+        }
+
+        public List<Product> GetListAllProductInStock()
+        {
+            return productDAL.GetListAllProductInstock();
         }
     }
 

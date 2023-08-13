@@ -17,7 +17,7 @@ namespace DAL
             Product product = new Product();
             try
             {
-                query = @"select product_id, product_name from products where product_id=@productId;";
+                query = @"select product_id, product_name from products where product_id=@productId and status = 1;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@productId", productId);
                 MySqlDataReader reader = command.ExecuteReader();
@@ -93,7 +93,7 @@ namespace DAL
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select product_id, product_name from products ;";
+                query = @"select product_id, product_name from products where status = 1 ;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -158,6 +158,27 @@ namespace DAL
                 query = "select * from order_details where order_id = @orderId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@orderId", orderId);
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    listProduct.Add(GetProductInOrder(reader));
+                }
+                reader.Close();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return listProduct;
+        }
+
+        public List<Product> GetListAllProductInstock()
+        {
+            List<Product> listProduct = new List<Product>();
+            try
+            {
+                query = "select * from products;";
+                MySqlCommand command = new MySqlCommand(query, connection);
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
