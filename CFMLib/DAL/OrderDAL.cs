@@ -223,10 +223,24 @@ namespace DAL
                         cmd.Parameters.AddWithValue("@orderId", order.OrderId);
                         cmd.ExecuteNonQuery();
 
+                        if (order.TableID != 0)
+                        {
+                            cmd.CommandText = "update tables set table_status = 0 where table_id = @tableId ;";
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddWithValue("@tableId", order.TableID);
+                            cmd.ExecuteNonQuery();
+
+                            trans.Commit();
+                            result = true;
+                        }
+                        else
+                        {
+                            trans.Commit();
+                            result = true;
+                        }
+
 
                         //commit transaction
-                        trans.Commit();
-                        result = true;
                         // trans.Rollback();
                     }
                     catch (Exception ex)
@@ -369,7 +383,7 @@ namespace DAL
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@orderId", order.OrderId);
                         cmd.ExecuteNonQuery();
-                        
+
                         cmd.CommandText = "update tables set table_status = 0 where table_id = @tableId;";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@tableId", order.TableID);
@@ -423,7 +437,7 @@ namespace DAL
         public List<Order> GetOrdersCompleted()
         {
             List<Order> listOrder = new List<Order>();
-             try
+            try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
                 query = @"select * from orders where order_status = 3;";

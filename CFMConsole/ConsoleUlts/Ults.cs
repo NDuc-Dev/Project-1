@@ -169,6 +169,7 @@ public class Ults
                                     Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "completed!" : "not complete!"));
                                     Console.WriteLine("Your Order Id is : " + orders.OrderId);
                                     UI.PressAnyKeyToContinue();
+                                    active = false;
                                     break;
                                 case "No":
                                     AnsiConsole.Markup("[Green]Canceling order successfully.[/]\n");
@@ -328,15 +329,17 @@ public class Ults
                             break;
                         case "Change product in order":
                             List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff);
+                            Console.WriteLine(listProductChange.Count());
+                            Console.ReadKey();
                             if (listProductChange == null)
                                 break;
                             order.ProductsList = listProductChange;
-                            UI.PrintOrderDetails(listProductChange, currentStaff, order, "CHANGE PRODUCT IN ORDER", staff.StaffName, 2);
+                            UI.PrintOrderDetails(listProductChange, currentStaff, order, "CHANGE PRODUCT IN ORDER", staff.StaffName, 5);
                             string changeAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
                             switch (changeAsk)
                             {
                                 case "Yes":
-                                    Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                                    Console.WriteLine("Update Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
                                     UI.PressAnyKeyToContinue();
                                     break;
                                 case "No":
@@ -482,8 +485,6 @@ public class Ults
             else
             {
                 orderChoose = GetOrderToViewDetails(listOrdersConfirmed, currentStaff, title);
-                orderChoose.ProductsList = productBL.GetListProductsInOrder(orderChoose.OrderId);
-                orderStaff = staffBL.GetStaffById(orderChoose.OrderStaffID);
                 if (orderChoose == null)
                 {
                     break;
@@ -497,6 +498,8 @@ public class Ults
                     }
                     else
                     {
+                        orderChoose.ProductsList = productBL.GetListProductsInOrder(orderChoose.OrderId);
+                        orderStaff = staffBL.GetStaffById(orderChoose.OrderStaffID);
                         UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
                         string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
                         switch (complete)
@@ -709,13 +712,12 @@ public class Ults
                             else if (item.ProductId != productId && item.ProductSizeId != sizeId)
                             {
                                 newList.Add(item);
-
                             }
                         }
                         newProduct = GetProductToAddToOrder(productBL.GetAll(), currentStaff, title);
                         if (newProduct != null)
                         {
-                            bool checkDup = false;
+                            bool checkDup = true;
                             foreach (Product item in newList)
                             {
                                 if (item.ProductId == newProduct.ProductId && item.ProductSizeId == newProduct.ProductSizeId)
@@ -729,13 +731,14 @@ public class Ults
                             {
                                 newList.Add(newProduct);
                             }
+                            return newList;
+
                         }
                         else
                         {
                             UI.GreenMessage("Cancel Change Complete !");
                             break;
                         }
-                        return newList;
                     }
                     else
                     {
