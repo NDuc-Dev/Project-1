@@ -3,7 +3,6 @@ using Spectre.Console;
 using UI;
 using BL;
 using System.Globalization;
-using System.ComponentModel;
 
 namespace Ultilities;
 
@@ -329,8 +328,6 @@ public class Ults
                             break;
                         case "Change product in order":
                             List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff);
-                            Console.WriteLine(listProductChange.Count());
-                            Console.ReadKey();
                             if (listProductChange == null)
                                 break;
                             order.ProductsList = listProductChange;
