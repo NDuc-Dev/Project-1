@@ -318,23 +318,6 @@ public class Ults
 
                                 }
                                 RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
-                                // List<Product> listProductafter = RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
-                                // if (listProductafter == null)
-                                //     break;
-                                // order.ProductsList = listProductafter;
-                                // UI.PrintOrderDetails(listProductafter, currentStaff, order, "REMOVE PRODUCT IN ORDER", staff.StaffName, 2);
-                                // string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
-                                // switch (deleteAsk)
-                                // {
-                                //     case "Yes":
-                                //         Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
-                                //         UI.PressAnyKeyToContinue();
-                                //         break;
-                                //     case "No":
-                                //         AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
-                                //         UI.PressAnyKeyToContinue();
-                                //         break;
-                                // }
                                 break;
                             case "Change product in order":
                                 List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff);
@@ -1014,12 +997,32 @@ public class Ults
                     productNumbersComplete.Add(targetNumber);
                 }
             }
-
+            if (productsToRemove.Count() == listProductsInOrder.Count())
+            {
+                string deleteOrderAsk = UI.Ask("You have selected all the products in your order,Do you want to [Green]DELETE[/] this order?");
+                switch (deleteOrderAsk)
+                {
+                    case "Yes":
+                        Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
+                        UI.PressAnyKeyToContinue();
+                        active = false;
+                        break;
+                    case "No":
+                        AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                        UI.PressAnyKeyToContinue();
+                        active = false;
+                        break;
+                }
+            }
+            if (active == false)
+            {
+                break;
+            }
             foreach (var productToRemove in productsToRemove)
             {
-                Console.WriteLine($"Product removed: {productToRemove.ProductName}");
                 listProductsInOrder.Remove(productToRemove);
             }
+
             UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, "REMOVE PRODUCT IN ORDER", staff.StaffName, 2);
             string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
             switch (deleteAsk)
@@ -1039,7 +1042,7 @@ public class Ults
                     }
                     foreach (var productToRemove in productsToRemove)
                     {
-                        Console.WriteLine($"Product removed: {productToRemove.ProductName}");
+                        Console.WriteLine($"Product removed: {productBL.GetProductById(productToRemove.ProductId).ProductName}");
                     }
                     foreach (var targetnumber in productNumbersComplete)
                     {
@@ -1055,7 +1058,10 @@ public class Ults
                     UI.PressAnyKeyToContinue();
                     break;
             }
-            break;
+            if (active == false)
+            {
+                break;
+            }
         }
     }
 
