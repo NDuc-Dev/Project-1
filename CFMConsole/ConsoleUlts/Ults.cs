@@ -128,14 +128,20 @@ public class Ults
             bool continuee = false;
             do
             {
-                if (active == false)
-                {
-                    break;
-                }
+
                 bool checkDup = true;
                 if (orders.ProductsList.Count() == 0)
                 {
                     orders.TableID = UI.ChooseTable(currentStaff, "CREATE ORDER", 0);
+                    if (orders.TableID == -1)
+                    {
+                        active = false;
+                        break;
+                    }
+                }
+                if (active == false)
+                {
+                    break;
                 }
                 product = GetProductToAddToOrder(lstproduct, currentStaff, "CREATE ORDER");
                 if (product != null)
@@ -187,6 +193,10 @@ public class Ults
                     break;
                 }
             } while (continuee == false);
+            if (active == false)
+            {
+                break;
+            }
         }
 
     }
