@@ -227,7 +227,7 @@ public class Ults
                         }
                         Staff staff = staffBL.GetStaffById(order.OrderStaffID);
                         order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
-                        string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Change product in order", "Remove Order", "Confirm product in order", "Change Table", "Confirm order", "Exit" };
+                        string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Change product in order", "Remove Order", "Confirm product in order", "Change Table", "Exit" };
                         string updateChoice;
                         UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, staff.StaffName, 0);
                         updateChoice = UI.SellectFunction(functionsItem);
@@ -404,37 +404,6 @@ public class Ults
                                     }
                                 }
                                 break;
-                            case "Confirm order":
-                                int checkComplete = 0;
-                                for (int i = 0; i < order.ProductsList.Count(); i++)
-                                {
-                                    if (order.ProductsList[i].StatusInOrder == 2)
-                                    {
-                                        checkComplete++;
-                                    }
-                                }
-                                if (checkComplete == order.ProductsList.Count())
-                                {
-                                    string continueComplete = UI.Ask("Do you want to [Green]CONFIRM[/] this order ?");
-                                    switch (continueComplete)
-                                    {
-                                        case "Yes":
-                                            Console.WriteLine("Update Order: " + (orderBL.ConfirmOrder(order) ? "completed!" : "not complete!"));
-                                            UI.PressAnyKeyToContinue();
-                                            break;
-                                        case "No":
-                                            AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
-                                            UI.PressAnyKeyToContinue();
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    AnsiConsole.Markup("[red]Have unfinished products that cannot be confirmed.[/]\n");
-                                    UI.PressAnyKeyToContinue();
-                                    break;
-                                }
-                                break;
                             case "Exit":
                                 view = false;
                                 break;
@@ -550,6 +519,7 @@ public class Ults
             }
         }
     }
+
     public Product GetProductToAddToOrder(List<Product> lstproduct, Staff orderStaff, string title)
     {
         bool active = true;
@@ -752,7 +722,6 @@ public class Ults
         }
         return newList;
     }
-
 
     public void ChangeProductStatusToComplete(List<Product> listProductsInOrder, Order order, string title, Staff staff)
     {
@@ -1054,6 +1023,5 @@ public class Ults
 
         return true;
     }
-
 
 }
