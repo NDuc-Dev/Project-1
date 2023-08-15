@@ -154,7 +154,7 @@ public class Ults
                     {
                         orders.ProductsList.Add(product);
                     }
-                    string addAsk = UI.Ask("[Green]Add product to order complete[/], do you want to [Green]CREATE ORDER[/] (Choose [red]No[/] to CONTINUE add product ?");
+                    string addAsk = UI.Ask("[Green]Add product to order complete[/], do you want to [Green]CREATE ORDER[/] (Choose [red]No[/] to CONTINUE add product) ?");
                     switch (addAsk)
                     {
                         case "No":
@@ -754,7 +754,7 @@ public class Ults
     }
 
 
-    public void ChangeProductStatusToComplete(List<Product> listProductsInOrder, Persistence.Order order, string title, Staff staff)
+    public void ChangeProductStatusToComplete(List<Product> listProductsInOrder, Order order, string title, Staff staff)
     {
         bool active = true;
 
@@ -798,6 +798,39 @@ public class Ults
                 {
                     Console.WriteLine($"Invalid serial number: {targetNumberString}");
                 }
+            }
+
+            List<Product> updatedProductList = productMap.Values.ToList();
+            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, "CONFIRM PRODUCT IN ORDER", staff.StaffName, 0);
+            string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
+            switch (deleteAsk)
+            {
+                case "Yes":
+                    int checkComplete = 0;
+                    for (int i = 0; i < updatedProductList.Count(); i++)
+                    {
+                        if (updatedProductList[i].StatusInOrder == 2)
+                        {
+                            checkComplete++;
+                        }
+                    }
+                    if (checkComplete == updatedProductList.Count())
+                    {
+                        order.OrderStatus = 2;
+                    }
+                    Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                    UI.PressAnyKeyToContinue();
+                    active = false;
+                    break;
+                case "No":
+                    AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                    active = false;
+                    UI.PressAnyKeyToContinue();
+                    break;
+            }
+            if (active == false)
+            {
+                break;
             }
 
         }
@@ -972,7 +1005,7 @@ public class Ults
                     }
                     if (checkComplete == order.ProductsList.Count())
                     {
-                        orderBL.ConfirmOrder(order);
+                        order.OrderStatus = 2;
                     }
                     foreach (var productToRemove in productsToRemove)
                     {
