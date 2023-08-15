@@ -340,7 +340,7 @@ public class Ults
                                 switch (changeAsk)
                                 {
                                     case "Yes":
-                                        Console.WriteLine("Update Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
+                                        Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
                                         UI.PressAnyKeyToContinue();
                                         break;
                                     case "No":
@@ -768,74 +768,6 @@ public class Ults
         return newList;
     }
 
-    public List<Product> GetProductsToRemoveProductsFromOrder(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
-    {
-        bool active = true;
-        List<Product> newList = new List<Product>();
-        while (active)
-        {
-
-            int productNumber = 0;
-            int productId;
-            int sizeId;
-
-            do
-            {
-                productId = 0;
-                sizeId = 0;
-                UI.PrintOrderDetails(listProductInOrder, currentStaff, order, title, staff.StaffName, 1);
-                AnsiConsole.Markup(" Input the order number of the product in the order to delete (Input [green]0[/] to exit): ");
-                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= listProductInOrder.Count())
-                {
-                    if (productNumber == 0)
-                    {
-                        return null;
-                    }
-                    else if (listProductInOrder[productNumber - 1].StatusInOrder == 1)
-                    {
-                        for (int i = 0; i < listProductInOrder.Count(); i++)
-                        {
-                            if (listProductInOrder[i].ProductId == listProductInOrder[productNumber - 1].ProductId && listProductInOrder[i].ProductSizeId == listProductInOrder[productNumber - 1].ProductSizeId)
-                            {
-                                productId = listProductInOrder[i].ProductId;
-                                sizeId = listProductInOrder[i].ProductSizeId;
-                            }
-                        }
-
-                        foreach (Product item in listProductInOrder)
-                        {
-                            if (item.ProductId == productId && item.ProductSizeId != sizeId)
-                            {
-                                newList.Add(item);
-
-                            }
-                            else if (item.ProductId != productId && item.ProductSizeId == sizeId)
-                            {
-                                newList.Add(item);
-
-                            }
-                            else if (item.ProductId != productId && item.ProductSizeId != sizeId)
-                            {
-                                newList.Add(item);
-
-                            }
-                        }
-                        return newList;
-                    }
-                    else
-                    {
-                        UI.RedMessage("Product is Complete! Can't remove. Please re-enter");
-                    }
-                }
-                else
-                {
-                    UI.RedMessage("Product Not Exits! Please re-enter");
-                }
-
-            } while (true);
-        }
-        return newList;
-    }
 
     public Product ChangeProductStatusToComplete(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
     {
