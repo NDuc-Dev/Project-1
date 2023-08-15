@@ -3,7 +3,9 @@ using Spectre.Console;
 using UI;
 using BL;
 using System.Globalization;
-
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
 namespace Ultilities;
 
 public class Ults
@@ -315,23 +317,24 @@ public class Ults
                                     }
 
                                 }
-                                List<Product> listProductafter = GetProductsToRemoveProductsFromOrder(order.ProductsList, order, "REMOVE PRODUCT IN ORDER", staff);
-                                if (listProductafter == null)
-                                    break;
-                                order.ProductsList = listProductafter;
-                                UI.PrintOrderDetails(listProductafter, currentStaff, order, "REMOVE PRODUCT IN ORDER", staff.StaffName, 2);
-                                string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
-                                switch (deleteAsk)
-                                {
-                                    case "Yes":
-                                        Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
-                                        UI.PressAnyKeyToContinue();
-                                        break;
-                                    case "No":
-                                        AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
-                                        UI.PressAnyKeyToContinue();
-                                        break;
-                                }
+                                RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
+                                // List<Product> listProductafter = RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
+                                // if (listProductafter == null)
+                                //     break;
+                                // order.ProductsList = listProductafter;
+                                // UI.PrintOrderDetails(listProductafter, currentStaff, order, "REMOVE PRODUCT IN ORDER", staff.StaffName, 2);
+                                // string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
+                                // switch (deleteAsk)
+                                // {
+                                //     case "Yes":
+                                //         Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                                //         UI.PressAnyKeyToContinue();
+                                //         break;
+                                //     case "No":
+                                //         AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                //         UI.PressAnyKeyToContinue();
+                                //         break;
+                                // }
                                 break;
                             case "Change product in order":
                                 List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff);
@@ -957,5 +960,130 @@ public class Ults
         }
 
     }
+
+    public void RemoveProductsInOrder(List<Product> listProductsInOrder, string title, Order order, Staff staff)
+    {
+        bool active = true;
+        while (active)
+        {
+
+            string input;
+            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, title, staff.StaffName, 1);
+            Dictionary<int, Product> productMap = new Dictionary<int, Product>();
+            for (int i = 0; i < listProductsInOrder.Count; i++)
+            {
+                productMap.Add(i + 1, listProductsInOrder[i]);
+            }
+            do
+            {
+                AnsiConsole.Markup("Enter the serial number of the product you want to [red]REMOVE[/], separated by the character '[green],[/]' or enter [red]0[/] to EXIT:");
+                input = Console.ReadLine();
+                if (input == "0")
+                {
+                    active = false;
+                    break;
+                }
+            } while (!IsValidNumberString(input, listProductsInOrder));
+
+            if (active == false)
+                break;
+            string[] targetNumberStrings = input.Split(',');
+
+            List<int> targetNumbers = new List<int>();
+            foreach (var targetNumberString in targetNumberStrings)
+            {
+                if (int.TryParse(targetNumberString.Trim(), out int targetNumber) && targetNumber > 0 && targetNumber <= listProductsInOrder.Count)
+                {
+                    targetNumbers.Add(targetNumber);
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid serial number: {targetNumberString}");
+                }
+            }
+            List<int> productNumbersComplete = new List<int>();
+            List<Product> productsToRemove = new List<Product>();
+            foreach (var targetNumber in targetNumbers)
+            {
+                if (productMap.TryGetValue(targetNumber, out Product product) && product.StatusInOrder == 1)
+                {
+                    productsToRemove.Add(product);
+                }
+                else
+                {
+                    productNumbersComplete.Add(targetNumber);
+                }
+            }
+
+            foreach (var productToRemove in productsToRemove)
+            {
+                Console.WriteLine($"Product removed: {productToRemove.ProductName}");
+                listProductsInOrder.Remove(productToRemove);
+            }
+            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, "REMOVE PRODUCT IN ORDER", staff.StaffName, 2);
+            string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
+            switch (deleteAsk)
+            {
+                case "Yes":
+                    int checkComplete = 0;
+                    for (int i = 0; i < order.ProductsList.Count(); i++)
+                    {
+                        if (order.ProductsList[i].StatusInOrder == 2)
+                        {
+                            checkComplete++;
+                        }
+                    }
+                    if (checkComplete == order.ProductsList.Count())
+                    {
+                        orderBL.ConfirmOrder(order);
+                    }
+                    foreach (var productToRemove in productsToRemove)
+                    {
+                        Console.WriteLine($"Product removed: {productToRemove.ProductName}");
+                    }
+                    foreach (var targetnumber in productNumbersComplete)
+                    {
+                        Console.WriteLine($"Can't delete product {targetnumber} because it's finished ");
+                    }
+                    Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                    UI.PressAnyKeyToContinue();
+                    active = false;
+                    break;
+                case "No":
+                    AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                    active = false;
+                    UI.PressAnyKeyToContinue();
+                    break;
+            }
+            break;
+        }
+    }
+
+
+    public bool IsValidNumberString(string input, List<Product> productList)
+    {
+
+        // Sử dụng biểu thức chính quy để kiểm tra chuỗi có chứa chỉ số và dấu phẩy hay không
+        if (!Regex.IsMatch(input, @$"^(\d+,)*\d+$"))
+        {
+            Console.WriteLine("Invalid string. Please re-enter.");
+            return false;
+        }
+
+        string[] numbers = input.Split(',');
+        foreach (string number in numbers)
+        {
+            if (!int.TryParse(number.Trim(), out _))
+            {
+                Console.WriteLine($"Invalid Number: {number}");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+
 
 }
