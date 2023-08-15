@@ -317,6 +317,67 @@ namespace UI
             }
         }
 
+        public void PrintNewProductsTable(List<Product> prlst, Staff staff, string title)
+        {
+            int pageSize = 5; // Số sản phẩm mỗi trang
+            int currentPage = 1; // Trang hiện tại
+
+            while (true)
+            {
+                Console.Clear();
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                if (title == "CREATE ORDER")
+                {
+                    TimeLine(TimeLineCreateOrderContent(2));
+                }
+                else if (title == "ADD PRODUCT TO ORDER")
+                {
+                    TimeLine(TimeLineAddProductToOrder(1));
+                }
+                else if (title == "CHANGE PRODUCT IN ORDER")
+                {
+                    TimeLine(TimeLineChangeProductInOrderContent(2));
+                }
+                var table = new Spectre.Console.Table();
+                table.AddColumn(new TableColumn("No").Centered());
+                table.AddColumn(new TableColumn("Product Name").LeftAligned());
+                // Hiển thị sản phẩm trên trang hiện tại
+                int startIndex = (currentPage - 1) * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize - 1, prlst.Count - 1);
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    table.AddRow($"{i + 1}", $"{prlst[i].ProductName}");
+                }
+                AnsiConsole.Write(table.Centered());
+                var Pagination = new Spectre.Console.Table();
+                Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)prlst.Count / pageSize)}" + ">");
+                AnsiConsole.Write(Pagination.Centered().NoBorder());
+                AnsiConsole.Markup(@"Press the [Green]BUTTON (←)[/] to go back to the previous page, the [Green]BUTTON (→)[/] to go to the next page
+[Green]ENTER[/] to choose product by [green]PRODUCT NUMBER[/] or input [Green]PRODUCT NUMBER = 0[/] to [red]EXIT[/].");
+                Console.WriteLine();
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                {
+                    if (currentPage > 1)
+                    {
+                        currentPage--;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    if (currentPage < Math.Ceiling((double)prlst.Count / pageSize))
+                    {
+                        currentPage++;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+            }
+        }
+
         public void PrintAllProductsInstock(List<Product> productList, Staff staff, string title)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
@@ -385,11 +446,12 @@ namespace UI
         public int InputQuantity(Product product, Staff staff, string title)
         {
             int quantity = 0;
-            bool err = false;
             bool active = true;
             while (active)
             {
 
+                bool err = false;
+                bool continuee = false;
                 do
                 {
                     Console.Clear();
@@ -407,7 +469,6 @@ namespace UI
                     {
                         TimeLine(TimeLineChangeProductInOrderContent(4));
                     }
-                    Console.WriteLine("Product ID : " + product.ProductId);
                     Console.WriteLine("Product Name : " + product.ProductName);
                     Console.WriteLine("Product Size : " + product.ProductSize);
                     string formattepricesize = product.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
@@ -415,14 +476,31 @@ namespace UI
                     Console.Write("Input Quantity: ");
                     if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
                     {
-                        return quantity;
+                        continuee = true;
+                        if (quantity > 10)
+                        {
+                            string askAceptQuantity = Ask("[green]Quantity > 10[/], Are you sure ?");
+                            switch (askAceptQuantity)
+                            {
+                                case "Yes":
+                                    return quantity;
+                                case "No":
+                                    continuee = false;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            return quantity;
+                        }
+                        // return quantity;
                     }
                     else
                     {
                         err = true;
                         RedMessage("Invalid quantity ! Please re-enter.");
                     }
-                } while (err == false);
+                } while (err == false && continuee);
             }
             return quantity;
         }
@@ -538,57 +616,47 @@ namespace UI
         }
         public int ChooseProductsize(Staff staff, int productId, string title)
         {
-            string size;
+            string[] size = { "Size S", "Size M", "Size L", "Choose another product" };
             int sizeId = 0;
-            bool showAlert = false;
             bool active = true;
-            bool err = false;
             while (active)
             {
-                do
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                if (title == "CREATE ORDER")
                 {
-                    ApplicationLogoAfterLogin(staff);
-                    Title(title);
-                    if (title == "CREATE ORDER")
-                    {
-                        TimeLine(TimeLineCreateOrderContent(3));
-                    }
-                    else if (title == "ADD PRODUCT TO ORDER")
-                    {
-                        TimeLine(TimeLineAddProductToOrder(2));
-                    }
-                    else if (title == "CHANGE PRODUCT IN ORDER")
-                    {
-                        TimeLine(TimeLineChangeProductInOrderContent(3));
-                    }
-                    PrintProductTable(productBL.GetProductById(productId));
-                    Product currentProduct = productBL.GetProductById(productId);
-                    Console.WriteLine("Product ID: " + currentProduct.ProductId);
-                    Console.WriteLine("Product Name: " + currentProduct.ProductName);
-                    AnsiConsole.Markup("Choose Product Size(Input [Green]S[/], [Green]M[/] or [Green]L[/] to choose [Green]PRODUCT SIZE[/]):");
-                    size = Console.ReadLine().ToUpper();
-                    if (size == "S" || size == "M" || size == "L")
-                    {
-                        switch (size)
-                        {
-                            case "S":
-                                return 1;
-                            case "M":
-                                return 2;
-                            case "L":
-                                return 3;
-                        }
-                    }
-                    else
-                    {
-                        showAlert = true;
-                        err = true;
-                    }
-                    if (showAlert)
-                    {
-                        RedMessage("Invalid choice. Please Re-enter");
-                    }
-                } while (err == false);
+                    TimeLine(TimeLineCreateOrderContent(3));
+                }
+                else if (title == "ADD PRODUCT TO ORDER")
+                {
+                    TimeLine(TimeLineAddProductToOrder(2));
+                }
+                else if (title == "CHANGE PRODUCT IN ORDER")
+                {
+                    TimeLine(TimeLineChangeProductInOrderContent(3));
+                }
+                PrintProductTable(productBL.GetProductById(productId));
+                Product currentProduct = productBL.GetProductById(productId);
+                // Console.WriteLine("Product ID: " + currentProduct.ProductId);
+                Console.WriteLine("Product Name: " + currentProduct.ProductName);
+                // AnsiConsole.Markup("Press [green]UP/DOWN[/] button and [Green] ENTER[/] to select to choose [Green]PRODUCT SIZE[/]):");
+                var choice = AnsiConsole.Prompt(
+           new SelectionPrompt<string>()
+           .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
+           .PageSize(10)
+           .AddChoices(size));
+
+                switch (choice)
+                {
+                    case "Size S":
+                        return 1;
+                    case "Size M":
+                        return 2;
+                    case "Size L":
+                        return 3;
+                    case "Choose another product":
+                        return 0;
+                }
             }
             return sizeId;
         }
