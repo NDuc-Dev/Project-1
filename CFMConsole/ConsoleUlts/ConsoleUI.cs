@@ -839,6 +839,7 @@ namespace UI
 
         public void PrintOrderDetails(List<Product> listProducts, Staff currentstaff, Persistence.Order order, string title, string staffName, int step)
         {
+        
             Console.Clear();
             ApplicationLogoAfterLogin(currentstaff);
             Title(title);

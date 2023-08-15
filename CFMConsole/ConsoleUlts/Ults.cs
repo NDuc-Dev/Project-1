@@ -154,13 +154,13 @@ public class Ults
                     {
                         orders.ProductsList.Add(product);
                     }
-                    string addAsk = UI.Ask("[Green]Add product to order complete[/], do you want to [Green]CONTINUE[/] to add product ?");
+                    string addAsk = UI.Ask("[Green]Add product to order complete[/], do you want to [Green]CREATE ORDER[/] (Choose [red]No[/] to CONTINUE add product ?");
                     switch (addAsk)
                     {
-                        case "Yes":
+                        case "No":
                             continuee = true;
                             break;
-                        case "No":
+                        case "Yes":
                             UI.PrintSaleReceipt(orders, currentStaff, currentStaff, "CREATE ORDER");
                             continuee = false;
                             string createAsk = UI.Ask("Do you want to [Green]CREATE[/] this order ?");
@@ -221,6 +221,10 @@ public class Ults
                     bool view = true;
                     while (view)
                     {
+                        if (view == false)
+                        {
+                            break;
+                        }
                         Staff staff = staffBL.GetStaffById(order.OrderStaffID);
                         order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
                         string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Change product in order", "Remove Order", "Confirm product in order", "Change Table", "Confirm order", "Exit" };
@@ -309,15 +313,22 @@ public class Ults
                                         case "Yes":
                                             Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
                                             UI.PressAnyKeyToContinue();
+                                            view = false;
                                             break;
                                         case "No":
                                             AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
                                             UI.PressAnyKeyToContinue();
+                                            view = false;
                                             break;
                                     }
 
                                 }
-                                RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
+                                else
+                                {
+                                    RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
+                                }
+                                if (order.ProductsList.Count() == 0)
+                                    view = false;
                                 break;
                             case "Change product in order":
                                 List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff);
@@ -443,7 +454,10 @@ public class Ults
                                 view = false;
                                 break;
                         }
-
+                        if (view == false)
+                        {
+                            break;
+                        }
                     }
                 }
                 else
