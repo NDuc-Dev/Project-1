@@ -366,6 +366,7 @@ public class Ults
                                         case "Yes":
                                             Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
                                             UI.PressAnyKeyToContinue();
+                                            view = false;
                                             break;
                                         case "No":
                                             AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
@@ -379,23 +380,7 @@ public class Ults
                                 }
                                 break;
                             case "Confirm product in order":
-                                Persistence.Product productConfirm = ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff);
-                                if (productConfirm == null)
-                                {
-                                    break;
-                                }
-                                string continueAsk = UI.Ask("Do you want to [Green]CONINUE[/] confirm this product ?");
-                                switch (continueAsk)
-                                {
-                                    case "Yes":
-                                        Console.WriteLine("Update Order: " + (productBL.UpdateProductStatusInOrder(productConfirm, order) ? "completed!" : "not complete!"));
-                                        UI.PressAnyKeyToContinue();
-                                        break;
-                                    case "No":
-                                        AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
-                                        UI.PressAnyKeyToContinue();
-                                        break;
-                                }
+                                ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff);
                                 break;
                             case "Change Table":
                                 int newTable = UI.ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
@@ -769,50 +754,53 @@ public class Ults
     }
 
 
-    public Product ChangeProductStatusToComplete(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
+    public void ChangeProductStatusToComplete(List<Product> listProductsInOrder, Persistence.Order order, string title, Staff staff)
     {
-        Product product = new Product();
         bool active = true;
 
         while (active)
         {
-            bool checkProductNumber;
-            int productNumber;
-            int productId;
-            int sizeId;
+            string input;
+            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, title, staff.StaffName, 1);
+            Dictionary<int, Product> productMap = new Dictionary<int, Product>();
+            for (int i = 0; i < listProductsInOrder.Count; i++)
+            {
+                productMap.Add(i + 1, listProductsInOrder[i]);
+            }
             do
             {
-                UI.PrintOrderDetails(listProductInOrder, currentStaff, order, title, staff.StaffName, 0);
-                AnsiConsole.Markup(" Input the order number of the product in the order to change status to complete (Input [green]0[/] to exit): ");
-                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= listProductInOrder.Count())
+                AnsiConsole.Markup("Enter the serial number of the product you want to [red]CONFIRM[/], separated by the character '[green],[/]' or enter [red]0[/] to EXIT:");
+                input = Console.ReadLine();
+                if (input == "0")
                 {
-                    if (productNumber == 0)
+                    active = false;
+                    break;
+                }
+            } while (!IsValidNumberString(input, listProductsInOrder));
+
+            if (active == false)
+                break;
+            string[] targetNumberStrings = input.Split(',');
+            foreach (var targetNumberString in targetNumberStrings)
+            {
+                if (int.TryParse(targetNumberString.Trim(), out int targetNumber) && targetNumber > 0 && targetNumber <= listProductsInOrder.Count)
+                {
+                    if (productMap.TryGetValue(targetNumber, out Product productToUpdate))
                     {
-                        return null;
-                    }
-                    else if (listProductInOrder[productNumber - 1].StatusInOrder == 1)
-                    {
-                        for (int i = 0; i < listProductInOrder.Count(); i++)
-                        {
-                            if (listProductInOrder[i].ProductId == listProductInOrder[productNumber - 1].ProductId && listProductInOrder[i].ProductSizeId == listProductInOrder[productNumber - 1].ProductSizeId)
-                            {
-                                return listProductInOrder[i];
-                            }
-                        }
+                        productToUpdate.StatusInOrder = 2;
                     }
                     else
                     {
-                        UI.RedMessage("Product is Complete! No need to rework . Please re-enter");
+                        Console.WriteLine($"No product found with sequence number{targetNumber}");
                     }
                 }
                 else
                 {
-                    UI.RedMessage("Product Not Exits! Please re-enter");
+                    Console.WriteLine($"Invalid serial number: {targetNumberString}");
                 }
             }
-            while (true);
+
         }
-        return product;
     }
 
     public void UpdateProductStatusInstock()
@@ -1011,7 +999,6 @@ public class Ults
         }
     }
 
-
     public bool IsValidNumberString(string input, List<Product> productList)
     {
 
@@ -1034,8 +1021,6 @@ public class Ults
 
         return true;
     }
-
-
 
 
 }
