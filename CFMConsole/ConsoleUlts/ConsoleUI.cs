@@ -542,11 +542,11 @@ namespace UI
                 string status;
                 if (table.TableStatus == 1)
                 {
-                    status = "Using";
+                    status = "[Red]Using[/]";
                 }
                 else
                 {
-                    status = "Empty Table";
+                    status = "[green]Empty Table[/]";
                 }
                 tableprint.AddRow($"{table.TableId}", $"{status}");
             }
@@ -580,12 +580,12 @@ namespace UI
                                 Title(title);
                                 TimeLine(TimeLineCreateOrderContent(1));
                                 PrintAllTables(listTable);
-                                AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table : ");
-                                if (int.TryParse(Console.ReadLine(), out tableId) && tableId > 0)
+                                AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [Red]TABLE ID = 0[/] to [red]EXIT[/]: ");
+                                if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                                 {
                                     if (tableId == 0)
                                     {
-                                        return 0;
+                                        return -1;
                                     }
                                     else
                                     {

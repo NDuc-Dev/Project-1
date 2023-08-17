@@ -333,7 +333,7 @@ namespace DAL
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from orders where order_status = 1 or order_status = 2 and order_table != 0;";
+                query = @"select * from orders where order_status = 1 and order_table != 0 or order_status = 2 and order_table != 0;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())

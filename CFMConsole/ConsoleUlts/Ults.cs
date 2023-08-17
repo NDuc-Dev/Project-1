@@ -633,6 +633,7 @@ public class Ults
                 if (subtitle == "IN BAR")
                 {
                     UI.PrintListOrderInBar(listOrder, currentStaff, title);
+                    AnsiConsole.Markup("Input [Green]TABLE ID[/] to view order or input [Red] TABLE ID = 0[/] to [Red]EXIT[/].\n");
                     AnsiConsole.Markup("Table ID: ");
                     int tableId;
                     if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
@@ -680,6 +681,7 @@ public class Ults
                 else if (subtitle == "TAKE AWAY")
                 {
                     UI.PrintListOrderTakeAway(listOrder, currentStaff, title);
+                    AnsiConsole.Markup("Input [Green]ORDER ID[/] to view order or input [Red]ORDER ID = 0[/] to [Red]EXIT[/].");
                     AnsiConsole.Markup("Order ID: ");
                     int orderId;
                     if (int.TryParse(Console.ReadLine(), out orderId) && orderId >= 0)
