@@ -326,13 +326,51 @@ namespace DAL
             return order;
         }
 
-        public List<Order> GetOrdersInprogress()
+        public List<Order> GetOrdersInBarInprogress()
         {
             List<Order> listOrder = new List<Order>();
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from orders where order_status = 1 or order_status = 2;";
+                query = @"select * from orders where order_status = 1 or order_status = 2 and order_table != 0;";
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    listOrder.Add(GetOrder(reader));
+                }
+                reader.Close();
+            }
+            catch { }
+            return listOrder;
+        }
+
+        public List<Order> GetTakeAwayOrdersInprogress()
+        {
+            List<Order> listOrder = new List<Order>();
+            try
+            {
+                MySqlCommand command = new MySqlCommand("", connection);
+                query = @"select * from orders where order_status = 1 or order_status = 2 and order_table = 0;";
+                command.CommandText = query;
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    listOrder.Add(GetOrder(reader));
+                }
+                reader.Close();
+            }
+            catch { }
+            return listOrder;
+        }
+
+        public List<Order> GetAllOrdersInprogress()
+        {
+            List<Order> listOrder = new List<Order>();
+            try
+            {
+                MySqlCommand command = new MySqlCommand("", connection);
+                query = @"select * from orders where order_status = 1 or order_status = 2 ;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
