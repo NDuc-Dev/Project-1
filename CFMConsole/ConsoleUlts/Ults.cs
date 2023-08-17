@@ -69,7 +69,7 @@ public class Ults
                             List<Order> listOrderUnComplete = orderBL.GetAllOrdersInprogress();
                             if (listOrderUnComplete.Count() != 0)
                             {
-                                UI.PrintListOrder(listOrderUnComplete, currentStaff, "CHECK OUT");
+                                // UI.PrintListOrder(listOrderUnComplete, currentStaff, "CHECK OUT");
                             }
                             else
                             {
@@ -211,7 +211,8 @@ public class Ults
         bool continuee = false;
         while (active)
         {
-
+            UI.ApplicationLogoAfterLogin(currentStaff);
+            UI.Title(title);
             var choice = AnsiConsole.Prompt(
        new SelectionPrompt<string>()
        .Title("Move [green]UP/DOWN[/] button and [Green]ENTER[/] to select.")
@@ -223,8 +224,6 @@ public class Ults
                     List<Order> listOrderInBarInprogress = orderBL.GetOrdersInBarInprogress();
                     if (listOrderInBarInprogress.Count() == 0)
                     {
-                        UI.ApplicationLogoAfterLogin(currentStaff);
-                        UI.Title(title);
                         UI.RedMessage("No orders have been created yet !");
                         break;
                     }
@@ -236,7 +235,7 @@ public class Ults
                         {
                             Staff staff = staffBL.GetStaffById(order.OrderStaffID);
                             order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
-                            string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Change product in order", "Remove Order", "Confirm product in order", "Change Table", "Exit" };
+                            string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Change product in order", "Confirm product in order", "Change Table", "Exit" };
                             string updateChoice;
                             UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, staff.StaffName, 0);
                             updateChoice = UI.SellectFunction(functionsItem);
@@ -358,36 +357,6 @@ public class Ults
                                             break;
                                     }
                                     break;
-                                case "Remove Order":
-                                    int checkProductComplete = 0;
-                                    for (int i = 0; i < order.ProductsList.Count(); i++)
-                                    {
-                                        if (order.ProductsList[i].StatusInOrder == 2)
-                                        {
-                                            checkProductComplete++;
-                                        }
-                                    }
-                                    if (checkProductComplete == 0)
-                                    {
-                                        string deleteOrderAsk = UI.Ask("Do you want to [Green]DELETE[/] this order?");
-                                        switch (deleteOrderAsk)
-                                        {
-                                            case "Yes":
-                                                Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
-                                                UI.PressAnyKeyToContinue();
-                                                view = false;
-                                                break;
-                                            case "No":
-                                                AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
-                                                UI.PressAnyKeyToContinue();
-                                                break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        UI.RedMessage("The order already has a finished product, cannot be deleted");
-                                    }
-                                    break;
                                 case "Confirm product in order":
                                     ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff);
                                     break;
@@ -432,8 +401,6 @@ public class Ults
                     List<Order> listTakeAwayOrderInprogress = orderBL.GetTakeAwayOrdersInprogress();
                     if (listTakeAwayOrderInprogress.Count() == 0)
                     {
-                        UI.ApplicationLogoAfterLogin(currentStaff);
-                        UI.Title(title);
                         UI.RedMessage("No orders have been created yet !");
                         break;
                     }
@@ -441,30 +408,64 @@ public class Ults
                     if (order != null)
                     {
                         bool view = true;
-                        while(view)
+                        while (view)
                         {
                             Staff staff = staffBL.GetStaffById(order.OrderStaffID);
                             order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
-                            string[] functionsItem = { "Remove an unfinished product from the order", "Remove Order", "Confirm product in order", "Exit" };
+                            string[] functionsItem = { "Remove an unfinished product from the order", "Confirm product in order", "Exit" };
                             string updateChoice;
                             UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, staff.StaffName, 0);
                             updateChoice = UI.SellectFunction(functionsItem);
                             switch (updateChoice)
                             {
                                 case "Remove an unfinished product from the order":
-                                break;
-                                case  "Remove Order":
-                                break;
+                                    if (order.ProductsList.Count() == 1)
+                                    {
+                                        AnsiConsole.Markup("[Red]The order has only 1 product left[/]\n");
+                                        string deleteOrderAsk = UI.Ask("Do you want to [Green]DELETE[/] this order?");
+                                        switch (deleteOrderAsk)
+                                        {
+                                            case "Yes":
+                                                Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
+                                                UI.PressAnyKeyToContinue();
+                                                view = false;
+                                                break;
+                                            case "No":
+                                                AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                                UI.PressAnyKeyToContinue();
+                                                view = false;
+                                                break;
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
+                                    }
+                                    if (order.ProductsList.Count() == 0)
+                                        view = false;
+                                    break;
                                 case "Confirm product in order":
-                                break;
+                                    ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff);
+                                    break;
                                 case "Exit":
+                                    view = false;
+                                    break;
+                            }
+                            if (view == false)
+                            {
                                 break;
                             }
                         }
                     }
                     break;
                 case "Exit":
+                    active = false;
                     break;
+            }
+            if (active == false)
+            {
+                break;
             }
         }
     }
@@ -625,69 +626,105 @@ public class Ults
         bool err = false;
         while (active)
         {
+
+
             do
             {
-                UI.PrintListOrder(listOrder, currentStaff, title);
-                AnsiConsole.Markup("Order ID: ");
-                int orderId;
-                if (int.TryParse(Console.ReadLine(), out orderId) && orderId >= 0)
+                if (subtitle == "IN BAR")
                 {
-                    if (orderId == 0)
+                    UI.PrintListOrderInBar(listOrder, currentStaff, title);
+                    AnsiConsole.Markup("Table ID: ");
+                    int tableId;
+                    if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                     {
-                        return null;
+                        if (tableId == 0)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            if (title == "PAYMENT")
+                            {
+                                if (orderBL.GetOrderByTable(tableId).OrderId != 0 && orderBL.GetOrderByTable(tableId).OrderStatus != 3)
+                                {
+                                    order = orderBL.GetOrderByTable(tableId);
+                                    return order;
+                                }
+                                else
+                                {
+                                    active = true;
+                                    UI.RedMessage("Order not exist !");
+                                }
+                            }
+                            else if (title == "UPDATE ORDER")
+                            {
+                                if (orderBL.GetOrderByTable(tableId).OrderId != 0 && orderBL.GetOrderByTable(tableId).OrderStatus != 3 && orderBL.GetOrderByTable(tableId).TableID != 0)
+                                {
+                                    order = orderBL.GetOrderByTable(tableId);
+                                    return order;
+                                }
+                                else
+                                {
+                                    active = true;
+                                    UI.RedMessage("Order not exist!");
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        if (title == "PAYMENT")
-                        {
-                            if (orderBL.GetOrderById(orderId).OrderId != 0 && orderBL.GetOrderById(orderId).OrderStatus != 3 && orderBL.GetOrderById(orderId).OrderStatus != 1)
-                            {
-                                order = orderBL.GetOrderById(orderId);
-                                return order;
-                            }
-                            else
-                            {
-                                active = true;
-                                UI.RedMessage("Order not exist !");
-                            }
-                        }
-                        else if (title == "UPDATE ORDER")
-                        {
-                            if (subtitle == "IN BAR")
-                            {
-                                if (orderBL.GetOrderById(orderId).OrderId != 0 && orderBL.GetOrderById(orderId).OrderStatus != 3 && orderBL.GetOrderById(orderId).TableID != 0)
-                                {
-                                    order = orderBL.GetOrderById(orderId);
-                                    return order;
-                                }
-                                else
-                                {
-                                    active = true;
-                                    UI.RedMessage("Order not exist!");
-                                }
-                            }
-                            else if (subtitle == "TAKE AWAY")
-                            {
-                                if (orderBL.GetOrderById(orderId).OrderId != 0 && orderBL.GetOrderById(orderId).OrderStatus != 3 && orderBL.GetOrderById(orderId).TableID == 0)
-                                {
-                                    order = orderBL.GetOrderById(orderId);
-                                    return order;
-                                }
-                                else
-                                {
-                                    active = true;
-                                    UI.RedMessage("Order not exist!");
-                                }
-                            }
-
-                        }
+                        UI.RedMessage("Invalid ID !");
+                        err = true;
                     }
                 }
-                else
+                else if (subtitle == "TAKE AWAY")
                 {
-                    UI.RedMessage("Invalid ID !");
-                    err = true;
+                    UI.PrintListOrderTakeAway(listOrder, currentStaff, title);
+                    AnsiConsole.Markup("Order ID: ");
+                    int orderId;
+                    if (int.TryParse(Console.ReadLine(), out orderId) && orderId >= 0)
+                    {
+                        if (orderId == 0)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            if (title == "PAYMENT")
+                            {
+                                if (orderBL.GetOrderById(orderId).OrderId == 0 && orderBL.GetOrderById(orderId).OrderStatus != 3)
+                                {
+                                    order = orderBL.GetOrderById(orderId);
+                                    return order;
+                                }
+                                else
+                                {
+                                    active = true;
+                                    UI.RedMessage("Order not exist !");
+                                }
+                            }
+                            else if (title == "UPDATE ORDER")
+                            {
+                                if (orderBL.GetOrderById(orderId).OrderId != 0 && orderBL.GetOrderById(orderId).OrderStatus != 3 && orderBL.GetOrderById(orderId).OrderId == 0)
+                                {
+                                    order = orderBL.GetOrderById(orderId);
+                                    return order;
+                                }
+                                else
+                                {
+                                    active = true;
+                                    UI.RedMessage("Order not exist!");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        UI.RedMessage("Invalid ID !");
+                        err = true;
+                    }
                 }
+
             }
             while (err == false);
         }

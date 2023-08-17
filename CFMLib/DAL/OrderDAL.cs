@@ -1,3 +1,4 @@
+using System.Dynamic;
 using MySqlConnector;
 using Persistence;
 
@@ -351,7 +352,7 @@ namespace DAL
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from orders where order_status = 1 or order_status = 2 and order_table = 0;";
+                query = @"select * from orders where order_status = 1 and order_table = 0 or order_status = 2 and order_table = 0;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -461,6 +462,25 @@ namespace DAL
                 query = @"select * from orders where order_id=@orderId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@orderId", orderId);
+                MySqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    order = GetOrder(reader);
+                }
+                reader.Close();
+            }
+            catch { }
+            return order;
+        }
+
+        public Order GetOrderByTable(int tableId)
+        {
+            Order order = new Order();
+            try
+            {
+                query = @"select * from orders where order_table = @tableId and order_status != 3;";
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@tableId", tableId);
                 MySqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {

@@ -18,6 +18,11 @@ namespace BL
             return orderDAL.GetOrdersInBarInprogress();
         }
 
+        public Order GetOrderByTable(int tableId)
+        {
+            return orderDAL.GetOrderByTable(tableId);
+        }
+
         public List<Order> GetTakeAwayOrdersInprogress()
         {
             return orderDAL.GetTakeAwayOrdersInprogress();

@@ -805,10 +805,11 @@ namespace UI
             PressAnyKeyToContinue();
         }
 
-        public void PrintListOrder(List<Order> listOrder, Staff staff, string title)
+        public void PrintListOrderTakeAway(List<Order> listOrder, Staff staff, string title)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
+
             while (true)
             {
                 Console.Clear();
@@ -818,7 +819,6 @@ namespace UI
                 table.AddColumn(new TableColumn("Order ID").Centered());
                 table.AddColumn(new TableColumn("Order Staff").Centered());
                 table.AddColumn(new TableColumn("Order Date").Centered());
-                table.AddColumn(new TableColumn("Order Table").Centered());
                 table.AddColumn(new TableColumn("Order Status").Centered());
 
                 // Hiển thị sản phẩm trên trang hiện tại
@@ -839,14 +839,7 @@ namespace UI
                     {
                         status = "[red]COMPLETE[/]";
                     }
-                    if (listOrder[i].TableID == 0)
-                    {
-                        table.AddRow($"{listOrder[i].OrderId}", $"{staffBL.GetStaffById(listOrder[i].OrderStaffID).StaffName}", $"{listOrder[i].OrderDate}", "Take Away", status);
-                    }
-                    else
-                    {
-                        table.AddRow($"{listOrder[i].OrderId}", $"{staffBL.GetStaffById(listOrder[i].OrderStaffID).StaffName}", $"{listOrder[i].OrderDate}", $"{listOrder[i].TableID}", status);
-                    }
+                    table.AddRow($"{listOrder[i].OrderId}", $"{staffBL.GetStaffById(listOrder[i].OrderStaffID).StaffName}", $"{listOrder[i].OrderDate}", status);
                 }
                 AnsiConsole.Write(table.Centered());
                 var Pagination = new Spectre.Console.Table();
@@ -855,11 +848,80 @@ namespace UI
                 if (title == "CHECK OUT")
                 {
                     AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to continue.\n");
-
                 }
                 else
                 {
-                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose order by ORDER ID or input [Green]ORDER ID = 0[/] to exit.\n");
+                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose order.\n");
+                }
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                {
+                    if (currentPage > 1)
+                    {
+                        currentPage--;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    if (currentPage < Math.Ceiling((double)listOrder.Count / pageSize))
+                    {
+                        currentPage++;
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+            }
+        }
+
+        public void PrintListOrderInBar(List<Order> listOrder, Staff staff, string title)
+        {
+            int pageSize = 5; // Số sản phẩm mỗi trang
+            int currentPage = 1; // Trang hiện tại
+            while (true)
+            {
+                Console.Clear();
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                var table = new Spectre.Console.Table();
+                table.AddColumn(new TableColumn("Table").Centered());
+                table.AddColumn(new TableColumn("Order Staff").Centered());
+                table.AddColumn(new TableColumn("Order Date").Centered());
+                table.AddColumn(new TableColumn("Order Status").Centered());
+
+                // Hiển thị sản phẩm trên trang hiện tại
+                int startIndex = (currentPage - 1) * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize - 1, listOrder.Count - 1);
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    string status;
+                    if (listOrder[i].OrderStatus == 1)
+                    {
+                        status = "[yellow]INPROGRESS[/]";
+                    }
+                    else if (listOrder[i].OrderStatus == 2)
+                    {
+                        status = "[Green]CONFIRMED[/]";
+                    }
+                    else
+                    {
+                        status = "[red]COMPLETE[/]";
+                    }
+                    table.AddRow($"{listOrder[i].TableID}", $"{staffBL.GetStaffById(listOrder[i].OrderStaffID).StaffName}", $"{listOrder[i].OrderDate}", status);
+                }
+                AnsiConsole.Write(table.Centered());
+                var Pagination = new Spectre.Console.Table();
+                Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)listOrder.Count / pageSize)}" + ">");
+                AnsiConsole.Write(Pagination.Centered().NoBorder());
+                if (title == "CHECK OUT")
+                {
+                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to continue.\n");
+                }
+                else
+                {
+                    AnsiConsole.Markup("Press the [Green]LEFT ARROW KEY (←)[/] to go back to the previous page, the [Green]RIGHT ARROW KEY (→)[/] to go to the next page, [Green]ENTER[/] to choose order.\n");
                 }
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
 

@@ -10,6 +10,7 @@ namespace BL
         {
             return tableDAL.GetTableById(tableId);
         }
+        
         public List<Table> GetAll()
         {
             return new TableDAL().GetTables();
