@@ -44,17 +44,6 @@ namespace BL
             return result;
         }
 
-        public bool ConfirmOrder(Order order)
-        {
-            bool result = orderDAL.ConfirmOrder(order);
-            return result;
-        }
-
-        public List<Order> GetOrdersConfirmed()
-        {
-            return orderDAL.GetOrdersConfirmed();
-        }
-
         public bool CompleteOrder(Order order)
         {
             return orderDAL.CompleteOrder(order);
