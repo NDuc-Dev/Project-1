@@ -4,9 +4,6 @@ using UI;
 using BL;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Ultilities;
 
@@ -47,6 +44,17 @@ public class Ults
             {
                 bool login = true;
                 UI.WelcomeStaff(currentStaff);
+                // Staff lastStaff = staffBL.GetLastStaffLogOut();
+                // if (lastStaff != null)
+                // {
+                //     if (currentStaff.StaffId != lastStaff.StaffId)
+                //     {
+
+                //     }
+                // }
+                // currentStaff.LoginTime = DateTime.Now;
+                // Console.WriteLine(currentStaff.LoginTime);
+                // Console.ReadKey();
                 while (login)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
@@ -68,29 +76,9 @@ public class Ults
                             UpdateProductStatusInstock();
                             break;
                         case "Check Out":
-                            List<Order> listOrderUnComplete = orderBL.GetAllOrdersInprogress();
-                            if (listOrderUnComplete.Count() != 0)
-                            {
-                                // UI.PrintListOrder(listOrderUnComplete, currentStaff, "CHECK OUT");
-                            }
-                            else
-                            {
-                                UI.ApplicationLogoAfterLogin(currentStaff);
-                                UI.Title("CHECK OUT");
-                            }
-                            AnsiConsole.Markup($"You have [green]{listOrderUnComplete.Count}[/] unpaid orders\n");
-                            List<Order> listOrderCompleted = orderBL.GetOrdersCompleted();
-                            decimal amountInShop = 0;
-                            foreach (Order order in listOrderCompleted)
-                            {
-                                order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
-                                foreach (Product product in order.ProductsList)
-                                {
-                                    amountInShop += product.ProductQuantity * productBL.GetProductByIdAndSize(product.ProductId, product.ProductSizeId).ProductPrice;
-                                }
-                            }
-                            string formattedTotal = amountInShop.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                            AnsiConsole.Markup($"Total amount in shop: [green]{formattedTotal} VND[/]\n");
+                            List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
+                            List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
+                            UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete,currentStaff,"CHECK OUT");
                             string checkOut = UI.Ask("Do you want to check out ?");
                             switch (checkOut)
                             {

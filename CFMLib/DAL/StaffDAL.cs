@@ -86,5 +86,31 @@ namespace DAL
             staff.StaffStatus = reader.GetInt32("Staff_Status");
             return staff;
         }
+
+        public Staff GetLastStaffLogOut()
+        {
+            Staff staff = new Staff();
+            try
+            {
+                string query = "select LAST_INSERT_ID() as login_id";
+                MySqlCommand command = new MySqlCommand(query, connection);
+                MySqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    staff.StaffId = reader.GetInt32("Staff_Id");
+                    staff.LogoutTime = reader.GetDateTime("Logout_Time");
+                }
+                else
+                {
+                    return null;
+                }
+                reader.Close();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return staff;
+        }
     }
 }

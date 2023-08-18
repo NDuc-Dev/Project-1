@@ -42,5 +42,10 @@ namespace BL
                 return null;
             }
         }
+    
+        public Staff? GetLastStaffLogOut()
+        {
+            return staffDAL.GetLastStaffLogOut();
+        }
     }
 }

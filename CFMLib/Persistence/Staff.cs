@@ -7,6 +7,8 @@ namespace Persistence
         public string UserName { set; get; }
         public string Password { set; get; }
         public int StaffStatus { set; get; }
+        public DateTime? LoginTime { set; get; }
+        public DateTime? LogoutTime { set; get; }
 
         public Staff()
         {

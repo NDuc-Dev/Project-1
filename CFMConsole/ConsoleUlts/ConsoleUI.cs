@@ -952,5 +952,78 @@ namespace UI
                .AddChoices(item));
             return choice;
         }
+
+        public void PrintListOrderInProgress(List<Order> ordersInBar, List<Order> ordersTakeAway, Staff currentStaff, string title)
+        {
+            ApplicationLogoAfterLogin(currentStaff);
+            Title(title);
+            decimal totalInBar = 0;
+            if (ordersInBar.Count > 0)
+            {
+                var tableOrdersInBar = new Spectre.Console.Table();
+                tableOrdersInBar.AddColumn(new TableColumn("Table").Centered());
+                tableOrdersInBar.AddColumn(new TableColumn("Order Staff").Centered());
+                tableOrdersInBar.AddColumn(new TableColumn("Order Date").Centered());
+                tableOrdersInBar.AddColumn(new TableColumn("Order Status").Centered());
+                tableOrdersInBar.AddColumn(new TableColumn("Amount").RightAligned());
+                foreach (var order in ordersInBar)
+                {
+                    order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
+                    decimal totalAmount = 0;
+                    foreach (var item in order.ProductsList)
+                    {
+                        totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
+                    }
+                    string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                    string status = "";
+                    if (order.OrderStatus == 1)
+                    {
+                        status = "[yellow]INPROGRESS[/]";
+                    }
+                    else if (order.OrderStatus == 2)
+                    {
+                        status = "[Green]CONFIRMED[/]";
+                    }
+                    tableOrdersInBar.AddRow($"{order.TableID}", $"{staffBL.GetStaffById(order.OrderStaffID).StaffName}", $"{order.OrderDate}", status, $"[Green]{formattedTotal}+ VND[/]");
+                    totalInBar += totalAmount;
+                }
+
+            }
+            decimal totalTakeAway = 0;
+            if (ordersTakeAway.Count > 0)
+            {
+                var tableOrdersTakeAway = new Spectre.Console.Table();
+                tableOrdersTakeAway.AddColumn(new TableColumn("Order ID").Centered());
+                tableOrdersTakeAway.AddColumn(new TableColumn("Order Staff").Centered());
+                tableOrdersTakeAway.AddColumn(new TableColumn("Order Date").Centered());
+                tableOrdersTakeAway.AddColumn(new TableColumn("Order Status").Centered());
+                tableOrdersTakeAway.AddColumn(new TableColumn("Amount").RightAligned());
+                foreach (var order in ordersTakeAway)
+                {
+                    order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
+                    decimal totalAmount = 0;
+                    foreach (var item in order.ProductsList)
+                    {
+                        totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
+                    }
+                    string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                    string status = "";
+                    if (order.OrderStatus == 1)
+                    {
+                        status = "[yellow]INPROGRESS[/]";
+                    }
+                    else if (order.OrderStatus == 2)
+                    {
+                        status = "[Green]CONFIRMED[/]";
+                    }
+                    tableOrdersTakeAway.AddRow($"{order.OrderId}", $"{staffBL.GetStaffById(order.OrderStaffID).StaffName}", $"{order.OrderDate}", status, $"[Green]{formattedTotal}+ VND[/]");
+                    totalTakeAway += totalAmount;
+                }
+            }
+            decimal total = totalInBar + totalTakeAway;
+            string totalFormat = total.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+            AnsiConsole.Markup($"You have [green]{ordersInBar.Count}[/] unfinished in bar orders and [green]{ordersTakeAway.Count}[/] unpaid takeout orders.\n");
+            AnsiConsole.Markup($"The total amount to be collected for unpaid orders is [green]{totalFormat} VND[/]\n");
+        }
     }
 }
