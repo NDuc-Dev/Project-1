@@ -1002,7 +1002,7 @@ public class Ults
                             }
                             else if (title == "UPDATE ORDER")
                             {
-                                if (orderBL.GetOrderById(orderId).TableID != 0 && orderBL.GetOrderById(orderId).OrderStatus != 3)
+                                if (orderBL.GetOrderById(orderId).TableID == 0 && orderBL.GetOrderById(orderId).OrderStatus != 3)
                                 {
                                     order = orderBL.GetOrderById(orderId);
                                     return order;
