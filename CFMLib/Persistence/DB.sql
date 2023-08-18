@@ -80,6 +80,17 @@ FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
 FOREIGN KEY (Update_By) REFERENCES Staffs(Staff_ID)
 );
 
+create table Login_Management(
+Login_Id int not null auto_increment,
+Staff_Id int not null,
+Login_time datetime,
+Logout_time datetime,
+Total_Amount_In_Shop decimal not null,
+PRIMARY KEY(Login_Id),
+FOREIGN KEY (Staff_Id) REFERENCES Staffs(Staff_Id),
+FOREIGN KEY (Staff_Id) REFERENCES Orders(Order_Staff_ID)
+);
+
 -- INSERT STAFF INFO TO TABLE "STAFFS"
 insert into Staffs(Staff_ID, Staff_Name, User_Name, Password, Staff_Status)
 value ('265204','Nguyen Ngoc Duc', 'duckhongngu', 'A067A668279CD1BEA956DF8EF006C895', '1');
