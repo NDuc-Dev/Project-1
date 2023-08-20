@@ -80,15 +80,14 @@ FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
 FOREIGN KEY (Update_By) REFERENCES Staffs(Staff_ID)
 );
 
-create table Login_Management(
+create table Login_Details(
 Login_Id int not null auto_increment,
 Staff_Id int not null,
-Login_time datetime,
-Logout_time datetime,
-Total_Amount_In_Shop decimal not null,
+Login_time datetime default current_timestamp,
+Logout_time datetime default current_timestamp,
+Total_Amount_In_Shop decimal not null default '0',
 PRIMARY KEY(Login_Id),
-FOREIGN KEY (Staff_Id) REFERENCES Staffs(Staff_Id),
-FOREIGN KEY (Staff_Id) REFERENCES Orders(Order_Staff_ID)
+FOREIGN KEY (Staff_Id) REFERENCES Staffs(Staff_Id)
 );
 
 -- INSERT STAFF INFO TO TABLE "STAFFS"
@@ -470,8 +469,6 @@ value ('3', 'Create Product Traditional Coffee');
 
 insert into update_details(Product_ID, Update_Des)
 value ('5', 'Create Product Milk Tea');
-
-
 
 -- CREATE AN SUB ACCOUNT TO DATABASE 
 CREATE USER IF NOT exists 'nguyenngocduc'@'localhost' IDENTIFIED BY 'Duc265204@';
