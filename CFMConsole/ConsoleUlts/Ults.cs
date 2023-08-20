@@ -42,19 +42,37 @@ public class Ults
 
             if (currentStaff != null)
             {
+                currentStaff.LoginTime = DateTime.Now;
                 bool login = true;
                 UI.WelcomeStaff(currentStaff);
-                // Staff lastStaff = staffBL.GetLastStaffLogOut();
-                // if (lastStaff != null)
-                // {
-                //     if (currentStaff.StaffId != lastStaff.StaffId)
-                //     {
-
-                //     }
-                // }
-                // currentStaff.LoginTime = DateTime.Now;
-                // Console.WriteLine(currentStaff.LoginTime);
-                // Console.ReadKey();
+                Staff lastStaff = staffBL.GetLastStaffLogOut();
+                if (lastStaff != null)
+                {
+                    if (currentStaff.StaffId != lastStaff.StaffId)
+                    {
+                        if (currentStaff.LoginTime.Day == lastStaff.LogoutTime.Day)
+                        {
+                            List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
+                            List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
+                            UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
+                            string ask = UI.Ask($"This is the information of staff {staffBL.GetStaffById(lastStaff.StaffId).StaffName} for the previous shift, are you sure it is correct?");
+                            switch (ask)
+                            {
+                                case "Yes":
+                                    login = true;
+                                    UI.GreenMessage("Thank you for your confirmation, have a good day !");
+                                    
+                                    UI.PressAnyKeyToContinue();
+                                    break;
+                                case "No":
+                                    login = false;
+                                    break;
+                            }
+                        }
+                    }
+                }
+                Console.WriteLine(currentStaff.LoginTime);
+                Console.ReadKey();
                 while (login)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
@@ -78,7 +96,7 @@ public class Ults
                         case "Check Out":
                             List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
                             List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
-                            UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete,currentStaff,"CHECK OUT");
+                            UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
                             string checkOut = UI.Ask("Do you want to check out ?");
                             switch (checkOut)
                             {
@@ -653,7 +671,7 @@ public class Ults
                             else
                             {
                                 UI.RedMessage("Unable to pay the order. No finished products yet !");
-                               
+
                             }
                         }
                     }

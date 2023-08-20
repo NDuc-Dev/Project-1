@@ -1,35 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "b/HszMwiU0/lsUglUhWnrX6nr8/U9JaRV0aWNc4HDTFW5qrmG2BRu3OUOuXv9OpzYUjCefBZOJULzlGpoZS0OA==",
+  "dgSpecHash": "IuPJCvZU0j0zCqzJ1EdBo37PkspVQttnHlXgueFCxq5dYhoXh8DD1cowxQ9HJtO4dXP0dKykWftWUAwA8QlAgQ==",
   "success": true,
   "projectFilePath": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\ditvu\\.nuget\\packages\\mysql.data\\6.9.8\\mysql.data.6.9.8.nupkg.sha512",
-    "C:\\Users\\ditvu\\.nuget\\packages\\mysqlconnection\\1.0.1\\mysqlconnection.1.0.1.nupkg.sha512",
-    "C:\\Users\\ditvu\\.nuget\\packages\\mysqlconnector\\2.2.7\\mysqlconnector.2.2.7.nupkg.sha512",
-    "C:\\Users\\ditvu\\.nuget\\packages\\spectre.console\\0.47.0\\spectre.console.0.47.0.nupkg.sha512",
-    "C:\\Users\\ditvu\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512"
+    "C:\\Users\\pc\\.nuget\\packages\\mysqlconnector\\2.2.7\\mysqlconnector.2.2.7.nupkg.sha512",
+    "C:\\Users\\pc\\.nuget\\packages\\spectre.console\\0.47.0\\spectre.console.0.47.0.nupkg.sha512",
+    "C:\\Users\\pc\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'MySql.Data 6.9.8' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
-      "libraryId": "MySql.Data",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'MySQLConnection 1.0.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
-      "libraryId": "MySQLConnection",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    }
-  ]
+  "logs": []
 }

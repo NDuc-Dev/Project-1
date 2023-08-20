@@ -95,10 +95,13 @@ namespace DAL
                 string query = "select LAST_INSERT_ID() as login_id";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 MySqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                if (reader.HasRows)
                 {
-                    staff.StaffId = reader.GetInt32("Staff_Id");
-                    staff.LogoutTime = reader.GetDateTime("Logout_Time");
+                    while (reader.Read())
+                    {
+                        staff.StaffId = reader.GetInt32("Staff_Id");
+                        staff.LogoutTime = reader.GetDateTime("Logout_Time");
+                    }
                 }
                 else
                 {

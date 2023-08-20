@@ -2,27 +2,6 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "MySql.Data/6.9.8": {
-        "type": "package",
-        "compile": {
-          "lib/net45/MySql.Data.dll": {}
-        },
-        "runtime": {
-          "lib/net45/MySql.Data.dll": {}
-        }
-      },
-      "MySQLConnection/1.0.1": {
-        "type": "package",
-        "dependencies": {
-          "MySql.Data": "6.9.8"
-        },
-        "compile": {
-          "lib/MySQLConnection.dll": {}
-        },
-        "runtime": {
-          "lib/MySQLConnection.dll": {}
-        }
-      },
       "MySqlConnector/2.2.7": {
         "type": "package",
         "compile": {
@@ -77,37 +56,6 @@
     }
   },
   "libraries": {
-    "MySql.Data/6.9.8": {
-      "sha512": "ZSkMKsB1J9Cb/nO3+GlfX/YttibU23y5ZQtn/xzzl3xfPK512wP1jNjiVG4AFvmeJrf02qHNc/GfXJGYYHN8Pg==",
-      "type": "package",
-      "path": "mysql.data/6.9.8",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "CHANGES",
-        "Readme.txt",
-        "content/app.config.transform",
-        "content/web.config.transform",
-        "lib/net20-cf/MySql.Data.CF.dll",
-        "lib/net20/MySql.Data.dll",
-        "lib/net40/MySql.Data.dll",
-        "lib/net45/MySql.Data.dll",
-        "mysql.data.6.9.8.nupkg.sha512",
-        "mysql.data.nuspec"
-      ]
-    },
-    "MySQLConnection/1.0.1": {
-      "sha512": "/BflH+iLaysGbkUghDuQfrxc2Xi5ckxnqlTLlZYslYrFatqMv9+2d24EvVGKTsJO+hAZeuSs6jcO2ZIvxkkkqQ==",
-      "type": "package",
-      "path": "mysqlconnection/1.0.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/MySQLConnection.dll",
-        "mysqlconnection.1.0.1.nupkg.sha512",
-        "mysqlconnection.nuspec"
-      ]
-    },
     "MySqlConnector/2.2.7": {
       "sha512": "rwFa71MlOJ142S+BXDvtLRdAIn7l6PTNWu+Xehs2qRehK8dckjKqwvK8azEADCMkQyXS1LXgh9HkSvItpTi6WA==",
       "type": "package",
@@ -185,13 +133,12 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "CFMLib >= 1.0.0",
-      "mysqlconnection >= 1.0.1",
       "mysqlconnector >= 2.2.7",
       "spectre.console >= 0.47.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ditvu\\.nuget\\packages\\": {}
+    "C:\\Users\\pc\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -199,11 +146,11 @@
       "projectUniqueName": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
       "projectName": "CFMConsole",
       "projectPath": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
-      "packagesPath": "C:\\Users\\ditvu\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
       "outputPath": "C:\\VTC\\Project-1\\CFMConsole\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\ditvu\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -231,10 +178,6 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
-          "mysqlconnection": {
-            "target": "Package",
-            "version": "[1.0.1, )"
-          },
           "mysqlconnector": {
             "target": "Package",
             "version": "[2.2.7, )"
@@ -263,27 +206,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'MySql.Data 6.9.8' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
-      "libraryId": "MySql.Data",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'MySQLConnection 1.0.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
-      "libraryId": "MySQLConnection",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    }
-  ]
+  }
 }
