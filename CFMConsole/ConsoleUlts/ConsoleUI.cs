@@ -2,7 +2,7 @@ using BL;
 using Persistence;
 using Spectre.Console;
 using System.Globalization;
-
+using System.Xml;
 
 namespace UI
 {
@@ -18,85 +18,78 @@ namespace UI
             AnsiConsole.Write(rule.DoubleBorder());
         }
 
-        public string TimeLineCreateOrderContent(int step)
+        public string TimeLineContent(int step, string title)
         {
             string content = "";
-            switch (step)
+            switch (title)
             {
-                case 1:
-                    content = "[green]CHOOSE TABLE[/] ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                case "CREATE ORDER":
+                    switch (step)
+                    {
+                        case 1:
+                            content = "[green]CHOOSE TABLE[/] ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                            break;
+                        case 2:
+                            content = "CHOOSE TABLE ==> [green]CHOOSE PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                            break;
+                        case 3:
+                            content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                            break;
+                        case 4:
+                            content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ORDER";
+                            break;
+                        case 5:
+                            content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ORDER[/]";
+                            break;
+                    }
                     break;
-                case 2:
-                    content = "CHOOSE TABLE ==> [green]CHOOSE PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                case "CHANGE PRODUCT IN ORDER":
+                    switch (step)
+                    {
+                        case 1:
+                            content = "[green]CHOOSE PRODUCT REMOVE[/]  ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE";
+                            break;
+                        case 2:
+                            content = "CHOOSE PRODUCT REMOVE ==> [green]CHOOSE NEW PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE";
+                            break;
+                        case 3:
+                            content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE";
+                            break;
+                        case 4:
+                            content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE";
+                            break;
+                        case 5:
+                            content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE[/]";
+                            break;
+                    }
                     break;
-                case 3:
-                    content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ORDER";
+                case "REMOVE PRODUCT IN ORDER":
+                    switch (step)
+                    {
+                        case 1:
+                            content = "[green]CHOOSE PRODUCT[/] ==> COMPLETE ORDER";
+                            break;
+                        case 2:
+                            content = "CHOOSE PRODUCT ==> [green]COMPLETE ORDER[/]";
+                            break;
+                    }
                     break;
-                case 4:
-                    content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ORDER";
-                    break;
-                case 5:
-                    content = "CHOOSE TABLE ==> CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ORDER[/]";
-                    break;
-            }
-            return content;
-        }
-
-        public string TimeLineChangeProductInOrderContent(int step)
-        {
-            string content = "";
-            switch (step)
-            {
-                case 1:
-                    content = "[green]CHOOSE PRODUCT REMOVE[/]  ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE";
-                    break;
-                case 2:
-                    content = "CHOOSE PRODUCT REMOVE ==> [green]CHOOSE NEW PRODUCT[/] ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE";
-                    break;
-                case 3:
-                    content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE";
-                    break;
-                case 4:
-                    content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE";
-                    break;
-                case 5:
-                    content = "CHOOSE PRODUCT REMOVE ==> CHOOSE NEW PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE[/]";
-                    break;
-            }
-            return content;
-        }
-
-        public string TimeLineDeleteProductInOrderContent(int step)
-        {
-            string content = "";
-            switch (step)
-            {
-                case 1:
-                    content = "[green]CHOOSE PRODUCT[/] ==> COMPLETE ORDER";
-                    break;
-                case 2:
-                    content = "CHOOSE PRODUCT ==> [green]COMPLETE ORDER[/]";
-                    break;
-            }
-            return content;
-        }
-
-        public string TimeLineAddProductToOrder(int step)
-        {
-            string content = "";
-            switch (step)
-            {
-                case 1:
-                    content = "[green]CHOOSE PRODUCT[/]  ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ADD";
-                    break;
-                case 2:
-                    content = "CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ADD";
-                    break;
-                case 3:
-                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ADD";
-                    break;
-                case 4:
-                    content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ADD[/]";
+                case "ADD PRODUCT TO ORDER":
+                    switch (step)
+                    {
+                        case 1:
+                            content = "[green]CHOOSE PRODUCT[/]  ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> COMPLETE ADD";
+                            break;
+                        case 2:
+                            content = "CHOOSE PRODUCT ==> [green]CHOOSE PRODUCT SIZE[/] ==> INPUT QUANTITY ==> COMPLETE ADD";
+                            break;
+                        case 3:
+                            content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> [green]INPUT QUANTITY[/] ==> COMPLETE ADD";
+                            break;
+                        case 4:
+                            content = "CHOOSE PRODUCT ==> CHOOSE PRODUCT SIZE ==> INPUT QUANTITY ==> [green]COMPLETE ADD[/]";
+                            break;
+                    }
                     break;
             }
             return content;
@@ -260,15 +253,15 @@ namespace UI
                 Title(title);
                 if (title == "CREATE ORDER")
                 {
-                    TimeLine(TimeLineCreateOrderContent(2));
+                    TimeLine(TimeLineContent(2, "CREATE ORDER"));
                 }
                 else if (title == "ADD PRODUCT TO ORDER")
                 {
-                    TimeLine(TimeLineAddProductToOrder(1));
+                    TimeLine(TimeLineContent(1, "ADD PRODUCT TO ORDER"));
                 }
                 else if (title == "CHANGE PRODUCT IN ORDER")
                 {
-                    TimeLine(TimeLineChangeProductInOrderContent(2));
+                    TimeLine(TimeLineContent(2, "CHANGE PRODUCT IN ORDER"));
                 }
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("No").Centered());
@@ -390,15 +383,15 @@ namespace UI
                     Title(title);
                     if (title == "CREATE ORDER")
                     {
-                        TimeLine(TimeLineCreateOrderContent(4));
+                        TimeLine(TimeLineContent(4, "CREATE ORDER"));
                     }
                     else if (title == "ADD PRODUCT TO ORDER")
                     {
-                        TimeLine(TimeLineAddProductToOrder(3));
+                        TimeLine(TimeLineContent(3, "ADD PRODUCT TO ORDER"));
                     }
                     else if (title == "CHANGE PRODUCT IN ORDER")
                     {
-                        TimeLine(TimeLineChangeProductInOrderContent(4));
+                        TimeLine(TimeLineContent(4, "CHANGE PRODUCT IN ORDER"));
                     }
                     Console.WriteLine("Product Name : " + product.ProductName);
                     Console.WriteLine("Product Size : " + product.ProductSize);
@@ -458,8 +451,7 @@ namespace UI
         public void WelcomeStaff(Staff staff)
         {
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Green;
-            TitleNoBorder("Welcome " + staff.StaffName);
+            TitleNoBorder($"[green]Welcome {staff.StaffName}[/]");
             Thread.Sleep(1000);
         }
 
@@ -494,7 +486,7 @@ namespace UI
             Title(title);
             if (title == "CREATE ORDER")
             {
-                TimeLine(TimeLineCreateOrderContent(1));
+                TimeLine(TimeLineContent(1, "CREATE ORDER"));
                 var choice = AnsiConsole.Prompt(
            new SelectionPrompt<string>()
            .Title("Move [green]UP/DOWN[/] button and [Green]ENTER[/] to select.")
@@ -509,7 +501,7 @@ namespace UI
                             {
                                 ApplicationLogoAfterLogin(staff);
                                 Title(title);
-                                TimeLine(TimeLineCreateOrderContent(1));
+                                TimeLine(TimeLineContent(1, "CREATE ORDER"));
                                 PrintAllTables(listTable);
                                 AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [Red]TABLE ID = 0[/] to [red]EXIT[/]: ");
                                 if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
@@ -603,21 +595,19 @@ namespace UI
                 Title(title);
                 if (title == "CREATE ORDER")
                 {
-                    TimeLine(TimeLineCreateOrderContent(3));
+                    TimeLine(TimeLineContent(3, "CREATE ORDER"));
                 }
                 else if (title == "ADD PRODUCT TO ORDER")
                 {
-                    TimeLine(TimeLineAddProductToOrder(2));
+                    TimeLine(TimeLineContent(2, "ADD PRODUCT TO ORDER"));
                 }
                 else if (title == "CHANGE PRODUCT IN ORDER")
                 {
-                    TimeLine(TimeLineChangeProductInOrderContent(3));
+                    TimeLine(TimeLineContent(3, "CHANGE PRODUCT IN ORDER"));
                 }
                 PrintProductTable(productBL.GetProductById(productId));
                 Product currentProduct = productBL.GetProductById(productId);
-                // Console.WriteLine("Product ID: " + currentProduct.ProductId);
                 Console.WriteLine("Product Name: " + currentProduct.ProductName);
-                // AnsiConsole.Markup("Press [green]UP/DOWN[/] button and [Green] ENTER[/] to select to choose [Green]PRODUCT SIZE[/]):");
                 var choice = AnsiConsole.Prompt(
            new SelectionPrompt<string>()
            .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
@@ -646,7 +636,7 @@ namespace UI
             Title(title);
             if (title == "CREATE ORDER")
             {
-                TimeLine(TimeLineCreateOrderContent(5));
+                TimeLine(TimeLineContent(5, "CREATE ORDER"));
             }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn("[Bold]SALE RECEIPT[/]").Centered());
@@ -712,27 +702,18 @@ namespace UI
             return choice;
         }
 
-        public string AskToContinueUpdateTable(int newTable, int currentTable)
-        {
-            string[] item = { "Yes", "No" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title($"Do you want to [Green]CONTINUE[/] change table {currentTable} to table {newTable} ?")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
         public void About(Staff orderStaff)
         {
             Console.Clear();
             ApplicationLogoAfterLogin(orderStaff);
             Title("ABOUT");
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Coffee Shop Management Application");
-            Console.WriteLine("Version: Beta_0.3.2");
-            Console.WriteLine("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
-            Console.WriteLine("Instructor: Nguyen Xuan Sinh");
+            var table = new Spectre.Console.Table();
+            table.AddColumn(new TableColumn ("ABOUT").Centered());
+            table.AddRow("Coffee Shop Management Application");
+            table.AddRow("Version: V1.0.0");
+            table.AddRow("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");
+            table.AddRow("Instructor: Nguyen Xuan Sinh");
+            AnsiConsole.Write(table.Centered());
             PressAnyKeyToContinue();
         }
 
@@ -885,15 +866,15 @@ namespace UI
             Title(title);
             if (title == "REMOVE PRODUCT IN ORDER")
             {
-                TimeLine(TimeLineDeleteProductInOrderContent(step));
+                TimeLine(TimeLineContent(step, "REMOVE PRODUCT IN ORDER"));
             }
             else if (title == "ADD PRODUCT TO ORDER")
             {
-                TimeLine(TimeLineAddProductToOrder(step));
+                TimeLine(TimeLineContent(step, "ADD PRODUCT TO ORDER"));
             }
             else if (title == "CHANGE PRODUCT IN ORDER")
             {
-                TimeLine(TimeLineChangeProductInOrderContent(step));
+                TimeLine(TimeLineContent(step, "CHANGE PRODUCT IN ORDER"));
             }
             var warp = new Spectre.Console.Table();
             warp.AddColumn(new TableColumn($"[Bold]{"Order Id: " + order.OrderId}[/]").Centered());
@@ -984,10 +965,10 @@ namespace UI
                     {
                         status = "[Green]CONFIRMED[/]";
                     }
-                    tableOrdersInBar.AddRow($"{order.TableID}", $"{staffBL.GetStaffById(order.OrderStaffID).StaffName}", $"{order.OrderDate}", status, $"[Green]{formattedTotal}+ VND[/]");
+                    tableOrdersInBar.AddRow($"{order.TableID}", $"{staffBL.GetStaffById(order.OrderStaffID).StaffName}", $"{order.OrderDate}", status, $"[Green]{formattedTotal} VND[/]");
                     totalInBar += totalAmount;
                 }
-
+                AnsiConsole.Write(tableOrdersInBar.Centered());
             }
             decimal totalTakeAway = 0;
             if (ordersTakeAway.Count > 0)
@@ -1016,9 +997,10 @@ namespace UI
                     {
                         status = "[Green]CONFIRMED[/]";
                     }
-                    tableOrdersTakeAway.AddRow($"{order.OrderId}", $"{staffBL.GetStaffById(order.OrderStaffID).StaffName}", $"{order.OrderDate}", status, $"[Green]{formattedTotal}+ VND[/]");
+                    tableOrdersTakeAway.AddRow($"{order.OrderId}", $"{staffBL.GetStaffById(order.OrderStaffID).StaffName}", $"{order.OrderDate}", status, $"[Green]{formattedTotal} VND[/]");
                     totalTakeAway += totalAmount;
                 }
+                AnsiConsole.Write(tableOrdersTakeAway.Centered());
             }
             decimal total = totalInBar + totalTakeAway;
             string totalFormat = total.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));

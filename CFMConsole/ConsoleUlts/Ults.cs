@@ -16,122 +16,8 @@ public class Ults
     TableBL tableBL = new TableBL();
     List<Product>? lstproduct;
     Staff currentStaff;
-    string[] MainMenu = { "Create Order", "Update Order", "Update Product Status Instock", "Payment", "Check Out", "About" };
 
-    public void Login()
-    {
-        bool active = true;
-        UI.Introduction();
-        while (active)
-        {
-            string UserName;
-            UI.ApplicationLogoBeforeLogin();
-            UI.Title("LOGIN");
-            UI.GreenMessage("Input User name and password to LOGIN or input User Name = 0 to EXIT.");
-            Console.Write("User Name: ");
-            UserName = Console.ReadLine();
-            if (UserName == "0")
-            {
-                break;
-            }
-            else
-            {
-                Console.Write("Password: ");
-                currentStaff = staffBL.GetPasswordAndCheckAuthorize(UserName);
-            }
-
-            if (currentStaff != null)
-            {
-                currentStaff.LoginTime = DateTime.Now;
-                bool login = true;
-                UI.WelcomeStaff(currentStaff);
-                bool checkNull = staffBL.CheckNullableInLogindetails();
-                if (checkNull == false)
-                {
-                    Staff lastStaff = staffBL.GetLastStaffLogOut();
-                    if (lastStaff != null)
-                    {
-                        if (currentStaff.StaffId != lastStaff.StaffId)
-                        {
-                            if (currentStaff.LoginTime.Day == lastStaff.LogoutTime.Day)
-                            {
-                                List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
-                                List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
-                                UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
-                                string ask = UI.Ask($"This is the information of staff {staffBL.GetStaffById(lastStaff.StaffId).StaffName} for the previous shift, are you sure it is correct?");
-                                switch (ask)
-                                {
-                                    case "Yes":
-                                        login = true;
-                                        UI.GreenMessage("Thank you for your confirmation, have a good day !");
-                                        staffBL.InsertNewLoginDetails(currentStaff);
-                                        UI.PressAnyKeyToContinue();
-                                        break;
-                                    case "No":
-                                        login = false;
-                                        UI.RedMessage($"Please contact the staff of the previous shift ({staffBL.GetStaffById(lastStaff.StaffId).StaffName}) to confirm the information.");
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    staffBL.InsertNewLoginDetails(currentStaff);
-                }
-                while (login)
-                {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    UI.ApplicationLogoAfterLogin(currentStaff);
-                    string MainMenuChoice = UI.Menu("MAIN MENU", MainMenu);
-
-                    switch (MainMenuChoice)
-                    {
-                        case "Create Order":
-                            CreateOrder();
-                            break;
-                        case "Update Order":
-                            UpdateOrder();
-                            break;
-                        case "Payment":
-                            Payment();
-                            break;
-                        case "Update Product Status Instock":
-                            UpdateProductStatusInstock();
-                            break;
-                        case "Check Out":
-                            List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
-                            List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
-                            UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
-                            string checkOut = UI.Ask("Do you want to check out ?");
-                            switch (checkOut)
-                            {
-                                case "Yes":
-                                    currentStaff.LogoutTime = DateTime.Now;
-                                    Console.WriteLine("Check out: " + (staffBL.UpdateLogoutTimeForStaff(currentStaff) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
-                                    // staffBL.UpdateLogoutTimeForStaff(currentStaff);
-                                    login = false;
-                                    break;
-                                case "No":
-                                    break;
-                            }
-                            break;
-                        case "About":
-                            UI.About(currentStaff);
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("");
-                UI.RedMessage("Invalid Username or Password ! Please re-enter.");
-            }
-        }
-    }
-
-    public void CreateOrder()
+    public void CreateOrder(Staff currentStaff)
     {
         bool active = true;
         Product product;
@@ -191,7 +77,7 @@ public class Ults
                             switch (createAsk)
                             {
                                 case "Yes":
-                                    AnsiConsole.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
+                                    AnsiConsole.Markup("Create Order: " + (orderBL.SaveOrder(orders) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                     Console.WriteLine("Your Order Id is : " + orders.OrderId);
                                     UI.PressAnyKeyToContinue();
                                     active = false;
@@ -219,7 +105,7 @@ public class Ults
 
     }
 
-    public void UpdateOrder()
+    public void UpdateOrder(Staff currentStaff)
     {
         string title = "UPDATE ORDER";
         List<Product> listAllProducts = productBL.GetAll();
@@ -304,7 +190,7 @@ public class Ults
                                                         {
                                                             case "Yes":
                                                                 order.OrderStatus = 1;
-                                                                AnsiConsole.Markup("Update Order: " + (orderBL.UpdateOrder(order) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
+                                                                AnsiConsole.Markup("Update Order: " + (orderBL.UpdateOrder(order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                                 UI.PressAnyKeyToContinue();
                                                                 continuee = false;
                                                                 subActive = false;
@@ -337,7 +223,7 @@ public class Ults
                                         switch (deleteOrderAsk)
                                         {
                                             case "Yes":
-                                                AnsiConsole.Markup("Delete Order: " + (orderBL.DeleteOrder(order) ? "[green]COMPLETED[/] !" : "[red]NOT COMPLETED[/] !"));
+                                                AnsiConsole.Markup("Delete Order: " + (orderBL.DeleteOrder(order) ? "[green]COMPLETED[/] !\n" : "[red]NOT COMPLETED[/] !\n"));
                                                 UI.PressAnyKeyToContinue();
                                                 view = false;
                                                 break;
@@ -366,7 +252,7 @@ public class Ults
                                     switch (changeAsk)
                                     {
                                         case "Yes":
-                                            Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
+                                            AnsiConsole.Markup("Update Order: " + (orderBL.UpdateOrder(order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                             UI.PressAnyKeyToContinue();
                                             break;
                                         case "No":
@@ -386,11 +272,11 @@ public class Ults
                                     }
                                     else
                                     {
-                                        string continueChange = UI.AskToContinueUpdateTable(newTable, order.TableID);
+                                        string continueChange = UI.Ask($"Do you want to [Green]CONTINUE[/] change table {order.TableID} to table {newTable} ?");
                                         switch (continueChange)
                                         {
                                             case "Yes":
-                                                Console.WriteLine("Update Order: " + (tableBL.ChangeTableOrder(newTable, order) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
+                                                AnsiConsole.Markup("Update Order: " + (tableBL.ChangeTableOrder(newTable, order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                 UI.PressAnyKeyToContinue();
                                                 break;
                                             case "No":
@@ -444,7 +330,7 @@ public class Ults
                                         switch (deleteOrderAsk)
                                         {
                                             case "Yes":
-                                                Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
+                                                AnsiConsole.Markup("Delete Order: " + (orderBL.DeleteOrder(order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                 UI.PressAnyKeyToContinue();
                                                 view = false;
                                                 break;
@@ -488,7 +374,7 @@ public class Ults
         }
     }
 
-    public void Payment()
+    public void Payment(Staff currentStaff)
     {
         string title = "PAYMENT";
         bool active = true;
@@ -576,7 +462,7 @@ public class Ults
                                                             UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
                                                             Console.WriteLine($"Amount received: {received} VND");
                                                             Console.WriteLine($"Return amount: {received - totalAmount} VND");
-                                                            AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[green]Completed[/] !" : "[red]not complete[/]!"));
+                                                            AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                             paid = false;
                                                             UI.PressAnyKeyToContinue();
                                                             break;
@@ -649,7 +535,7 @@ public class Ults
                                                                     Console.WriteLine($"Amount received: {received} VND");
                                                                     Console.WriteLine($"Return amount: {received - totalAmount} VND");
                                                                     orderBL.UpdateOrder(orderChoose);
-                                                                    AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[green]Completed[/] !" : "[red]not complete[/]!"));
+                                                                    AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                                     paid = false;
                                                                     UI.PressAnyKeyToContinue();
                                                                     break;
@@ -757,7 +643,7 @@ public class Ults
                                                             UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
                                                             Console.WriteLine($"Amount received: {received} VND");
                                                             Console.WriteLine($"Return amount: {received - totalAmount} VND");
-                                                            AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[green]Completed[/] !" : "[red]not complete[/]!"));
+                                                            AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                             paid = false;
                                                             UI.PressAnyKeyToContinue();
                                                             break;
@@ -830,7 +716,7 @@ public class Ults
                                                                     Console.WriteLine($"Amount received: {received} VND");
                                                                     Console.WriteLine($"Return amount: {received - totalAmount} VND");
                                                                     orderBL.UpdateOrder(orderChoose);
-                                                                    AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[green]Completed[/] !" : "[red]not complete[/]!"));
+                                                                    AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                                     paid = false;
                                                                     UI.PressAnyKeyToContinue();
                                                                     break;
@@ -1200,7 +1086,7 @@ public class Ults
                     {
                         order.OrderStatus = 2;
                     }
-                    Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                    AnsiConsole.Markup("Update Order: " + (orderBL.UpdateOrder(order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                     UI.PressAnyKeyToContinue();
                     active = false;
                     break;
@@ -1218,7 +1104,7 @@ public class Ults
         }
     }
 
-    public void UpdateProductStatusInstock()
+    public void UpdateProductStatusInstock(Staff currentStaff)
     {
         bool active = true;
         while (active)
@@ -1256,7 +1142,7 @@ public class Ults
                                     else
                                     {
                                         int newStatus = 0;
-                                        UI.GreenMessage("Change status " + (productBL.ChangeProductStatus(newStatus, product.ProductId) ? "completed!" : "not complete!"));
+                                        UI.GreenMessage("Change status " + (productBL.ChangeProductStatus(newStatus, product.ProductId) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                         UI.PressAnyKeyToContinue();
                                     }
                                     break;
@@ -1268,7 +1154,7 @@ public class Ults
                                     else
                                     {
                                         int newStatus = 1;
-                                        UI.GreenMessage("Change status " + (productBL.ChangeProductStatus(newStatus, product.ProductId) ? "completed!" : "not complete!"));
+                                        UI.GreenMessage("Change status " + (productBL.ChangeProductStatus(newStatus, product.ProductId) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                         UI.PressAnyKeyToContinue();
                                     }
                                     break;
@@ -1352,7 +1238,7 @@ public class Ults
                 switch (deleteOrderAsk)
                 {
                     case "Yes":
-                        Console.WriteLine("Delete Order: " + (orderBL.DeleteOrder(order) ? "completed!" : "not complete!"));
+                        AnsiConsole.Markup("Delete Order: " + (orderBL.DeleteOrder(order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                         UI.PressAnyKeyToContinue();
                         active = false;
                         break;
@@ -1397,7 +1283,7 @@ public class Ults
                     {
                         Console.WriteLine($"Can't delete product {targetnumber} because it's finished ");
                     }
-                    Console.WriteLine("Update Order: " + (orderBL.UpdateOrder(order) ? "completed!" : "not complete!"));
+                    AnsiConsole.Markup("Update Order: " + (orderBL.UpdateOrder(order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                     UI.PressAnyKeyToContinue();
                     active = false;
                     break;

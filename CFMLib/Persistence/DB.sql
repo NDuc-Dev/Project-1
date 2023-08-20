@@ -1,6 +1,6 @@
-DROP database if exists coffeeshop;
-CREATE DATABASE CoffeeShop;
-use CoffeeShop;
+DROP database if exists csm;
+CREATE DATABASE csm;
+use csm;
 -- drop database coffeeshop;
 
 -- CREATE DATABASE AND TABLES
@@ -472,4 +472,4 @@ value ('5', 'Create Product Milk Tea');
 
 -- CREATE AN SUB ACCOUNT TO DATABASE 
 CREATE USER IF NOT exists 'nguyenngocduc'@'localhost' IDENTIFIED BY 'Duc265204@';
-GRANT ALL PRIVILEGES ON coffeeshop.* TO 'nguyenngocduc'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON csm.* TO 'nguyenngocduc'@'localhost' WITH GRANT OPTION;
