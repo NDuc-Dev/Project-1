@@ -47,5 +47,20 @@ namespace BL
         {
             return staffDAL.GetLastStaffLogOut();
         }
+
+        public bool CheckNullableInLogindetails()
+        {
+            return staffDAL.CheckNullableInLogindetails();
+        }
+
+        public bool InsertNewLoginDetails(Staff staff)
+        {
+            return staffDAL.InsertNewLoginDetails(staff);
+        }
+
+        public bool UpdateLogoutTimeForStaff(Staff staff)
+        {
+            return staffDAL.UpdateLogoutTimeForStaff(staff);
+        }
     }
 }

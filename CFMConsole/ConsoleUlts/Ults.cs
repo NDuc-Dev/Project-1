@@ -45,34 +45,41 @@ public class Ults
                 currentStaff.LoginTime = DateTime.Now;
                 bool login = true;
                 UI.WelcomeStaff(currentStaff);
-                Staff lastStaff = staffBL.GetLastStaffLogOut();
-                if (lastStaff != null)
+                bool checkNull = staffBL.CheckNullableInLogindetails();
+                if (checkNull == false)
                 {
-                    if (currentStaff.StaffId != lastStaff.StaffId)
+                    Staff lastStaff = staffBL.GetLastStaffLogOut();
+                    if (lastStaff != null)
                     {
-                        if (currentStaff.LoginTime.Day == lastStaff.LogoutTime.Day)
+                        if (currentStaff.StaffId != lastStaff.StaffId)
                         {
-                            List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
-                            List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
-                            UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
-                            string ask = UI.Ask($"This is the information of staff {staffBL.GetStaffById(lastStaff.StaffId).StaffName} for the previous shift, are you sure it is correct?");
-                            switch (ask)
+                            if (currentStaff.LoginTime.Day == lastStaff.LogoutTime.Day)
                             {
-                                case "Yes":
-                                    login = true;
-                                    UI.GreenMessage("Thank you for your confirmation, have a good day !");
-                                    
-                                    UI.PressAnyKeyToContinue();
-                                    break;
-                                case "No":
-                                    login = false;
-                                    break;
+                                List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
+                                List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
+                                UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
+                                string ask = UI.Ask($"This is the information of staff {staffBL.GetStaffById(lastStaff.StaffId).StaffName} for the previous shift, are you sure it is correct?");
+                                switch (ask)
+                                {
+                                    case "Yes":
+                                        login = true;
+                                        UI.GreenMessage("Thank you for your confirmation, have a good day !");
+                                        staffBL.InsertNewLoginDetails(currentStaff);
+                                        UI.PressAnyKeyToContinue();
+                                        break;
+                                    case "No":
+                                        login = false;
+                                        UI.RedMessage($"Please contact the staff of the previous shift ({staffBL.GetStaffById(lastStaff.StaffId).StaffName}) to confirm the information.");
+                                        break;
+                                }
                             }
                         }
                     }
                 }
-                Console.WriteLine(currentStaff.LoginTime);
-                Console.ReadKey();
+                else
+                {
+                    staffBL.InsertNewLoginDetails(currentStaff);
+                }
                 while (login)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
@@ -101,6 +108,9 @@ public class Ults
                             switch (checkOut)
                             {
                                 case "Yes":
+                                    currentStaff.LogoutTime = DateTime.Now;
+                                    Console.WriteLine("Check out: " + (staffBL.UpdateLogoutTimeForStaff(currentStaff) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
+                                    // staffBL.UpdateLogoutTimeForStaff(currentStaff);
                                     login = false;
                                     break;
                                 case "No":
@@ -181,7 +191,7 @@ public class Ults
                             switch (createAsk)
                             {
                                 case "Yes":
-                                    Console.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
+                                    AnsiConsole.WriteLine("Create Order: " + (orderBL.SaveOrder(orders) ? "[Green]SUCCESS[/] !" : "[Red]WRONG[/] !"));
                                     Console.WriteLine("Your Order Id is : " + orders.OrderId);
                                     UI.PressAnyKeyToContinue();
                                     active = false;
