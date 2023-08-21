@@ -262,7 +262,7 @@ public class Ults
                                     }
                                     break;
                                 case "Confirm product in order":
-                                    ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff);
+                                    ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff, currentStaff);
                                     break;
                                 case "Change Table":
                                     int newTable = UI.ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
@@ -350,7 +350,7 @@ public class Ults
                                         view = false;
                                     break;
                                 case "Confirm product in order":
-                                    ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff);
+                                    ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff, currentStaff);
                                     break;
                                 case "Exit":
                                     view = false;
@@ -816,15 +816,13 @@ public class Ults
         return product;
     }
 
-    public Order GetOrderToViewDetails(List<Order> listOrder, Staff orderStaff, string title, string subtitle)
+    public Order GetOrderToViewDetails(List<Order> listOrder, Staff currentStaff, string title, string subtitle)
     {
         bool active = true;
         Order order = null;
         bool err = false;
         while (active)
         {
-
-
             do
             {
                 if (subtitle == "IN BAR")
@@ -1022,7 +1020,7 @@ public class Ults
         return newList;
     }
 
-    public void ChangeProductStatusToComplete(List<Product> listProductsInOrder, Order order, string title, Staff staff)
+    public void ChangeProductStatusToComplete(List<Product> listProductsInOrder, Order order, string title, Staff staff, Staff currentStaff)
     {
         bool active = true;
 
