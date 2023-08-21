@@ -2,7 +2,6 @@ using BL;
 using Persistence;
 using Spectre.Console;
 using System.Globalization;
-using System.Xml;
 
 namespace UI
 {
@@ -478,111 +477,113 @@ namespace UI
 
         public int ChooseTable(Staff staff, string title, int tableOrder)
         {
-            int tableId = 0;
-            List<Persistence.Table> listTable = tableBL.GetAll();
-            bool checkTableId;
-
-            ApplicationLogoAfterLogin(staff);
-            Title(title);
-            if (title == "CREATE ORDER")
+            while (true)
             {
-                TimeLine(TimeLineContent(1, "CREATE ORDER"));
-                var choice = AnsiConsole.Prompt(
-           new SelectionPrompt<string>()
-           .Title("Move [green]UP/DOWN[/] button and [Green]ENTER[/] to select.")
-           .PageSize(3)
-           .AddChoices("Drink at the Coffee Shop", "Takeout orders", "Exit"));
-                switch (choice)
+
+                int tableId = -1;
+                List<Persistence.Table> listTable = tableBL.GetAll();
+                bool checkTableId;
+
+                ApplicationLogoAfterLogin(staff);
+                Title(title);
+                if (title == "CREATE ORDER")
                 {
-                    case "Drink at the Coffee Shop":
-                        while (true)
-                        {
-                            do
+                    TimeLine(TimeLineContent(1, "CREATE ORDER"));
+                    var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Move [green]UP/DOWN[/] button and [Green]ENTER[/] to select.")
+               .PageSize(3)
+               .AddChoices("Drink at the Coffee Shop", "Takeout orders", "Exit"));
+                    switch (choice)
+                    {
+                        case "Drink at the Coffee Shop":
+                            while (true)
                             {
                                 ApplicationLogoAfterLogin(staff);
                                 Title(title);
                                 TimeLine(TimeLineContent(1, "CREATE ORDER"));
                                 PrintAllTables(listTable);
-                                AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [Red]TABLE ID = 0[/] to [red]EXIT[/]: ");
-                                if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
+                                do
                                 {
-                                    if (tableId == 0)
+                                    AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [Red]TABLE ID = 0[/] to [red]EXIT[/]: ");
+                                    if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                                     {
-                                        return -1;
-                                    }
-                                    else
-                                    {
-                                        if (tableBL.GetTableById(tableId).TableStatus == 1)
+                                        if (tableId == 0)
                                         {
-                                            RedMessage("Table is using, please re-enter Table ID.");
-                                            checkTableId = false;
-                                        }
-                                        else if (tableBL.GetTableById(tableId).TableId == 0)
-                                        {
-                                            RedMessage("Invalid Id, please re-enter Table ID.");
-                                            checkTableId = false;
+                                            return -1;
                                         }
                                         else
                                         {
-                                            return tableBL.GetTableById(tableId).TableId;
+                                            if (tableBL.GetTableById(tableId).TableStatus == 1)
+                                            {
+                                                RedMessage("Table is using, please re-enter Table ID.");
+                                                checkTableId = false;
+                                            }
+                                            else if (tableBL.GetTableById(tableId).TableId == 0)
+                                            {
+                                                RedMessage("Invalid Id, please re-enter Table ID.");
+                                                checkTableId = false;
+                                            }
+                                            else
+                                            {
+                                                return tableBL.GetTableById(tableId).TableId;
+                                            }
                                         }
                                     }
+                                    else
+                                    {
+                                        checkTableId = false;
+                                        RedMessage("Invalid Id, please re-enter Table ID");
+                                    }
                                 }
-                                else
-                                {
-                                    checkTableId = false;
-                                    RedMessage("Invalid Id, please re-enter Table ID");
-                                }
+                                while (checkTableId);
                             }
-                            while (checkTableId);
-                        }
-                    case "Takeout orders":
-                        return 0;
-                    case "Exit":
-                        return -1;
-                }
-            }
-            else if (title == "CHANGE ORDER TABLE")
-            {
-                do
-                {
-                    PrintAllTables(listTable);
-                    AnsiConsole.Markup($"\nCurrent [Green]TABLE ID[/] of this order is [green]{tableOrder}[/].");
-                    AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table to change or input [green]0[/] to exit: ");
-                    if (int.TryParse(Console.ReadLine(), out tableId) && tableId > 0)
-                    {
-                        if (tableId == 0)
-                        {
+                        case "Takeout orders":
                             return 0;
-                        }
-                        else
+                        case "Exit":
+                            return -1;
+                    }
+                }
+                else if (title == "CHANGE ORDER TABLE")
+                {
+                    do
+                    {
+                        PrintAllTables(listTable);
+                        AnsiConsole.Markup($"\nCurrent [Green]TABLE ID[/] of this order is [green]{tableOrder}[/].");
+                        AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table to change or input [green]0[/] to exit: ");
+                        if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                         {
-                            if (tableBL.GetTableById(tableId).TableStatus == 1)
+                            if (tableId == 0)
                             {
-                                RedMessage("Table is using, please re-enter Table ID.");
-                                checkTableId = false;
-                            }
-                            else if (tableBL.GetTableById(tableId).TableId == 0)
-                            {
-                                RedMessage("Invalid Id, please re-enter Table ID.");
-                                checkTableId = false;
+                                return -1;
                             }
                             else
                             {
-                                return tableBL.GetTableById(tableId).TableId;
+                                if (tableBL.GetTableById(tableId).TableStatus == 1)
+                                {
+                                    RedMessage("Table is using, please re-enter Table ID.");
+                                    checkTableId = false;
+                                }
+                                else if (tableBL.GetTableById(tableId).TableId == 0)
+                                {
+                                    RedMessage("Invalid Id, please re-enter Table ID.");
+                                    checkTableId = false;
+                                }
+                                else
+                                {
+                                    return tableBL.GetTableById(tableId).TableId;
+                                }
                             }
                         }
+                        else
+                        {
+                            checkTableId = false;
+                            RedMessage("Invalid Id, please re-enter Table ID");
+                        }
                     }
-                    else
-                    {
-                        checkTableId = false;
-                        RedMessage("Invalid Id, please re-enter Table ID");
-                    }
+                    while (checkTableId);
                 }
-                while (checkTableId);
             }
-
-            return tableId;
         }
         public int ChooseProductsize(Staff staff, int productId, string title)
         {
@@ -708,7 +709,7 @@ namespace UI
             ApplicationLogoAfterLogin(orderStaff);
             Title("ABOUT");
             var table = new Spectre.Console.Table();
-            table.AddColumn(new TableColumn ("ABOUT").Centered());
+            table.AddColumn(new TableColumn("ABOUT").Centered());
             table.AddRow("Coffee Shop Management Application");
             table.AddRow("Version: V1.0.0");
             table.AddRow("Made By : Nguyen Ngoc Duc, Nguyen Thi Khanh Ly");

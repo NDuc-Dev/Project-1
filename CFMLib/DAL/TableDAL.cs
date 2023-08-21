@@ -31,7 +31,7 @@ namespace DAL
             Table table = new Table();
             try
             {
-                query = @"select * from tables where table_id=@tableId and table_status = 0;";
+                query = @"select * from tables where table_id=@tableId;";
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@tableId", tableId);
                 MySqlDataReader reader = command.ExecuteReader();

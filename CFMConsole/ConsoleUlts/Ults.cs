@@ -237,13 +237,13 @@ public class Ults
                                     }
                                     else
                                     {
-                                        RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
+                                        RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
                                     }
                                     if (order.ProductsList.Count() == 0)
                                         view = false;
                                     break;
                                 case "Change product in order":
-                                    List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff);
+                                    List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff, currentStaff);
                                     if (listProductChange == null)
                                         break;
                                     order.ProductsList = listProductChange;
@@ -265,25 +265,40 @@ public class Ults
                                     ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff, currentStaff);
                                     break;
                                 case "Change Table":
-                                    int newTable = UI.ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
-                                    if (newTable == 0)
+                                    bool checkExit = false;
+                                    while (checkExit == false)
                                     {
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        string continueChange = UI.Ask($"Do you want to [Green]CONTINUE[/] change table {order.TableID} to table {newTable} ?");
-                                        switch (continueChange)
+                                        int newTable = UI.ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
+                                        if (newTable == -1)
                                         {
-                                            case "Yes":
-                                                AnsiConsole.Markup("Update Order: " + (tableBL.ChangeTableOrder(newTable, order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
-                                                UI.PressAnyKeyToContinue();
-                                                break;
-                                            case "No":
-                                                AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
-                                                UI.PressAnyKeyToContinue();
-                                                break;
+                                            checkExit = true;
+                                            break;
                                         }
+                                        else if (newTable == -1)
+                                        {
+                                            checkExit = true;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            string continueChange = UI.Ask($"Do you want to [Green]CONTINUE[/] change table {order.TableID} to table {newTable} ?");
+                                            switch (continueChange)
+                                            {
+                                                case "Yes":
+                                                    AnsiConsole.Markup("Update Order: " + (tableBL.ChangeTableOrder(newTable, order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                    UI.PressAnyKeyToContinue();
+                                                    break;
+                                                case "No":
+                                                    AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                                    UI.PressAnyKeyToContinue();
+                                                    break;
+                                            }
+                                        }
+                                        if (checkExit == true)
+                                        {
+                                            break;
+                                        }
+
                                     }
                                     break;
                                 case "Exit":
@@ -344,7 +359,7 @@ public class Ults
                                     }
                                     else
                                     {
-                                        RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff);
+                                        RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
                                     }
                                     if (order.ProductsList.Count() == 0)
                                         view = false;
@@ -776,7 +791,7 @@ public class Ults
                 UI.PrintNewProductsTable(lstproduct, orderStaff, title);
                 AnsiConsole.Markup("Product Number: ");
                 int productNumber;
-                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0)
+                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= lstproduct.Count)
                 {
                     if (productNumber == 0)
                     {
@@ -928,7 +943,7 @@ public class Ults
         return order;
     }
 
-    public List<Product> GetProductToChange(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff)
+    public List<Product> GetProductToChange(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff, Staff currentStaff)
     {
         bool active = true;
         List<Product> newList = new List<Product>();
@@ -1177,7 +1192,7 @@ public class Ults
 
     }
 
-    public void RemoveProductsInOrder(List<Product> listProductsInOrder, string title, Order order, Staff staff)
+    public void RemoveProductsInOrder(List<Product> listProductsInOrder, string title, Order order, Staff staff, Staff currentStaff)
     {
         bool active = true;
         while (active)

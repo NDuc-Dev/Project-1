@@ -87,8 +87,7 @@ Login_time datetime default current_timestamp,
 Logout_time datetime default current_timestamp,
 Total_Amount_In_Shop decimal not null default '0',
 PRIMARY KEY(Login_Id),
-FOREIGN KEY (Staff_Id) REFERENCES Staffs(Staff_Id),
-FOREIGN KEY (Staff_Id) REFERENCES Orders(Order_Staff_Id)
+FOREIGN KEY (Staff_Id) REFERENCES Staffs(Staff_Id)
 );
 
 -- INSERT STAFF INFO TO TABLE "STAFFS"
