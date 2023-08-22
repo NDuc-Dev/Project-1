@@ -403,362 +403,368 @@ public class Ults
             switch (choice)
             {
                 case "Drink at the Coffee Shop":
-                    List<Order> listOrderInBarInprogress = orderBL.GetOrdersInBarInprogress();
-                    if (listOrderInBarInprogress.Count() == 0)
+                    while (true)
                     {
-                        UI.ApplicationLogoAfterLogin(currentStaff);
-                        UI.Title(title);
-                        UI.RedMessage("No orders have been created yet !");
-                        break;
-                    }
-                    else
-                    {
-                        orderChoose = GetOrderToViewDetails(listOrderInBarInprogress, currentStaff, title, "IN BAR");
-                        if (orderChoose == null)
+
+                        List<Order> listOrderInBarInprogress = orderBL.GetOrdersInBarInprogress();
+                        if (listOrderInBarInprogress.Count() == 0)
                         {
+                            UI.ApplicationLogoAfterLogin(currentStaff);
+                            UI.Title(title);
+                            UI.RedMessage("No orders have been created yet !");
                             break;
                         }
                         else
                         {
-                            orderChoose.ProductsList = productBL.GetListProductsInOrder(orderChoose.OrderId);
-                            orderStaff = staffBL.GetStaffById(orderChoose.OrderStaffID);
-                            int checkComplete = 0;
-                            List<Product> productsToRemove = new List<Product>();
-                            foreach (Product productInOrder in orderChoose.ProductsList)
+                            orderChoose = GetOrderToViewDetails(listOrderInBarInprogress, currentStaff, title, "IN BAR");
+                            if (orderChoose == null)
                             {
-                                if (productInOrder.StatusInOrder == 2)
-                                {
-                                    checkComplete++;
-                                }
-                                else
-                                {
-                                    productsToRemove.Add(productInOrder);
-                                }
-                            }
-                            if (checkComplete == orderChoose.ProductsList.Count())
-                            {
-                                UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
-                                switch (complete)
-                                {
-                                    case "Yes":
-                                        bool paid = true;
-                                        while (paid)
-                                        {
-                                            UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                            decimal totalAmount = 0;
-                                            foreach (var item in orderChoose.ProductsList)
-                                            {
-                                                totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
-                                            }
-                                            string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                                            AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
-                                            decimal received = InputTotal();
-                                            if (received == -1)
-                                            {
-                                                break;
-                                            }
-                                            if (received % 1000 == 0)
-                                            {
-                                                string accept = UI.Ask("The amount is too big, are you sure?");
-                                                switch (accept)
-                                                {
-                                                    case "Yes":
-                                                        if (received - totalAmount < 0)
-                                                        {
-                                                            UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                                        }
-                                                        else if (received - totalAmount >= 0)
-                                                        {
-                                                            UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                            Console.WriteLine($"Amount received: {received} VND");
-                                                            Console.WriteLine($"Return amount: {received - totalAmount} VND");
-                                                            AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
-                                                            paid = false;
-                                                            UI.PressAnyKeyToContinue();
-                                                            break;
-                                                        }
-                                                        break;
-                                                    case "No":
-                                                        break;
-                                                }
-                                                if (paid == false)
-                                                {
-                                                    break;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                            }
-
-                                        }
-                                        break;
-                                    case "No":
-                                        break;
-                                }
-                            }
-                            else if (checkComplete > 0 && checkComplete < orderChoose.ProductsList.Count)
-                            {
-                                UI.PrintOrderDetails(orderChoose.ProductsList, currentStaff, orderChoose, title, orderStaff.StaffName, 0);
-                                string delete = UI.Ask($"The order has [green]{orderChoose.ProductsList.Count - checkComplete}[/] unfinished product, do you want to delete the unfinished products and pay now?");
-                                switch (delete)
-                                {
-                                    case "Yes":
-                                        foreach (var productToRemove in productsToRemove)
-                                        {
-                                            orderChoose.ProductsList.Remove(productToRemove);
-                                        }
-                                        UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                        string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
-                                        switch (complete)
-                                        {
-                                            case "Yes":
-                                                bool paid = true;
-                                                while (paid)
-                                                {
-                                                    UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                    decimal totalAmount = 0;
-                                                    foreach (var item in orderChoose.ProductsList)
-                                                    {
-                                                        totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
-                                                    }
-                                                    string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                                                    AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
-                                                    decimal received = InputTotal();
-                                                    if (received == -1)
-                                                    {
-                                                        break;
-                                                    }
-                                                    if (received % 1000 == 0)
-                                                    {
-                                                        string accept = UI.Ask("The amount is too big, are you sure?");
-                                                        switch (accept)
-                                                        {
-                                                            case "Yes":
-                                                                if (received - totalAmount < 0)
-                                                                {
-                                                                    UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                                                }
-                                                                else if (received - totalAmount >= 0)
-                                                                {
-                                                                    UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                                    Console.WriteLine($"Amount received: {received} VND");
-                                                                    Console.WriteLine($"Return amount: {received - totalAmount} VND");
-                                                                    orderBL.UpdateOrder(orderChoose);
-                                                                    AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
-                                                                    paid = false;
-                                                                    UI.PressAnyKeyToContinue();
-                                                                    break;
-                                                                }
-                                                                break;
-                                                            case "No":
-                                                                break;
-                                                        }
-                                                        if (paid == false)
-                                                        {
-                                                            break;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                                    }
-
-                                                }
-                                                break;
-                                            case "No":
-                                                break;
-                                        }
-                                        break;
-                                    case "No":
-                                        break;
-                                }
+                                break;
                             }
                             else
                             {
-                                UI.RedMessage("Unable to pay the order. No finished products yet !");
+                                orderChoose.ProductsList = productBL.GetListProductsInOrder(orderChoose.OrderId);
+                                orderStaff = staffBL.GetStaffById(orderChoose.OrderStaffID);
+                                int checkComplete = 0;
+                                List<Product> productsToRemove = new List<Product>();
+                                foreach (Product productInOrder in orderChoose.ProductsList)
+                                {
+                                    if (productInOrder.StatusInOrder == 2)
+                                    {
+                                        checkComplete++;
+                                    }
+                                    else
+                                    {
+                                        productsToRemove.Add(productInOrder);
+                                    }
+                                }
+                                if (checkComplete == orderChoose.ProductsList.Count())
+                                {
+                                    UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                    string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
+                                    switch (complete)
+                                    {
+                                        case "Yes":
+                                            bool paid = true;
+                                            while (paid)
+                                            {
+                                                UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                decimal totalAmount = 0;
+                                                foreach (var item in orderChoose.ProductsList)
+                                                {
+                                                    totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
+                                                }
+                                                string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                                                AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
+                                                decimal received = InputTotal();
+                                                if (received == -1)
+                                                {
+                                                    break;
+                                                }
+                                                if (received % 1000 == 0)
+                                                {
+                                                    string accept = UI.Ask("The amount is too big, are you sure?");
+                                                    switch (accept)
+                                                    {
+                                                        case "Yes":
+                                                            if (received - totalAmount < 0)
+                                                            {
+                                                                UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                            }
+                                                            else if (received - totalAmount >= 0)
+                                                            {
+                                                                UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                                Console.WriteLine($"Amount received: {received} VND");
+                                                                Console.WriteLine($"Return amount: {received - totalAmount} VND");
+                                                                AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                                paid = false;
+                                                                UI.PressAnyKeyToContinue();
+                                                                break;
+                                                            }
+                                                            break;
+                                                        case "No":
+                                                            break;
+                                                    }
+                                                    if (paid == false)
+                                                    {
+                                                        break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                }
 
+                                            }
+                                            break;
+                                        case "No":
+                                            break;
+                                    }
+                                }
+                                else if (checkComplete > 0 && checkComplete < orderChoose.ProductsList.Count)
+                                {
+                                    UI.PrintOrderDetails(orderChoose.ProductsList, currentStaff, orderChoose, title, orderStaff.StaffName, 0);
+                                    string delete = UI.Ask($"The order has [green]{orderChoose.ProductsList.Count - checkComplete}[/] unfinished product, do you want to delete the unfinished products and pay now?");
+                                    switch (delete)
+                                    {
+                                        case "Yes":
+                                            foreach (var productToRemove in productsToRemove)
+                                            {
+                                                orderChoose.ProductsList.Remove(productToRemove);
+                                            }
+                                            UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                            string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
+                                            switch (complete)
+                                            {
+                                                case "Yes":
+                                                    bool paid = true;
+                                                    while (paid)
+                                                    {
+                                                        UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                        decimal totalAmount = 0;
+                                                        foreach (var item in orderChoose.ProductsList)
+                                                        {
+                                                            totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
+                                                        }
+                                                        string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                                                        AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
+                                                        decimal received = InputTotal();
+                                                        if (received == -1)
+                                                        {
+                                                            break;
+                                                        }
+                                                        if (received % 1000 == 0)
+                                                        {
+                                                            string accept = UI.Ask("The amount is too big, are you sure?");
+                                                            switch (accept)
+                                                            {
+                                                                case "Yes":
+                                                                    if (received - totalAmount < 0)
+                                                                    {
+                                                                        UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                                    }
+                                                                    else if (received - totalAmount >= 0)
+                                                                    {
+                                                                        UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                                        Console.WriteLine($"Amount received: {received} VND");
+                                                                        Console.WriteLine($"Return amount: {received - totalAmount} VND");
+                                                                        orderBL.UpdateOrder(orderChoose);
+                                                                        AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                                        paid = false;
+                                                                        UI.PressAnyKeyToContinue();
+                                                                        break;
+                                                                    }
+                                                                    break;
+                                                                case "No":
+                                                                    break;
+                                                            }
+                                                            if (paid == false)
+                                                            {
+                                                                break;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                        }
+
+                                                    }
+                                                    break;
+                                                case "No":
+                                                    break;
+                                            }
+                                            break;
+                                        case "No":
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    UI.RedMessage("Unable to pay the order. No finished products yet !");
+                                }
                             }
                         }
                     }
                     break;
                 case "Take Away orders":
-                    List<Order> listTakeAwayOrderInprogress = orderBL.GetTakeAwayOrdersInprogress();
-                    if (listTakeAwayOrderInprogress.Count() == 0)
+                    while (true)
                     {
-                        UI.ApplicationLogoAfterLogin(currentStaff);
-                        UI.Title(title);
-                        UI.RedMessage("No orders have been created yet !");
-                        break;
-                    }
-                    else
-                    {
-                        orderChoose = GetOrderToViewDetails(listTakeAwayOrderInprogress, currentStaff, title, "TAKE AWAY");
-                        if (orderChoose == null)
+                        List<Order> listTakeAwayOrderInprogress = orderBL.GetTakeAwayOrdersInprogress();
+                        if (listTakeAwayOrderInprogress.Count() == 0)
                         {
+                            UI.ApplicationLogoAfterLogin(currentStaff);
+                            UI.Title(title);
+                            UI.RedMessage("No orders have been created yet !");
                             break;
                         }
                         else
                         {
-                            orderChoose.ProductsList = productBL.GetListProductsInOrder(orderChoose.OrderId);
-                            orderStaff = staffBL.GetStaffById(orderChoose.OrderStaffID);
-                            int checkComplete = 0;
-                            List<Product> productsToRemove = new List<Product>();
-                            foreach (Product productInOrder in orderChoose.ProductsList)
+                            orderChoose = GetOrderToViewDetails(listTakeAwayOrderInprogress, currentStaff, title, "TAKE AWAY");
+                            if (orderChoose == null)
                             {
-                                if (productInOrder.StatusInOrder == 2)
-                                {
-                                    checkComplete++;
-                                }
-                                else
-                                {
-                                    productsToRemove.Add(productInOrder);
-                                }
-                            }
-                            if (checkComplete == orderChoose.ProductsList.Count())
-                            {
-                                UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
-                                switch (complete)
-                                {
-                                    case "Yes":
-                                        bool paid = true;
-                                        while (paid)
-                                        {
-                                            UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                            decimal totalAmount = 0;
-                                            foreach (var item in orderChoose.ProductsList)
-                                            {
-                                                totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
-                                            }
-                                            string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                                            AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
-                                            decimal received = InputTotal();
-                                            if (received == -1)
-                                            {
-                                                break;
-                                            }
-                                            if (received % 1000 == 0)
-                                            {
-                                                string accept = UI.Ask("The amount is too big, are you sure?");
-                                                switch (accept)
-                                                {
-                                                    case "Yes":
-                                                        if (received - totalAmount < 0)
-                                                        {
-                                                            UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                                        }
-                                                        else if (received - totalAmount >= 0)
-                                                        {
-                                                            UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                            Console.WriteLine($"Amount received: {received} VND");
-                                                            Console.WriteLine($"Return amount: {received - totalAmount} VND");
-                                                            AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
-                                                            paid = false;
-                                                            UI.PressAnyKeyToContinue();
-                                                            break;
-                                                        }
-                                                        break;
-                                                    case "No":
-                                                        break;
-                                                }
-                                                if (paid == false)
-                                                {
-                                                    break;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                            }
-
-                                        }
-                                        break;
-                                    case "No":
-                                        break;
-                                }
-                            }
-                            else if (checkComplete > 0 && checkComplete < orderChoose.ProductsList.Count)
-                            {
-                                UI.PrintOrderDetails(orderChoose.ProductsList, currentStaff, orderChoose, title, orderStaff.StaffName, 0);
-                                string delete = UI.Ask($"The order has [green]{orderChoose.ProductsList.Count - checkComplete}[/] unfinished product, do you want to delete the unfinished products and pay now?");
-                                switch (delete)
-                                {
-                                    case "Yes":
-                                        foreach (var productToRemove in productsToRemove)
-                                        {
-                                            orderChoose.ProductsList.Remove(productToRemove);
-                                        }
-                                        UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                        string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
-                                        switch (complete)
-                                        {
-                                            case "Yes":
-                                                bool paid = true;
-                                                while (paid)
-                                                {
-                                                    UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                    decimal totalAmount = 0;
-                                                    foreach (var item in orderChoose.ProductsList)
-                                                    {
-                                                        totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
-                                                    }
-                                                    string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                                                    AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
-                                                    decimal received = InputTotal();
-                                                    if (received == -1)
-                                                    {
-                                                        break;
-                                                    }
-                                                    if (received % 1000 == 0)
-                                                    {
-                                                        string accept = UI.Ask("The amount is too big, are you sure?");
-                                                        switch (accept)
-                                                        {
-                                                            case "Yes":
-                                                                if (received - totalAmount < 0)
-                                                                {
-                                                                    UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                                                }
-                                                                else if (received - totalAmount >= 0)
-                                                                {
-                                                                    UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                                    Console.WriteLine($"Amount received: {received} VND");
-                                                                    Console.WriteLine($"Return amount: {received - totalAmount} VND");
-                                                                    orderBL.UpdateOrder(orderChoose);
-                                                                    AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
-                                                                    paid = false;
-                                                                    UI.PressAnyKeyToContinue();
-                                                                    break;
-                                                                }
-                                                                break;
-                                                            case "No":
-                                                                break;
-                                                        }
-                                                        if (paid == false)
-                                                        {
-                                                            break;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
-                                                    }
-
-                                                }
-                                                break;
-                                            case "No":
-                                                break;
-                                        }
-                                        break;
-                                    case "No":
-                                        break;
-                                }
+                                break;
                             }
                             else
                             {
-                                UI.RedMessage("Unable to pay the order. No finished products yet !");
+                                orderChoose.ProductsList = productBL.GetListProductsInOrder(orderChoose.OrderId);
+                                orderStaff = staffBL.GetStaffById(orderChoose.OrderStaffID);
+                                int checkComplete = 0;
+                                List<Product> productsToRemove = new List<Product>();
+                                foreach (Product productInOrder in orderChoose.ProductsList)
+                                {
+                                    if (productInOrder.StatusInOrder == 2)
+                                    {
+                                        checkComplete++;
+                                    }
+                                    else
+                                    {
+                                        productsToRemove.Add(productInOrder);
+                                    }
+                                }
+                                if (checkComplete == orderChoose.ProductsList.Count())
+                                {
+                                    UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                    string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
+                                    switch (complete)
+                                    {
+                                        case "Yes":
+                                            bool paid = true;
+                                            while (paid)
+                                            {
+                                                UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                decimal totalAmount = 0;
+                                                foreach (var item in orderChoose.ProductsList)
+                                                {
+                                                    totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
+                                                }
+                                                string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                                                AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
+                                                decimal received = InputTotal();
+                                                if (received == -1)
+                                                {
+                                                    break;
+                                                }
+                                                if (received % 1000 == 0)
+                                                {
+                                                    string accept = UI.Ask("The amount is too big, are you sure?");
+                                                    switch (accept)
+                                                    {
+                                                        case "Yes":
+                                                            if (received - totalAmount < 0)
+                                                            {
+                                                                UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                            }
+                                                            else if (received - totalAmount >= 0)
+                                                            {
+                                                                UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                                Console.WriteLine($"Amount received: {received} VND");
+                                                                Console.WriteLine($"Return amount: {received - totalAmount} VND");
+                                                                AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                                paid = false;
+                                                                UI.PressAnyKeyToContinue();
+                                                                break;
+                                                            }
+                                                            break;
+                                                        case "No":
+                                                            break;
+                                                    }
+                                                    if (paid == false)
+                                                    {
+                                                        break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                }
+
+                                            }
+                                            break;
+                                        case "No":
+                                            break;
+                                    }
+                                }
+                                else if (checkComplete > 0 && checkComplete < orderChoose.ProductsList.Count)
+                                {
+                                    UI.PrintOrderDetails(orderChoose.ProductsList, currentStaff, orderChoose, title, orderStaff.StaffName, 0);
+                                    string delete = UI.Ask($"The order has [green]{orderChoose.ProductsList.Count - checkComplete}[/] unfinished product, do you want to delete the unfinished products and pay now?");
+                                    switch (delete)
+                                    {
+                                        case "Yes":
+                                            foreach (var productToRemove in productsToRemove)
+                                            {
+                                                orderChoose.ProductsList.Remove(productToRemove);
+                                            }
+                                            UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                            string complete = UI.Ask("Do you want to [Green]COMPLETE[/] this order ?");
+                                            switch (complete)
+                                            {
+                                                case "Yes":
+                                                    bool paid = true;
+                                                    while (paid)
+                                                    {
+                                                        UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                        decimal totalAmount = 0;
+                                                        foreach (var item in orderChoose.ProductsList)
+                                                        {
+                                                            totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
+                                                        }
+                                                        string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                                                        AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
+                                                        decimal received = InputTotal();
+                                                        if (received == -1)
+                                                        {
+                                                            break;
+                                                        }
+                                                        if (received % 1000 == 0)
+                                                        {
+                                                            string accept = UI.Ask("The amount is too big, are you sure?");
+                                                            switch (accept)
+                                                            {
+                                                                case "Yes":
+                                                                    if (received - totalAmount < 0)
+                                                                    {
+                                                                        UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                                    }
+                                                                    else if (received - totalAmount >= 0)
+                                                                    {
+                                                                        UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
+                                                                        Console.WriteLine($"Amount received: {received} VND");
+                                                                        Console.WriteLine($"Return amount: {received - totalAmount} VND");
+                                                                        orderBL.UpdateOrder(orderChoose);
+                                                                        AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                                        paid = false;
+                                                                        UI.PressAnyKeyToContinue();
+                                                                        break;
+                                                                    }
+                                                                    break;
+                                                                case "No":
+                                                                    break;
+                                                            }
+                                                            if (paid == false)
+                                                            {
+                                                                break;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
+                                                        }
+
+                                                    }
+                                                    break;
+                                                case "No":
+                                                    break;
+                                            }
+                                            break;
+                                        case "No":
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    UI.RedMessage("Unable to pay the order. No finished products yet !");
+                                }
                             }
                         }
                     }

@@ -511,14 +511,14 @@ namespace DAL
             return listOrder;
         }
 
-        public List<Order> GetOrdersCompleteInDay(DateOnly Now)
+        public List<Order> GetOrdersCompleteInDay(string Now)
         {
-             List<Order> listOrder = new List<Order>();
+            List<Order> listOrder = new List<Order>();
             try
             {
-                MySqlCommand command = new MySqlCommand(query, connection);
-                query = @"SELECT * FROM orders WHERE DATE(order_date) = @Now and order_status = '3';";
-                command.Parameters.AddWithValue("@Now", Now);
+                MySqlCommand command = new MySqlCommand("", connection);
+                query = @$"SELECT * FROM orders WHERE DATE(order_date) = '{Now}' and order_status = '3';";
+                command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {

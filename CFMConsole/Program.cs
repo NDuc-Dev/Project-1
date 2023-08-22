@@ -58,7 +58,8 @@ public class Program
                                 List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
                                 uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
                                 DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                                List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(date);
+                                string selectedDateFormatted = date.ToString("yyyy/MM/dd");
+                                List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
                                 decimal totalAmountInShop = 0;
                                 foreach (Order order in listOrderComplete)
                                 {
@@ -90,7 +91,7 @@ public class Program
                                             if (problemTrimed.Length > 0)
                                             {
                                                 staffBL.InsertNewLoginDetails(currentStaff);
-                                                AnsiConsole.Markup("Check out: " + (staffBL.InsertProblemLogin(problem, currentStaff) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                AnsiConsole.Markup("Update Problem: " + (staffBL.InsertProblemLogin(problem) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                 uI.PressAnyKeyToContinue();
                                                 break;
                                             }
@@ -143,7 +144,8 @@ public class Program
                             uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
                             decimal totalAmountInShop = 0;
                             DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                            List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(date);
+                            string selectedDateFormatted = date.ToString("yyyy/MM/dd");
+                            List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
                             foreach (Order order in listOrderComplete)
                             {
                                 List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
@@ -159,7 +161,9 @@ public class Program
                             {
                                 case "Yes":
                                     currentStaff.LogoutTime = DateTime.Now;
-                                    AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTimeForStaff(currentStaff, totalAmountInShop) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                    string formattedDateTime = currentStaff.LogoutTime.ToString("yyyy-MM-dd HH:mm:ss");
+                                    AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTimeForStaff(formattedDateTime, totalAmountInShop) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                    uI.PressAnyKeyToContinue();
                                     login = false;
                                     break;
                                 case "No":

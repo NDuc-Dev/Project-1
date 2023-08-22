@@ -134,7 +134,7 @@ namespace DAL
             return staff;
         }
 
-        public bool UpdateLogoutTimeForStaff(Staff staff, decimal total)
+        public bool UpdateLogoutTimeForStaff(string time, decimal total)
         {
             bool result = false;
             try
@@ -147,13 +147,22 @@ namespace DAL
                         cmd.Transaction = trans;
                         cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write, login_details write;";
                         cmd.ExecuteNonQuery();
+                        MySqlDataReader? reader = null;
 
-                        cmd.CommandText = "update login_details set logout_time = @logoutTime, total_amount_in_shop = @total where staff_id = @staffId and login_time = @loginTime";
+                        cmd.CommandText = "select LAST_INSERT_ID() as login_Id";
+                        int loginId = 0;
+                        reader = cmd.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            loginId = reader.GetInt32("login_Id");
+                        }
+                        reader.Close();
+                        
+                        cmd.CommandText = $"update login_details set logout_time = '{time}', total_amount_in_shop = @total where login_id = @loginId;";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@total",total);
-                        cmd.Parameters.AddWithValue("@logoutTime", staff.LogoutTime);
-                        cmd.Parameters.AddWithValue("@staffId", staff.StaffId);
-                        cmd.Parameters.AddWithValue("@loginTime", staff.LoginTime);
+                        cmd.Parameters.AddWithValue("@loginId", loginId);
+                        // cmd.Parameters.AddWithValue("@logoutTime", time);
                         cmd.ExecuteNonQuery();
 
                         trans.Commit();
@@ -184,7 +193,7 @@ namespace DAL
             return result;
         }
 
-        public bool InsertProblemLogin(string problem, Staff staff)
+        public bool InsertProblemLogin(string problem)
         {
             bool result = false;
             try
@@ -198,12 +207,22 @@ namespace DAL
                         cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write, login_details write;";
                         cmd.ExecuteNonQuery();
 
+                        MySqlDataReader? reader = null;
+
+                        cmd.CommandText = "select LAST_INSERT_ID() as login_Id";
+                        int loginId = 0;
+                        reader = cmd.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            loginId = reader.GetInt32("login_Id");
+                        }
+                        reader.Close();
+
                         //insert order
-                        cmd.CommandText = "update login_details set Descriptions = @Descriptions where staff_id = @staffId and login_time = @loginTime;";
+                        cmd.CommandText = "update login_details set Descriptions = @Descriptions where login_id = @loginId;";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@Descriptions", problem);
-                        cmd.Parameters.AddWithValue("@staffId", staff.StaffId);
-                        cmd.Parameters.AddWithValue("@loginTime", staff.LoginTime);
+                        cmd.Parameters.AddWithValue("@loginId", loginId);
                         cmd.ExecuteNonQuery();
 
                         //commit transaction
