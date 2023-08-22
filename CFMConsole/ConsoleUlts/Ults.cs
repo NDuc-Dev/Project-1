@@ -15,7 +15,6 @@ public class Ults
     OrderBL orderBL = new OrderBL();
     TableBL tableBL = new TableBL();
     List<Product>? lstproduct;
-    Staff currentStaff;
 
     public void CreateOrder(Staff currentStaff)
     {
@@ -271,14 +270,8 @@ public class Ults
                                         int newTable = UI.ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
                                         if (newTable == -1)
                                         {
-                                            // checkExit = true;
                                             break;
                                         }
-                                        // else if (newTable == -1)
-                                        // {
-                                        //     checkExit = true;
-                                        //     break;
-                                        // }
                                         else
                                         {
                                             string continueChange = UI.Ask($"Do you want to [Green]CONTINUE[/] change table {order.TableID} to table {newTable} ?");
