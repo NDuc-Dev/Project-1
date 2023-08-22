@@ -1,3 +1,4 @@
 {
-    "dotnet.defaultSolution": "CFM(code).sln"
+    "dotnet.defaultSolution": "CFM(code).sln",
+    "C_Cpp.errorSquiggles": "enabled"
 }

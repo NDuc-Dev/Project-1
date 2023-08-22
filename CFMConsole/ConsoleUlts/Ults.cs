@@ -248,7 +248,7 @@ public class Ults
                                         break;
                                     order.ProductsList = listProductChange;
                                     UI.PrintOrderDetails(listProductChange, currentStaff, order, "CHANGE PRODUCT IN ORDER", staff.StaffName, 5);
-                                    string changeAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
+                                    string changeAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] confirm ?");
                                     switch (changeAsk)
                                     {
                                         case "Yes":
@@ -271,14 +271,14 @@ public class Ults
                                         int newTable = UI.ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
                                         if (newTable == -1)
                                         {
-                                            checkExit = true;
+                                            // checkExit = true;
                                             break;
                                         }
-                                        else if (newTable == -1)
-                                        {
-                                            checkExit = true;
-                                            break;
-                                        }
+                                        // else if (newTable == -1)
+                                        // {
+                                        //     checkExit = true;
+                                        //     break;
+                                        // }
                                         else
                                         {
                                             string continueChange = UI.Ask($"Do you want to [Green]CONTINUE[/] change table {order.TableID} to table {newTable} ?");
@@ -286,10 +286,13 @@ public class Ults
                                             {
                                                 case "Yes":
                                                     AnsiConsole.Markup("Update Order: " + (tableBL.ChangeTableOrder(newTable, order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                    checkExit = true;
+                                                    order.TableID = newTable;
                                                     UI.PressAnyKeyToContinue();
                                                     break;
                                                 case "No":
                                                     AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                                    checkExit = true;
                                                     UI.PressAnyKeyToContinue();
                                                     break;
                                             }

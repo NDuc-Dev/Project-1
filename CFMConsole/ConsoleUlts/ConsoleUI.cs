@@ -915,7 +915,7 @@ namespace UI
                 }
                 else
                 {
-                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][green]COMPLTETE[/][/]");
+                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][green]CONFIRMED[/][/]");
                 }
             }
             warp.AddRow(orderInfoTable.Centered().NoBorder());
