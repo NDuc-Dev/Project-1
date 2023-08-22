@@ -134,7 +134,7 @@ namespace DAL
             return staff;
         }
 
-        public bool UpdateLogoutTimeForStaff(Staff staff)
+        public bool UpdateLogoutTimeForStaff(Staff staff, decimal total)
         {
             bool result = false;
             try
@@ -148,8 +148,9 @@ namespace DAL
                         cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write, login_details write;";
                         cmd.ExecuteNonQuery();
 
-                        cmd.CommandText = "update login_details set logout_time = @logoutTime where staff_id = @staffId and login_time = @loginTime";
+                        cmd.CommandText = "update login_details set logout_time = @logoutTime, total_amount_in_shop = @total where staff_id = @staffId and login_time = @loginTime";
                         cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@total",total);
                         cmd.Parameters.AddWithValue("@logoutTime", staff.LogoutTime);
                         cmd.Parameters.AddWithValue("@staffId", staff.StaffId);
                         cmd.Parameters.AddWithValue("@loginTime", staff.LoginTime);
@@ -183,6 +184,56 @@ namespace DAL
             return result;
         }
 
+        public bool InsertProblemLogin(string problem, Staff staff)
+        {
+            bool result = false;
+            try
+            {
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write, login_details write;";
+                        cmd.ExecuteNonQuery();
+
+                        //insert order
+                        cmd.CommandText = "update login_details set Descriptions = @Descriptions where staff_id = @staffId and login_time = @loginTime;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@Descriptions", problem);
+                        cmd.Parameters.AddWithValue("@staffId", staff.StaffId);
+                        cmd.Parameters.AddWithValue("@loginTime", staff.LoginTime);
+                        cmd.ExecuteNonQuery();
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            trans.Rollback();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"ERROR: {ex.Message}");
+                        }
+                    }
+                    finally
+                    {
+                        //unlock all tables;
+                        cmd.CommandText = "unlock tables;";
+                        cmd.ExecuteNonQuery();
+                    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+            }
+            return result;
+        }
         public bool InsertNewLoginDetails(Staff staff)
         {
             bool result = false;

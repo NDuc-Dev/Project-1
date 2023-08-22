@@ -58,9 +58,14 @@ namespace BL
             return staffDAL.InsertNewLoginDetails(staff);
         }
 
-        public bool UpdateLogoutTimeForStaff(Staff staff)
+        public bool UpdateLogoutTimeForStaff(Staff staff, decimal total)
         {
-            return staffDAL.UpdateLogoutTimeForStaff(staff);
+            return staffDAL.UpdateLogoutTimeForStaff(staff, total);
+        }
+        
+        public bool InsertProblemLogin(string problem, Staff staff)
+        {
+            return staffDAL.InsertProblemLogin(problem, staff);
         }
     }
 }

@@ -510,5 +510,24 @@ namespace DAL
             catch { }
             return listOrder;
         }
+
+        public List<Order> GetOrdersCompleteInDay(DateOnly Now)
+        {
+             List<Order> listOrder = new List<Order>();
+            try
+            {
+                MySqlCommand command = new MySqlCommand(query, connection);
+                query = @"SELECT * FROM orders WHERE DATE(order_date) = @Now and order_status = '3';";
+                command.Parameters.AddWithValue("@Now", Now);
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    listOrder.Add(GetOrder(reader));
+                }
+                reader.Close();
+            }
+            catch { }
+            return listOrder;
+        }
     }
 }

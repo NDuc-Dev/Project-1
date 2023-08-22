@@ -58,5 +58,10 @@ namespace BL
         {
             return orderDAL.GetOrdersCompleted();
         }
+
+        public List<Order> GetOrdersCompleteInDay(DateOnly Now)
+        {
+            return orderDAL.GetOrdersCompleteInDay(Now);
+        }
     }
 }

@@ -86,6 +86,7 @@ Staff_Id int not null,
 Login_time datetime default current_timestamp,
 Logout_time datetime default current_timestamp,
 Total_Amount_In_Shop decimal not null default '0',
+Descriptions varchar(300),
 PRIMARY KEY(Login_Id),
 FOREIGN KEY (Staff_Id) REFERENCES Staffs(Staff_Id)
 );

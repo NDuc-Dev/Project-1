@@ -1,6 +1,7 @@
 ﻿using Ultilities;
 using Persistence;
 using Spectre.Console;
+using System.Globalization;
 using UI;
 using BL;
 
@@ -13,6 +14,7 @@ public class Program
         ConsoleUI uI = new ConsoleUI();
         StaffBL staffBL = new StaffBL();
         OrderBL orderBL = new OrderBL();
+        ProductBL productBL = new ProductBL();
         List<Product>? lstproduct;
         Staff currentStaff;
         string[] MainMenu = { "Create Order", "Update Order", "Update Product Status Instock", "Payment", "Check Out", "About" };
@@ -55,6 +57,19 @@ public class Program
                                 List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
                                 List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
                                 uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
+                                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                                List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(date);
+                                decimal totalAmountInShop = 0;
+                                foreach (Order order in listOrderComplete)
+                                {
+                                    List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
+                                    foreach (Product product in productsInOrder)
+                                    {
+                                        totalAmountInShop += product.ProductPrice;
+                                    }
+                                }
+                                string totalFormat = totalAmountInShop.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                                AnsiConsole.Markup($"Total amount available in shop : [green]{totalFormat} VND[/]\n");
                                 string ask = uI.Ask($"This is the information of staff {staffBL.GetStaffById(lastStaff.StaffId).StaffName} for the previous shift, are you sure it is correct?");
                                 switch (ask)
                                 {
@@ -65,11 +80,36 @@ public class Program
                                         uI.PressAnyKeyToContinue();
                                         break;
                                     case "No":
-                                        login = false;
-                                        uI.RedMessage($"Please contact the staff of the previous shift ({staffBL.GetStaffById(lastStaff.StaffId).StaffName}) to confirm the information.");
+                                        login = true;
+                                        while (true)
+                                        {
+                                            uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
+                                            AnsiConsole.Markup("[green]Enter the problem you encountered and press [red]ENTER[/] to continue[/]: ");
+                                            string problem = Console.ReadLine();
+                                            string problemTrimed = problem.Trim();
+                                            if (problemTrimed.Length > 0)
+                                            {
+                                                staffBL.InsertNewLoginDetails(currentStaff);
+                                                AnsiConsole.Markup("Check out: " + (staffBL.InsertProblemLogin(problem, currentStaff) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                uI.PressAnyKeyToContinue();
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                uI.RedMessage("Invalid String !");
+                                            }
+                                        }
                                         break;
                                 }
                             }
+                            else
+                            {
+                                staffBL.InsertNewLoginDetails(currentStaff);
+                            }
+                        }
+                        else
+                        {
+                            staffBL.InsertNewLoginDetails(currentStaff);
                         }
                     }
                 }
@@ -101,12 +141,25 @@ public class Program
                             List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
                             List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
                             uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
+                            decimal totalAmountInShop = 0;
+                            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                            List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(date);
+                            foreach (Order order in listOrderComplete)
+                            {
+                                List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
+                                foreach (Product product in productsInOrder)
+                                {
+                                    totalAmountInShop += product.ProductPrice;
+                                }
+                            }
+                            string totalFormat = totalAmountInShop.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                            AnsiConsole.Markup($"Total amount available in shop : [green]{totalFormat} VND[/]\n");
                             string checkOut = uI.Ask("Do you want to check out ?");
                             switch (checkOut)
                             {
                                 case "Yes":
                                     currentStaff.LogoutTime = DateTime.Now;
-                                    AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTimeForStaff(currentStaff) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                    AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTimeForStaff(currentStaff, totalAmountInShop) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                     login = false;
                                     break;
                                 case "No":
