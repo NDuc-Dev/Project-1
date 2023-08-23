@@ -36,7 +36,8 @@ public class Program
             else
             {
                 Console.Write("Password: ");
-                currentStaff = staffBL.GetPasswordAndCheckAuthorize(UserName);
+                string password = staffBL.GetPassword();
+                currentStaff = staffBL.CheckAuthorize(UserName, password);
             }
 
             if (currentStaff != null)

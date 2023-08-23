@@ -76,6 +76,21 @@ namespace DAL
             }
 
         }
+
+        public Staff CheckAuthorize(string UserName, string Password)
+        {
+            Staff staff = new Staff();
+            staff = GetStaffAccount(UserName);
+            if (staff.Password == ChangePasswordMD5(Password) && staff.StaffStatus == 1)
+            {
+                return staff;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public Staff GetStaff(MySqlDataReader reader)
         {
             Staff staff = new Staff();

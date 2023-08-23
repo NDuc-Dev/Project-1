@@ -805,7 +805,7 @@ public class Ults
                         int productId = product.ProductId;
                         if (product.ProductId != 0)
                         {
-                            int sizeId = UI.ChooseProductsize(orderStaff, product.ProductId, title);
+                            int sizeId = ChooseProductsize(orderStaff, product.ProductId, title);
                             if (sizeId == 0)
                             {
                                 break;
@@ -951,7 +951,7 @@ public class Ults
         List<Product> newList = new List<Product>();
         while (active)
         {
-            int productNumber = 0;
+            int productNumber;
             int productId;
             int sizeId;
             Product newProduct = new Product();
@@ -1146,7 +1146,11 @@ public class Ults
                         if (product.ProductId != 0)
                         {
                             UI.PrintProductTable(productBL.GetProductInstockById(productId));
-                            string change = UI.AskChangeStatus();
+                            string[] item = { "Change Product Status to Out Of Stock", "Change Product Status to In Stock", "Exit" };
+                            var change = AnsiConsole.Prompt(
+                               new SelectionPrompt<string>()
+                               .PageSize(3)
+                               .AddChoices(item));
                             switch (change)
                             {
                                 case "Change Product Status to Out Of Stock":
@@ -1389,6 +1393,51 @@ public class Ults
         }
         decimal.TryParse(input, out decimal result);
         return result;
+    }
+
+    public int ChooseProductsize(Staff staff, int productId, string title)
+    {
+        string[] size = { "Size S", "Size M", "Size L", "Choose another product" };
+        int sizeId = 0;
+        bool active = true;
+        while (active)
+        {
+            UI.ApplicationLogoAfterLogin(staff);
+            UI.Title(title);
+            if (title == "CREATE ORDER")
+            {
+                UI.TimeLine(UI.TimeLineContent(3, "CREATE ORDER"));
+            }
+            else if (title == "ADD PRODUCT TO ORDER")
+            {
+                UI.TimeLine(UI.TimeLineContent(2, "ADD PRODUCT TO ORDER"));
+            }
+            else if (title == "CHANGE PRODUCT IN ORDER")
+            {
+                UI.TimeLine(UI.TimeLineContent(3, "CHANGE PRODUCT IN ORDER"));
+            }
+            UI.PrintProductTable(productBL.GetProductById(productId));
+            Product currentProduct = productBL.GetProductById(productId);
+            Console.WriteLine("Product Name: " + currentProduct.ProductName);
+            var choice = AnsiConsole.Prompt(
+       new SelectionPrompt<string>()
+       .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
+       .PageSize(10)
+       .AddChoices(size));
+
+            switch (choice)
+            {
+                case "Size S":
+                    return 1;
+                case "Size M":
+                    return 2;
+                case "Size L":
+                    return 3;
+                case "Choose another product":
+                    return 0;
+            }
+        }
+        return sizeId;
     }
 
 }

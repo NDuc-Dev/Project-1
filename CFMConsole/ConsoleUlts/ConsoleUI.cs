@@ -196,11 +196,7 @@ namespace UI
             {
                 Title(title);
             }
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
-               .PageSize(10)
-               .AddChoices(item));
+            var choice = SellectFunction(item);
             return choice;
         }
 
@@ -416,7 +412,6 @@ namespace UI
                         {
                             return quantity;
                         }
-                        // return quantity;
                     }
                     else
                     {
@@ -585,50 +580,7 @@ namespace UI
                 }
             }
         }
-        public int ChooseProductsize(Staff staff, int productId, string title)
-        {
-            string[] size = { "Size S", "Size M", "Size L", "Choose another product" };
-            int sizeId = 0;
-            bool active = true;
-            while (active)
-            {
-                ApplicationLogoAfterLogin(staff);
-                Title(title);
-                if (title == "CREATE ORDER")
-                {
-                    TimeLine(TimeLineContent(3, "CREATE ORDER"));
-                }
-                else if (title == "ADD PRODUCT TO ORDER")
-                {
-                    TimeLine(TimeLineContent(2, "ADD PRODUCT TO ORDER"));
-                }
-                else if (title == "CHANGE PRODUCT IN ORDER")
-                {
-                    TimeLine(TimeLineContent(3, "CHANGE PRODUCT IN ORDER"));
-                }
-                PrintProductTable(productBL.GetProductById(productId));
-                Product currentProduct = productBL.GetProductById(productId);
-                Console.WriteLine("Product Name: " + currentProduct.ProductName);
-                var choice = AnsiConsole.Prompt(
-           new SelectionPrompt<string>()
-           .Title("Move [green]UP/DOWN[/] button and [Green] ENTER[/] to select function")
-           .PageSize(10)
-           .AddChoices(size));
-
-                switch (choice)
-                {
-                    case "Size S":
-                        return 1;
-                    case "Size M":
-                        return 2;
-                    case "Size L":
-                        return 3;
-                    case "Choose another product":
-                        return 0;
-                }
-            }
-            return sizeId;
-        }
+        
 
         public void PrintSaleReceipt(Order order, Staff currentstaff, Staff staff, string title)
         {
@@ -688,16 +640,6 @@ namespace UI
             var choice = AnsiConsole.Prompt(
                new SelectionPrompt<string>()
                .Title($"{ask}")
-               .PageSize(3)
-               .AddChoices(item));
-            return choice;
-        }
-
-        public string AskChangeStatus()
-        {
-            string[] item = { "Change Product Status to Out Of Stock", "Change Product Status to In Stock", "Exit" };
-            var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
                .PageSize(3)
                .AddChoices(item));
             return choice;

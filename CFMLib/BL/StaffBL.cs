@@ -10,7 +10,7 @@ namespace BL
         {
             return new StaffDAL().GetStaffById(staffId);
         }
-        public Staff? GetPasswordAndCheckAuthorize(string UserName)
+        public string GetPassword()
         {
             string Password = "";
             ConsoleKey key;
@@ -30,19 +30,14 @@ namespace BL
                     Password += keyInfo.KeyChar;
                 }
             } while (key != ConsoleKey.Enter);
-            
-            Staff staff = new Staff();
-            staff = staffDAL.GetStaffAccount(UserName);
-            if (staff.Password == staffDAL.ChangePasswordMD5(Password) && staff.StaffStatus == 1)
-            {
-                return staff;
-            }
-            else
-            {
-                return null;
-            }
+            return Password;
         }
-    
+
+        public Staff CheckAuthorize(string userName, string Password)
+        {
+            return staffDAL.CheckAuthorize(userName,Password);
+        }
+
         public Staff? GetLastStaffLogOut()
         {
             return staffDAL.GetLastStaffLogOut();
@@ -62,7 +57,7 @@ namespace BL
         {
             return staffDAL.UpdateLogoutTimeForStaff(time, total);
         }
-        
+
         public bool InsertProblemLogin(string problem)
         {
             return staffDAL.InsertProblemLogin(problem);
