@@ -11,9 +11,9 @@ namespace BL
             return tableDAL.GetTableById(tableId);
         }
         
-        public List<Table> GetAll()
+        public List<Table> GetAllTables()
         {
-            return new TableDAL().GetTables();
+            return new TableDAL().GetAllTables();
         }
 
         public bool ChangeTableOrder(int newTableId, Order order)

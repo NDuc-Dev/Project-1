@@ -7,15 +7,15 @@ namespace BL
     public class OrderBL
     {
         private OrderDAL orderDAL = new OrderDAL();
-        public bool SaveOrder(Order order)
+        public bool CreateOrder(Order order)
         {
-            bool result = orderDAL.CreateOrder(order);
+            bool result = orderDAL.SaveOrder(order);
             return result;
         }
 
-        public List<Order> GetOrdersInBarInprogress()
+        public List<Order> GetOrdersInBar()
         {
-            return orderDAL.GetOrdersInBarInprogress();
+            return orderDAL.GetOrdersInBar();
         }
 
         public Order GetOrderByTable(int tableId)
@@ -23,16 +23,11 @@ namespace BL
             return orderDAL.GetOrderByTable(tableId);
         }
 
-        public List<Order> GetTakeAwayOrdersInprogress()
+        public List<Order> GetTakeAwayOrders()
         {
-            return orderDAL.GetTakeAwayOrdersInprogress();
+            return orderDAL.GetTakeAwayOrders();
         }
         
-        public List<Order> GetAllOrdersInprogress()
-        {
-            return orderDAL.GetAllOrdersInprogress();
-        }
-
         public Order GetOrderById(int orderId)
         {
             return orderDAL.GetOrderById(orderId);

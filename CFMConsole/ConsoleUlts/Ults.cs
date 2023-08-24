@@ -20,7 +20,7 @@ public class Ults
     {
         bool active = true;
         Product product;
-        lstproduct = productBL.GetAll();
+        lstproduct = productBL.GetAllProductActive();
         Order orders = new Order();
         while (active)
         {
@@ -76,7 +76,7 @@ public class Ults
                             switch (createAsk)
                             {
                                 case "Yes":
-                                    AnsiConsole.Markup("Create Order: " + (orderBL.SaveOrder(orders) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                    AnsiConsole.Markup("Create Order: " + (orderBL.CreateOrder(orders) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                     Console.WriteLine("Your Order Id is : " + orders.OrderId);
                                     UI.PressAnyKeyToContinue();
                                     active = false;
@@ -107,7 +107,7 @@ public class Ults
     public void UpdateOrder(Staff currentStaff)
     {
         string title = "UPDATE ORDER";
-        List<Product> listAllProducts = productBL.GetAll();
+        List<Product> listAllProducts = productBL.GetAllProductActive();
         Product product;
         Order order;
         bool active = true;
@@ -124,7 +124,7 @@ public class Ults
             switch (choice)
             {
                 case "Drink at the Coffee Shop":
-                    List<Order> listOrderInBarInprogress = orderBL.GetOrdersInBarInprogress();
+                    List<Order> listOrderInBarInprogress = orderBL.GetOrdersInBar();
                     if (listOrderInBarInprogress.Count() == 0)
                     {
                         UI.RedMessage("No orders have been created yet !");
@@ -138,7 +138,7 @@ public class Ults
                         {
                             Staff staff = staffBL.GetStaffById(order.OrderStaffID);
                             order.ProductsList = productBL.GetListProductsInOrder(order.OrderId);
-                            string[] functionsItem = { "Add product to order", "Remove an unfinished product from the order", "Change product in order", "Confirm product in order", "Change Table", "Exit" };
+                            string[] functionsItem = { "Add product to order", "Remove unfinished products from the order", "Change product in order", "Confirm product in order", "Change Table", "Exit" };
                             string updateChoice;
                             UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, staff.StaffName, 0);
                             updateChoice = UI.SellectFunction(functionsItem);
@@ -214,7 +214,7 @@ public class Ults
                                         while (continuee == false);
                                     }
                                     break;
-                                case "Remove an unfinished product from the order":
+                                case "Remove unfinished products from the order":
                                     if (order.ProductsList.Count() == 1)
                                     {
                                         AnsiConsole.Markup("[Red]The order has only 1 product left[/]\n");
@@ -232,7 +232,6 @@ public class Ults
                                                 view = false;
                                                 break;
                                         }
-
                                     }
                                     else
                                     {
@@ -313,7 +312,7 @@ public class Ults
                     }
                     break;
                 case "Take Away orders":
-                    List<Order> listTakeAwayOrderInprogress = orderBL.GetTakeAwayOrdersInprogress();
+                    List<Order> listTakeAwayOrderInprogress = orderBL.GetTakeAwayOrders();
                     if (listTakeAwayOrderInprogress.Count() == 0)
                     {
                         UI.RedMessage("No orders have been created yet !");
@@ -406,7 +405,7 @@ public class Ults
                     while (true)
                     {
 
-                        List<Order> listOrderInBarInprogress = orderBL.GetOrdersInBarInprogress();
+                        List<Order> listOrderInBarInprogress = orderBL.GetOrdersInBar();
                         if (listOrderInBarInprogress.Count() == 0)
                         {
                             UI.ApplicationLogoAfterLogin(currentStaff);
@@ -589,7 +588,7 @@ public class Ults
                 case "Take Away orders":
                     while (true)
                     {
-                        List<Order> listTakeAwayOrderInprogress = orderBL.GetTakeAwayOrdersInprogress();
+                        List<Order> listTakeAwayOrderInprogress = orderBL.GetTakeAwayOrders();
                         if (listTakeAwayOrderInprogress.Count() == 0)
                         {
                             UI.ApplicationLogoAfterLogin(currentStaff);
@@ -811,7 +810,7 @@ public class Ults
                                 break;
                             }
                             product = productBL.GetProductByIdAndSize(productId, sizeId);
-                            product.ProductQuantity = UI.InputQuantity(product, orderStaff, title);
+                            product.ProductQuantity = InputQuantity(product, orderStaff, title);
                             product.StatusInOrder = 1;
                             return product;
                         }
@@ -996,7 +995,7 @@ public class Ults
                                 newList.Add(item);
                             }
                         }
-                        newProduct = GetProductToAddToOrder(productBL.GetAll(), currentStaff, title);
+                        newProduct = GetProductToAddToOrder(productBL.GetAllProductActive(), currentStaff, title);
                         if (newProduct != null)
                         {
                             bool checkDup = true;
@@ -1439,5 +1438,66 @@ public class Ults
         }
         return sizeId;
     }
+
+    public int InputQuantity(Product product, Staff staff, string title)
+        {
+            int quantity = 0;
+            bool active = true;
+            while (active)
+            {
+
+                bool err = false;
+                bool continuee = false;
+                do
+                {
+                    Console.Clear();
+                    UI.ApplicationLogoAfterLogin(staff);
+                    UI.Title(title);
+                    if (title == "CREATE ORDER")
+                    {
+                        UI.TimeLine(UI.TimeLineContent(4, "CREATE ORDER"));
+                    }
+                    else if (title == "ADD PRODUCT TO ORDER")
+                    {
+                        UI.TimeLine(UI.TimeLineContent(3, "ADD PRODUCT TO ORDER"));
+                    }
+                    else if (title == "CHANGE PRODUCT IN ORDER")
+                    {
+                        UI.TimeLine(UI.TimeLineContent(4, "CHANGE PRODUCT IN ORDER"));
+                    }
+                    Console.WriteLine("Product Name : " + product.ProductName);
+                    Console.WriteLine("Product Size : " + product.ProductSize);
+                    string formattepricesize = product.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                    Console.WriteLine("Unit Price : " + formattepricesize + " VND");
+                    Console.Write("Input Quantity: ");
+                    if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
+                    {
+                        continuee = true;
+                        if (quantity > 10)
+                        {
+                            string askAceptQuantity = UI.Ask("[green]Quantity > 10[/], Are you sure ?");
+                            switch (askAceptQuantity)
+                            {
+                                case "Yes":
+                                    return quantity;
+                                case "No":
+                                    continuee = false;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            return quantity;
+                        }
+                    }
+                    else
+                    {
+                        err = true;
+                        UI.RedMessage("Invalid quantity ! Please re-enter.");
+                    }
+                } while (err == false && continuee);
+            }
+            return quantity;
+        }
 
 }

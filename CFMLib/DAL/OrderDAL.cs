@@ -9,7 +9,7 @@ namespace DAL
         private MySqlConnection connection = DbConfig.GetConnection();
         private string query = "";
 
-        public bool CreateOrder(Order order)
+        public bool SaveOrder(Order order)
         {
             if (order == null || order.ProductsList == null || order.ProductsList.Count() == 0)
             {
@@ -327,7 +327,7 @@ namespace DAL
             return order;
         }
 
-        public List<Order> GetOrdersInBarInprogress()
+        public List<Order> GetOrdersInBar()
         {
             List<Order> listOrder = new List<Order>();
             try
@@ -346,7 +346,7 @@ namespace DAL
             return listOrder;
         }
 
-        public List<Order> GetTakeAwayOrdersInprogress()
+        public List<Order> GetTakeAwayOrders()
         {
             List<Order> listOrder = new List<Order>();
             try

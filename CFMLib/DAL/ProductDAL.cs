@@ -107,7 +107,7 @@ namespace DAL
             return product;
         }
 
-        public List<Product> GetProducts()
+        public List<Product> GetAllProductActive()
         {
             List<Product> listProduct = new List<Product>();
             try

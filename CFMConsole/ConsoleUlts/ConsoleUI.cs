@@ -362,66 +362,7 @@ namespace UI
             }
         }
 
-        public int InputQuantity(Product product, Staff staff, string title)
-        {
-            int quantity = 0;
-            bool active = true;
-            while (active)
-            {
-
-                bool err = false;
-                bool continuee = false;
-                do
-                {
-                    Console.Clear();
-                    ApplicationLogoAfterLogin(staff);
-                    Title(title);
-                    if (title == "CREATE ORDER")
-                    {
-                        TimeLine(TimeLineContent(4, "CREATE ORDER"));
-                    }
-                    else if (title == "ADD PRODUCT TO ORDER")
-                    {
-                        TimeLine(TimeLineContent(3, "ADD PRODUCT TO ORDER"));
-                    }
-                    else if (title == "CHANGE PRODUCT IN ORDER")
-                    {
-                        TimeLine(TimeLineContent(4, "CHANGE PRODUCT IN ORDER"));
-                    }
-                    Console.WriteLine("Product Name : " + product.ProductName);
-                    Console.WriteLine("Product Size : " + product.ProductSize);
-                    string formattepricesize = product.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                    Console.WriteLine("Unit Price : " + formattepricesize + " VND");
-                    Console.Write("Input Quantity: ");
-                    if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
-                    {
-                        continuee = true;
-                        if (quantity > 10)
-                        {
-                            string askAceptQuantity = Ask("[green]Quantity > 10[/], Are you sure ?");
-                            switch (askAceptQuantity)
-                            {
-                                case "Yes":
-                                    return quantity;
-                                case "No":
-                                    continuee = false;
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            return quantity;
-                        }
-                    }
-                    else
-                    {
-                        err = true;
-                        RedMessage("Invalid quantity ! Please re-enter.");
-                    }
-                } while (err == false && continuee);
-            }
-            return quantity;
-        }
+        
 
         // Message Color
         public void RedMessage(string message)
@@ -476,7 +417,7 @@ namespace UI
             {
 
                 int tableId = -1;
-                List<Persistence.Table> listTable = tableBL.GetAll();
+                List<Persistence.Table> listTable = tableBL.GetAllTables();
                 bool checkTableId;
 
                 ApplicationLogoAfterLogin(staff);

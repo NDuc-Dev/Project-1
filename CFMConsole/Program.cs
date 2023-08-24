@@ -55,8 +55,8 @@ public class Program
                         {
                             if (currentStaff.LoginTime.Day == lastStaff.LogoutTime.Day)
                             {
-                                List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
-                                List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
+                                List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBar();
+                                List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrders();
                                 uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
                                 DateOnly date = DateOnly.FromDateTime(DateTime.Now);
                                 string selectedDateFormatted = date.ToString("yyyy/MM/dd");
@@ -140,8 +140,8 @@ public class Program
                             Ultilities.UpdateProductStatusInstock(currentStaff);
                             break;
                         case "Check Out":
-                            List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBarInprogress();
-                            List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrdersInprogress();
+                            List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBar();
+                            List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrders();
                             uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
                             decimal totalAmountInShop = 0;
                             DateOnly date = DateOnly.FromDateTime(DateTime.Now);

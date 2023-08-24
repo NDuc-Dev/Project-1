@@ -8,7 +8,7 @@ namespace DAL
         private MySqlConnection connection = DbConfig.GetConnection();
         private string query = "";
 
-        public List<Table> GetTables()
+        public List<Table> GetAllTables()
         {
             List<Table> listTable = new List<Table>();
             try

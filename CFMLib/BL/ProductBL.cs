@@ -16,9 +16,9 @@ namespace BL
         {
             return productDAL.GetProductInstockById(productId);
         }
-        public List<Product> GetAll()
+        public List<Product> GetAllProductActive()
         {
-            return productDAL.GetProducts();
+            return productDAL.GetAllProductActive();
         }
         public Product GetProductByIdAndSize(int productId, int sizeId)
         {
