@@ -215,27 +215,44 @@ public class Ults
                                     }
                                     break;
                                 case "Remove unfinished products from the order":
-                                    if (order.ProductsList.Count() == 1)
+                                    int checkComplete = 0;
+                                    foreach (var item in order.ProductsList)
                                     {
-                                        AnsiConsole.Markup("[Red]The order has only 1 product left[/]\n");
-                                        string deleteOrderAsk = UI.Ask("Do you want to [Green]DELETE[/] this order?");
-                                        switch (deleteOrderAsk)
+                                        if (item.StatusInOrder == 2)
                                         {
-                                            case "Yes":
-                                                AnsiConsole.Markup("Delete Order: " + (orderBL.DeleteOrder(order) ? "[green]COMPLETED[/] !\n" : "[red]NOT COMPLETED[/] !\n"));
-                                                UI.PressAnyKeyToContinue();
-                                                view = false;
-                                                break;
-                                            case "No":
-                                                AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
-                                                UI.PressAnyKeyToContinue();
-                                                view = false;
-                                                break;
+                                            checkComplete++;
                                         }
+                                    }
+                                    if (order.ProductsList.Count == checkComplete)
+                                    {
+                                        AnsiConsole.Markup("[Red]No unfinished product in the order.[/]\n");
+                                        UI.PressAnyKeyToContinue();
+                                        break;
                                     }
                                     else
                                     {
-                                        RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
+                                        if (order.ProductsList.Count() == 1 && order.ProductsList[0].StatusInOrder == 1)
+                                        {
+                                            AnsiConsole.Markup("[Red]The order has only 1 product left[/]\n");
+                                            string deleteOrderAsk = UI.Ask("Do you want to [Green]DELETE[/] this order?");
+                                            switch (deleteOrderAsk)
+                                            {
+                                                case "Yes":
+                                                    AnsiConsole.Markup("Delete Order: " + (orderBL.DeleteOrder(order) ? "[green]COMPLETED[/] !\n" : "[red]NOT COMPLETED[/] !\n"));
+                                                    UI.PressAnyKeyToContinue();
+                                                    view = false;
+                                                    break;
+                                                case "No":
+                                                    AnsiConsole.Markup("[Green]Canceling update successfully.[/]\n");
+                                                    UI.PressAnyKeyToContinue();
+                                                    view = false;
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
+                                        }
                                     }
                                     if (order.ProductsList.Count() == 0)
                                         view = false;
@@ -1440,64 +1457,64 @@ public class Ults
     }
 
     public int InputQuantity(Product product, Staff staff, string title)
+    {
+        int quantity = 0;
+        bool active = true;
+        while (active)
         {
-            int quantity = 0;
-            bool active = true;
-            while (active)
-            {
 
-                bool err = false;
-                bool continuee = false;
-                do
+            bool err = false;
+            bool continuee = false;
+            do
+            {
+                Console.Clear();
+                UI.ApplicationLogoAfterLogin(staff);
+                UI.Title(title);
+                if (title == "CREATE ORDER")
                 {
-                    Console.Clear();
-                    UI.ApplicationLogoAfterLogin(staff);
-                    UI.Title(title);
-                    if (title == "CREATE ORDER")
+                    UI.TimeLine(UI.TimeLineContent(4, "CREATE ORDER"));
+                }
+                else if (title == "ADD PRODUCT TO ORDER")
+                {
+                    UI.TimeLine(UI.TimeLineContent(3, "ADD PRODUCT TO ORDER"));
+                }
+                else if (title == "CHANGE PRODUCT IN ORDER")
+                {
+                    UI.TimeLine(UI.TimeLineContent(4, "CHANGE PRODUCT IN ORDER"));
+                }
+                Console.WriteLine("Product Name : " + product.ProductName);
+                Console.WriteLine("Product Size : " + product.ProductSize);
+                string formattepricesize = product.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                Console.WriteLine("Unit Price : " + formattepricesize + " VND");
+                Console.Write("Input Quantity: ");
+                if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
+                {
+                    continuee = true;
+                    if (quantity > 10)
                     {
-                        UI.TimeLine(UI.TimeLineContent(4, "CREATE ORDER"));
-                    }
-                    else if (title == "ADD PRODUCT TO ORDER")
-                    {
-                        UI.TimeLine(UI.TimeLineContent(3, "ADD PRODUCT TO ORDER"));
-                    }
-                    else if (title == "CHANGE PRODUCT IN ORDER")
-                    {
-                        UI.TimeLine(UI.TimeLineContent(4, "CHANGE PRODUCT IN ORDER"));
-                    }
-                    Console.WriteLine("Product Name : " + product.ProductName);
-                    Console.WriteLine("Product Size : " + product.ProductSize);
-                    string formattepricesize = product.ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                    Console.WriteLine("Unit Price : " + formattepricesize + " VND");
-                    Console.Write("Input Quantity: ");
-                    if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
-                    {
-                        continuee = true;
-                        if (quantity > 10)
+                        string askAceptQuantity = UI.Ask("[green]Quantity > 10[/], Are you sure ?");
+                        switch (askAceptQuantity)
                         {
-                            string askAceptQuantity = UI.Ask("[green]Quantity > 10[/], Are you sure ?");
-                            switch (askAceptQuantity)
-                            {
-                                case "Yes":
-                                    return quantity;
-                                case "No":
-                                    continuee = false;
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            return quantity;
+                            case "Yes":
+                                return quantity;
+                            case "No":
+                                continuee = false;
+                                break;
                         }
                     }
                     else
                     {
-                        err = true;
-                        UI.RedMessage("Invalid quantity ! Please re-enter.");
+                        return quantity;
                     }
-                } while (err == false && continuee);
-            }
-            return quantity;
+                }
+                else
+                {
+                    err = true;
+                    UI.RedMessage("Invalid quantity ! Please re-enter.");
+                }
+            } while (err == false && continuee);
         }
+        return quantity;
+    }
 
 }
