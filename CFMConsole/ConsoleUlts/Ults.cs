@@ -1101,8 +1101,8 @@ public class Ults
 
             List<Product> updatedProductList = productMap.Values.ToList();
             UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, "CONFIRM PRODUCT IN ORDER", staff.StaffName, 0);
-            string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
-            switch (deleteAsk)
+            string confirmAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
+            switch (confirmAsk)
             {
                 case "Yes":
                     int checkComplete = 0;

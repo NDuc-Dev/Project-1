@@ -138,7 +138,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\pc\\.nuget\\packages\\": {}
+    "C:\\Users\\ditvu\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -146,11 +146,11 @@
       "projectUniqueName": "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
       "projectName": "CFMConsole",
       "projectPath": "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
-      "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\ditvu\\.nuget\\packages\\",
       "outputPath": "c:\\VTC\\Project-1\\CFMConsole\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\ditvu\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
