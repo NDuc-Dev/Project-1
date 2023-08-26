@@ -149,7 +149,7 @@ namespace DAL
             return staff;
         }
 
-        public bool UpdateLogoutTimeForStaff(string time, decimal total)
+        public bool UpdateLogoutTime(string time, decimal total)
         {
             bool result = false;
             try

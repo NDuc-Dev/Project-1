@@ -1654,7 +1654,7 @@ public class Ults
             case "Yes":
                 currentStaff.LogoutTime = DateTime.Now;
                 string formattedDateTime = currentStaff.LogoutTime.ToString("yyyy-MM-dd HH:mm:ss");
-                AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTimeForStaff(formattedDateTime, totalAmountInShop) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTime(formattedDateTime, totalAmountInShop) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                 UI.PressAnyKeyToContinue();
                 return true;
             case "No":
