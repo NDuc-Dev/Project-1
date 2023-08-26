@@ -35,7 +35,7 @@ public class Ults
                 bool checkDup = true;
                 if (orders.ProductsList.Count() == 0)
                 {
-                    orders.TableID = UI.ChooseTable(currentStaff, "CREATE ORDER", 0);
+                    orders.TableID = ChooseTable(currentStaff, "CREATE ORDER", 0);
                     if (orders.TableID == -1)
                     {
                         active = false;
@@ -283,7 +283,7 @@ public class Ults
                                     bool checkExit = false;
                                     while (checkExit == false)
                                     {
-                                        int newTable = UI.ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
+                                        int newTable = ChooseTable(currentStaff, "CHANGE ORDER TABLE", order.TableID);
                                         if (newTable == -1)
                                         {
                                             break;
@@ -1516,5 +1516,116 @@ public class Ults
         }
         return quantity;
     }
+
+    public int ChooseTable(Staff staff, string title, int tableOrder)
+        {
+            while (true)
+            {
+
+                int tableId = -1;
+                List<Persistence.Table> listTable = tableBL.GetAllTables();
+                bool checkTableId;
+
+                UI.ApplicationLogoAfterLogin(staff);
+                UI.Title(title);
+                if (title == "CREATE ORDER")
+                {
+                    UI.TimeLine(UI.TimeLineContent(1, "CREATE ORDER"));
+                    var choice = AnsiConsole.Prompt(
+               new SelectionPrompt<string>()
+               .Title("Move [green]UP/DOWN[/] button and [Green]ENTER[/] to select.")
+               .PageSize(3)
+               .AddChoices("Drink at the Coffee Shop", "Takeout orders", "Exit"));
+                    switch (choice)
+                    {
+                        case "Drink at the Coffee Shop":
+                            while (true)
+                            {
+                                UI.ApplicationLogoAfterLogin(staff);
+                                UI.Title(title);
+                                UI.TimeLine(UI.TimeLineContent(1, "CREATE ORDER"));
+                                UI.PrintAllTables(listTable);
+                                do
+                                {
+                                    AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [Red]TABLE ID = 0[/] to [red]EXIT[/]: ");
+                                    if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
+                                    {
+                                        if (tableId == 0)
+                                        {
+                                            return -1;
+                                        }
+                                        else
+                                        {
+                                            if (tableBL.GetTableById(tableId).TableStatus == 1)
+                                            {
+                                                UI.RedMessage("Table is using, please re-enter Table ID.");
+                                                checkTableId = false;
+                                            }
+                                            else if (tableBL.GetTableById(tableId).TableId == 0)
+                                            {
+                                                UI.RedMessage("Invalid Id, please re-enter Table ID.");
+                                                checkTableId = false;
+                                            }
+                                            else
+                                            {
+                                                return tableBL.GetTableById(tableId).TableId;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        checkTableId = false;
+                                        UI.RedMessage("Invalid Id, please re-enter Table ID");
+                                    }
+                                }
+                                while (checkTableId);
+                            }
+                        case "Takeout orders":
+                            return 0;
+                        case "Exit":
+                            return -1;
+                    }
+                }
+                else if (title == "CHANGE ORDER TABLE")
+                {
+                    do
+                    {
+                        UI.PrintAllTables(listTable);
+                        AnsiConsole.Markup($"\nCurrent [Green]TABLE ID[/] of this order is [green]{tableOrder}[/].");
+                        AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table to change or input [green]0[/] to exit: ");
+                        if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
+                        {
+                            if (tableId == 0)
+                            {
+                                return -1;
+                            }
+                            else
+                            {
+                                if (tableBL.GetTableById(tableId).TableStatus == 1)
+                                {
+                                    UI.RedMessage("Table is using, please re-enter Table ID.");
+                                    checkTableId = false;
+                                }
+                                else if (tableBL.GetTableById(tableId).TableId == 0)
+                                {
+                                    UI.RedMessage("Invalid Id, please re-enter Table ID.");
+                                    checkTableId = false;
+                                }
+                                else
+                                {
+                                    return tableBL.GetTableById(tableId).TableId;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            checkTableId = false;
+                            UI.RedMessage("Invalid Id, please re-enter Table ID");
+                        }
+                    }
+                    while (checkTableId);
+                }
+            }
+        }
 
 }
