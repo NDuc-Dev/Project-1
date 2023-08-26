@@ -140,35 +140,15 @@ public class Program
                             Ultilities.UpdateProductStatusInstock(currentStaff);
                             break;
                         case "Check Out":
-                            List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBar();
-                            List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrders();
-                            uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
-                            decimal totalAmountInShop = 0;
-                            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                            string selectedDateFormatted = date.ToString("yyyy/MM/dd");
-                            List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
-                            foreach (Order order in listOrderComplete)
+                            bool checkOut = Ultilities.CheckOut(currentStaff);
+                            if (checkOut)
                             {
-                                List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
-                                foreach (Product product in productsInOrder)
-                                {
-                                    totalAmountInShop += product.ProductPrice;
-                                }
+                                login = false;
+                                break;
                             }
-                            string totalFormat = totalAmountInShop.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                            AnsiConsole.Markup($"Total amount available in shop : [green]{totalFormat} VND[/]\n");
-                            string checkOut = uI.Ask("Do you want to check out ?");
-                            switch (checkOut)
+                            else
                             {
-                                case "Yes":
-                                    currentStaff.LogoutTime = DateTime.Now;
-                                    string formattedDateTime = currentStaff.LogoutTime.ToString("yyyy-MM-dd HH:mm:ss");
-                                    AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTimeForStaff(formattedDateTime, totalAmountInShop) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
-                                    uI.PressAnyKeyToContinue();
-                                    login = false;
-                                    break;
-                                case "No":
-                                    break;
+                                login = true;
                             }
                             break;
                         case "About":

@@ -1518,114 +1518,148 @@ public class Ults
     }
 
     public int ChooseTable(Staff staff, string title, int tableOrder)
+    {
+        while (true)
         {
-            while (true)
+
+            int tableId = -1;
+            List<Persistence.Table> listTable = tableBL.GetAllTables();
+            bool checkTableId;
+
+            UI.ApplicationLogoAfterLogin(staff);
+            UI.Title(title);
+            if (title == "CREATE ORDER")
             {
-
-                int tableId = -1;
-                List<Persistence.Table> listTable = tableBL.GetAllTables();
-                bool checkTableId;
-
-                UI.ApplicationLogoAfterLogin(staff);
-                UI.Title(title);
-                if (title == "CREATE ORDER")
+                UI.TimeLine(UI.TimeLineContent(1, "CREATE ORDER"));
+                var choice = AnsiConsole.Prompt(
+           new SelectionPrompt<string>()
+           .Title("Move [green]UP/DOWN[/] button and [Green]ENTER[/] to select.")
+           .PageSize(3)
+           .AddChoices("Drink at the Coffee Shop", "Takeout orders", "Exit"));
+                switch (choice)
                 {
-                    UI.TimeLine(UI.TimeLineContent(1, "CREATE ORDER"));
-                    var choice = AnsiConsole.Prompt(
-               new SelectionPrompt<string>()
-               .Title("Move [green]UP/DOWN[/] button and [Green]ENTER[/] to select.")
-               .PageSize(3)
-               .AddChoices("Drink at the Coffee Shop", "Takeout orders", "Exit"));
-                    switch (choice)
-                    {
-                        case "Drink at the Coffee Shop":
-                            while (true)
+                    case "Drink at the Coffee Shop":
+                        while (true)
+                        {
+                            UI.ApplicationLogoAfterLogin(staff);
+                            UI.Title(title);
+                            UI.TimeLine(UI.TimeLineContent(1, "CREATE ORDER"));
+                            UI.PrintAllTables(listTable);
+                            do
                             {
-                                UI.ApplicationLogoAfterLogin(staff);
-                                UI.Title(title);
-                                UI.TimeLine(UI.TimeLineContent(1, "CREATE ORDER"));
-                                UI.PrintAllTables(listTable);
-                                do
+                                AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [Red]TABLE ID = 0[/] to [red]EXIT[/]: ");
+                                if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
                                 {
-                                    AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table or input [Red]TABLE ID = 0[/] to [red]EXIT[/]: ");
-                                    if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
+                                    if (tableId == 0)
                                     {
-                                        if (tableId == 0)
-                                        {
-                                            return -1;
-                                        }
-                                        else
-                                        {
-                                            if (tableBL.GetTableById(tableId).TableStatus == 1)
-                                            {
-                                                UI.RedMessage("Table is using, please re-enter Table ID.");
-                                                checkTableId = false;
-                                            }
-                                            else if (tableBL.GetTableById(tableId).TableId == 0)
-                                            {
-                                                UI.RedMessage("Invalid Id, please re-enter Table ID.");
-                                                checkTableId = false;
-                                            }
-                                            else
-                                            {
-                                                return tableBL.GetTableById(tableId).TableId;
-                                            }
-                                        }
+                                        return -1;
                                     }
                                     else
                                     {
-                                        checkTableId = false;
-                                        UI.RedMessage("Invalid Id, please re-enter Table ID");
+                                        if (tableBL.GetTableById(tableId).TableStatus == 1)
+                                        {
+                                            UI.RedMessage("Table is using, please re-enter Table ID.");
+                                            checkTableId = false;
+                                        }
+                                        else if (tableBL.GetTableById(tableId).TableId == 0)
+                                        {
+                                            UI.RedMessage("Invalid Id, please re-enter Table ID.");
+                                            checkTableId = false;
+                                        }
+                                        else
+                                        {
+                                            return tableBL.GetTableById(tableId).TableId;
+                                        }
                                     }
-                                }
-                                while (checkTableId);
-                            }
-                        case "Takeout orders":
-                            return 0;
-                        case "Exit":
-                            return -1;
-                    }
-                }
-                else if (title == "CHANGE ORDER TABLE")
-                {
-                    do
-                    {
-                        UI.PrintAllTables(listTable);
-                        AnsiConsole.Markup($"\nCurrent [Green]TABLE ID[/] of this order is [green]{tableOrder}[/].");
-                        AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table to change or input [green]0[/] to exit: ");
-                        if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
-                        {
-                            if (tableId == 0)
-                            {
-                                return -1;
-                            }
-                            else
-                            {
-                                if (tableBL.GetTableById(tableId).TableStatus == 1)
-                                {
-                                    UI.RedMessage("Table is using, please re-enter Table ID.");
-                                    checkTableId = false;
-                                }
-                                else if (tableBL.GetTableById(tableId).TableId == 0)
-                                {
-                                    UI.RedMessage("Invalid Id, please re-enter Table ID.");
-                                    checkTableId = false;
                                 }
                                 else
                                 {
-                                    return tableBL.GetTableById(tableId).TableId;
+                                    checkTableId = false;
+                                    UI.RedMessage("Invalid Id, please re-enter Table ID");
                                 }
                             }
+                            while (checkTableId);
+                        }
+                    case "Takeout orders":
+                        return 0;
+                    case "Exit":
+                        return -1;
+                }
+            }
+            else if (title == "CHANGE ORDER TABLE")
+            {
+                do
+                {
+                    UI.PrintAllTables(listTable);
+                    AnsiConsole.Markup($"\nCurrent [Green]TABLE ID[/] of this order is [green]{tableOrder}[/].");
+                    AnsiConsole.Markup("\nInput [Green]TABLE ID[/] to choose table to change or input [green]0[/] to exit: ");
+                    if (int.TryParse(Console.ReadLine(), out tableId) && tableId >= 0)
+                    {
+                        if (tableId == 0)
+                        {
+                            return -1;
                         }
                         else
                         {
-                            checkTableId = false;
-                            UI.RedMessage("Invalid Id, please re-enter Table ID");
+                            if (tableBL.GetTableById(tableId).TableStatus == 1)
+                            {
+                                UI.RedMessage("Table is using, please re-enter Table ID.");
+                                checkTableId = false;
+                            }
+                            else if (tableBL.GetTableById(tableId).TableId == 0)
+                            {
+                                UI.RedMessage("Invalid Id, please re-enter Table ID.");
+                                checkTableId = false;
+                            }
+                            else
+                            {
+                                return tableBL.GetTableById(tableId).TableId;
+                            }
                         }
                     }
-                    while (checkTableId);
+                    else
+                    {
+                        checkTableId = false;
+                        UI.RedMessage("Invalid Id, please re-enter Table ID");
+                    }
                 }
+                while (checkTableId);
             }
         }
+    }
 
+    public bool CheckOut(Staff currentStaff)
+    {
+        bool checkOutbool = false;
+        List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBar();
+        List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrders();
+        UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
+        decimal totalAmountInShop = 0;
+        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+        string selectedDateFormatted = date.ToString("yyyy/MM/dd");
+        List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
+        foreach (Order order in listOrderComplete)
+        {
+            List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
+            foreach (Product product in productsInOrder)
+            {
+                totalAmountInShop += product.ProductPrice;
+            }
+        }
+        string totalFormat = totalAmountInShop.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+        AnsiConsole.Markup($"Total amount available in shop : [green]{totalFormat} VND[/]\n");
+        string checkOut = UI.Ask("Do you want to check out ?");
+        switch (checkOut)
+        {
+            case "Yes":
+                currentStaff.LogoutTime = DateTime.Now;
+                string formattedDateTime = currentStaff.LogoutTime.ToString("yyyy-MM-dd HH:mm:ss");
+                AnsiConsole.Markup("Check out: " + (staffBL.UpdateLogoutTimeForStaff(formattedDateTime, totalAmountInShop) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                UI.PressAnyKeyToContinue();
+                return true;
+            case "No":
+                return false;
+        }
+        return checkOutbool;
+    }
 }
