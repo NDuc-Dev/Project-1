@@ -126,6 +126,8 @@ namespace DAL
         public Staff GetLastStaffLogOut()
         {
             Staff staff = new Staff();
+            // using (MySqlCommand cmd = connection.CreateCommand())
+            // using (MySqlCommand command = new MySqlCommand(query, connection))
             try
             {
                 string query = "SELECT *FROM login_details ORDER BY login_time DESC LIMIT 1;";

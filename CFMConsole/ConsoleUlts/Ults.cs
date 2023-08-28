@@ -473,13 +473,28 @@ public class Ults
                                                 string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
                                                 AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
                                                 decimal received = InputTotal();
+                                                // string receivedFormat = received.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
                                                 if (received == -1)
                                                 {
                                                     break;
                                                 }
                                                 if (received % 1000 == 0)
                                                 {
-                                                    string accept = UI.Ask("The amount is too big, are you sure?");
+                                                    decimal totalAmountInShop = 0;
+                                                    DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                                                    string selectedDateFormatted = date.ToString("yyyy/MM/dd");
+                                                    List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
+                                                    foreach (Order order in listOrderComplete)
+                                                    {
+                                                        List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
+                                                        foreach (Product product in productsInOrder)
+                                                        {
+                                                            totalAmountInShop += product.ProductPrice;
+                                                        }
+                                                    }
+                                                    // string totalFormat = totalAmountInShop.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                                                    string receivedFormat = received.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
+                                                    string accept = UI.Ask($"Amount received is [green]{receivedFormat} VND[/], do you want to continue ?");
                                                     switch (accept)
                                                     {
                                                         case "Yes":
@@ -487,11 +502,16 @@ public class Ults
                                                             {
                                                                 UI.RedMessage("Enter the number divisible by 1000 and must be greater than the total amount ! Please re-enter.");
                                                             }
+                                                            else if (totalAmountInShop < received - totalAmount)
+                                                            {
+                                                                UI.RedMessage("Return Amount is bigger than total amount in shop.");
+                                                            }
                                                             else if (received - totalAmount >= 0)
                                                             {
+                                                                string returnFormat = (received - totalAmount).ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
                                                                 UI.PrintSaleReceipt(orderChoose, currentStaff, orderStaff, title);
-                                                                Console.WriteLine($"Amount received: {received} VND");
-                                                                Console.WriteLine($"Return amount: {received - totalAmount} VND");
+                                                                Console.WriteLine($"Amount received: {receivedFormat} VND");
+                                                                Console.WriteLine($"Return amount: {returnFormat} VND");
                                                                 AnsiConsole.Markup("Payment " + (orderBL.CompleteOrder(orderChoose) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                                 paid = false;
                                                                 UI.PressAnyKeyToContinue();
@@ -501,6 +521,7 @@ public class Ults
                                                         case "No":
                                                             break;
                                                     }
+
                                                     if (paid == false)
                                                     {
                                                         break;
