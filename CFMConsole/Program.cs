@@ -36,7 +36,7 @@ public class Program
             else
             {
                 Console.Write("Password: ");
-                string password = staffBL.GetPassword();
+                string password = Ultilities.GetPassword();
                 string passwordMD5 = Ultilities.ChangePasswordMD5(password);
                 currentStaff = staffBL.CheckAuthorize(UserName, passwordMD5);
             }
@@ -59,9 +59,7 @@ public class Program
                                 List<Order> listOrderInBarUnComplete = orderBL.GetOrdersInBar();
                                 List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrders();
                                 uI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "LOGIN");
-                                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                                string selectedDateFormatted = date.ToString("yyyy/MM/dd");
-                                List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
+                                List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay();
                                 decimal totalAmountInShop = 0;
                                 foreach (Order order in listOrderComplete)
                                 {

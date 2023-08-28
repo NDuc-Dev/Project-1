@@ -13,14 +13,7 @@ namespace BL
         
         public List<Table> GetAllTables()
         {
-            return new TableDAL().GetAllTables();
-        }
-
-        public bool ChangeTableOrder(int newTableId, Order order)
-        {
-            bool result;
-            result = tableDAL.ChangeTableOrder(newTableId, order);
-            return result;
+            return tableDAL.GetAllTables();
         }
     }
 }

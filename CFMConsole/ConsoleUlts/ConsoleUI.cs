@@ -9,7 +9,6 @@ namespace UI
     {
         SizeBL sizeBL = new SizeBL();
         ProductBL productBL = new ProductBL();
-        TableBL tableBL = new TableBL();
         StaffBL staffBL = new StaffBL();
         public void Line()
         {
@@ -236,7 +235,7 @@ namespace UI
             AnsiConsole.Write(table.Centered());
         }
 
-        public void PrintNewProductsTable(List<Product> prlst, Staff staff, string title)
+        public void PrintNewProductsTable(List<Product> productList, Staff staff, string title)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
@@ -263,14 +262,14 @@ namespace UI
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
                 // Hiển thị sản phẩm trên trang hiện tại
                 int startIndex = (currentPage - 1) * pageSize;
-                int endIndex = Math.Min(startIndex + pageSize - 1, prlst.Count - 1);
+                int endIndex = Math.Min(startIndex + pageSize - 1, productList.Count - 1);
                 for (int i = startIndex; i <= endIndex; i++)
                 {
-                    table.AddRow($"{i + 1}", $"{prlst[i].ProductName}");
+                    table.AddRow($"{i + 1}", $"{productList[i].ProductName}");
                 }
                 AnsiConsole.Write(table.Centered());
                 var Pagination = new Spectre.Console.Table();
-                Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)prlst.Count / pageSize)}" + ">");
+                Pagination.AddColumn("<" + $"{currentPage}" + "/" + $"{Math.Ceiling((double)productList.Count / pageSize)}" + ">");
                 AnsiConsole.Write(Pagination.Centered().NoBorder());
                 AnsiConsole.Markup(@"Press the [Green]BUTTON (←)[/] to go back to the previous page, the [Green]BUTTON (→)[/] to go to the next page
 [Green]ENTER[/] to choose product by [green]PRODUCT NUMBER[/] or input [Green]PRODUCT NUMBER = 0[/] to [red]EXIT[/].");
@@ -285,7 +284,7 @@ namespace UI
                 }
                 else if (keyInfo.Key == ConsoleKey.RightArrow)
                 {
-                    if (currentPage < Math.Ceiling((double)prlst.Count / pageSize))
+                    if (currentPage < Math.Ceiling((double)productList.Count / pageSize))
                     {
                         currentPage++;
                     }
@@ -362,8 +361,6 @@ namespace UI
             }
         }
 
-        
-
         // Message Color
         public void RedMessage(string message)
         {
@@ -411,9 +408,6 @@ namespace UI
             AnsiConsole.Write(tableprint.Centered());
         }
 
-        
-        
-
         public void PrintSaleReceipt(Order order, Staff currentstaff, Staff staff, string title)
         {
             Console.Clear();
@@ -451,7 +445,7 @@ namespace UI
                 decimal amount = productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice * item.ProductQuantity;
                 string formattedAmount = amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
                 string formattedPrice = productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
-                innertable.AddRow($"{productBL.GetProductById(item.ProductId).ProductName}", $"({sizeBL.GetSizeByID(item.ProductSizeId).SizeProduct})", $"{formattedPrice + " VND"}", $"x{item.ProductQuantity}", $"{formattedAmount + " VND"}").NoBorder();
+                innertable.AddRow($"{productBL.GetProductById(item.ProductId).ProductName}", $"({sizeBL.GetSizeBySizeID(item.ProductSizeId).SizeProduct})", $"{formattedPrice + " VND"}", $"x{item.ProductQuantity}", $"{formattedAmount + " VND"}").NoBorder();
                 totalAmount += item.ProductQuantity * productBL.GetProductByIdAndSize(item.ProductId, item.ProductSizeId).ProductPrice;
             }
             string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
@@ -477,10 +471,10 @@ namespace UI
             return choice;
         }
 
-        public void About(Staff orderStaff)
+        public void About(Staff currentStaff)
         {
             Console.Clear();
-            ApplicationLogoAfterLogin(orderStaff);
+            ApplicationLogoAfterLogin(currentStaff);
             Title("ABOUT");
             var table = new Spectre.Console.Table();
             table.AddColumn(new TableColumn("ABOUT").Centered());
@@ -685,11 +679,11 @@ namespace UI
             {
                 if (listProducts[i].StatusInOrder == 1)
                 {
-                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][yellow]INPROGRESS[/][/]");
+                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeBySizeID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][yellow]INPROGRESS[/][/]");
                 }
                 else
                 {
-                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeByID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][green]CONFIRMED[/][/]");
+                    productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProducts[i].ProductId).ProductName}", $"{sizeBL.GetSizeBySizeID(listProducts[i].ProductSizeId).SizeProduct}", $"{listProducts[i].ProductQuantity}", "[bold][green]CONFIRMED[/][/]");
                 }
             }
             warp.AddRow(orderInfoTable.Centered().NoBorder());

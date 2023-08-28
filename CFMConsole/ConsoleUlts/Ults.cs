@@ -16,13 +16,12 @@ public class Ults
     ProductBL productBL = new ProductBL();
     OrderBL orderBL = new OrderBL();
     TableBL tableBL = new TableBL();
-    List<Product>? lstproduct;
 
     public void CreateOrder(Staff currentStaff)
     {
         bool active = true;
         Product product;
-        lstproduct = productBL.GetAllProductActive();
+        List<Product> lstproduct = productBL.GetAllProductActive();
         Order orders = new Order();
         while (active)
         {
@@ -78,6 +77,7 @@ public class Ults
                             switch (createAsk)
                             {
                                 case "Yes":
+                                    orders.OrderStatus = 1;
                                     AnsiConsole.Markup("Create Order: " + (orderBL.CreateOrder(orders) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                     Console.WriteLine("Your Order Id is : " + orders.OrderId);
                                     UI.PressAnyKeyToContinue();
@@ -253,14 +253,14 @@ public class Ults
                                         }
                                         else
                                         {
-                                            RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
+                                            RemoveProductsInOrder("REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
                                         }
                                     }
                                     if (order.ProductsList.Count() == 0)
                                         view = false;
                                     break;
                                 case "Change product in order":
-                                    List<Product> listProductChange = GetProductToChange(order.ProductsList, order, "CHANGE PRODUCT IN ORDER", staff, currentStaff);
+                                    List<Product> listProductChange = GetProductToChange(order, "CHANGE PRODUCT IN ORDER", staff, currentStaff);
                                     if (listProductChange == null)
                                         break;
                                     order.ProductsList = listProductChange;
@@ -279,7 +279,7 @@ public class Ults
                                     }
                                     break;
                                 case "Confirm product in order":
-                                    ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff, currentStaff);
+                                    ChangeProductStatusToComplete(order, "CONFIRM PRODUCT IN ORDER", staff, currentStaff);
                                     break;
                                 case "Change Table":
                                     bool checkExit = false;
@@ -296,7 +296,7 @@ public class Ults
                                             switch (continueChange)
                                             {
                                                 case "Yes":
-                                                    AnsiConsole.Markup("Update Order: " + (tableBL.ChangeTableOrder(newTable, order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
+                                                    AnsiConsole.Markup("Update Order: " + (orderBL.ChangeTableOrder(newTable, order) ? "[Green]SUCCESS[/] !\n" : "[Red]WRONG[/] !\n"));
                                                     checkExit = true;
                                                     order.TableID = newTable;
                                                     UI.PressAnyKeyToContinue();
@@ -373,13 +373,13 @@ public class Ults
                                     }
                                     else
                                     {
-                                        RemoveProductsInOrder(order.ProductsList, "REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
+                                        RemoveProductsInOrder("REMOVE PRODUCT IN ORDER", order, staff, currentStaff);
                                     }
                                     if (order.ProductsList.Count() == 0)
                                         view = false;
                                     break;
                                 case "Confirm product in order":
-                                    ChangeProductStatusToComplete(order.ProductsList, order, "CONFIRM PRODUCT IN ORDER", staff, currentStaff);
+                                    ChangeProductStatusToComplete(order, "CONFIRM PRODUCT IN ORDER", staff, currentStaff);
                                     break;
                                 case "Exit":
                                     view = false;
@@ -483,9 +483,7 @@ public class Ults
                                                 if (received % 1000 == 0)
                                                 {
                                                     decimal totalAmountInShop = 0;
-                                                    DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                                                    string selectedDateFormatted = date.ToString("yyyy/MM/dd");
-                                                    List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
+                                                    List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay();
                                                     foreach (Order order in listOrderComplete)
                                                     {
                                                         List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
@@ -984,7 +982,7 @@ public class Ults
         return order;
     }
 
-    public List<Product> GetProductToChange(List<Product> listProductInOrder, Persistence.Order order, string title, Staff staff, Staff currentStaff)
+    public List<Product> GetProductToChange(Persistence.Order order, string title, Staff orderStaff, Staff currentStaff)
     {
         bool active = true;
         List<Product> newList = new List<Product>();
@@ -999,26 +997,26 @@ public class Ults
             {
                 productId = 0;
                 sizeId = 0;
-                UI.PrintOrderDetails(listProductInOrder, currentStaff, order, title, staff.StaffName, 1);
+                UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, orderStaff.StaffName, 1);
                 AnsiConsole.Markup(" Input the order number of the product in the order to change (Input [green]0[/] to exit): ");
-                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= listProductInOrder.Count())
+                if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= order.ProductsList.Count())
                 {
                     if (productNumber == 0)
                     {
                         return null;
                     }
-                    else if (listProductInOrder[productNumber - 1].StatusInOrder == 1)
+                    else if (order.ProductsList[productNumber - 1].StatusInOrder == 1)
                     {
-                        for (int i = 0; i < listProductInOrder.Count(); i++)
+                        for (int i = 0; i < order.ProductsList.Count(); i++)
                         {
-                            if (listProductInOrder[i].ProductId == listProductInOrder[productNumber - 1].ProductId && listProductInOrder[i].ProductSizeId == listProductInOrder[productNumber - 1].ProductSizeId)
+                            if (order.ProductsList[i].ProductId == order.ProductsList[productNumber - 1].ProductId && order.ProductsList[i].ProductSizeId == order.ProductsList[productNumber - 1].ProductSizeId)
                             {
-                                productId = listProductInOrder[i].ProductId;
-                                sizeId = listProductInOrder[i].ProductSizeId;
+                                productId = order.ProductsList[i].ProductId;
+                                sizeId = order.ProductsList[i].ProductSizeId;
                             }
                         }
 
-                        foreach (Product item in listProductInOrder)
+                        foreach (Product item in order.ProductsList)
                         {
                             if (item.ProductId == productId && item.ProductSizeId != sizeId)
                             {
@@ -1076,18 +1074,18 @@ public class Ults
         return newList;
     }
 
-    public void ChangeProductStatusToComplete(List<Product> listProductsInOrder, Order order, string title, Staff staff, Staff currentStaff)
+    public void ChangeProductStatusToComplete(Order order, string title, Staff orderStaff, Staff currentStaff)
     {
         bool active = true;
 
         while (active)
         {
             string input;
-            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, title, staff.StaffName, 1);
+            UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, orderStaff.StaffName, 1);
             Dictionary<int, Product> productMap = new Dictionary<int, Product>();
-            for (int i = 0; i < listProductsInOrder.Count; i++)
+            for (int i = 0; i < order.ProductsList.Count; i++)
             {
-                productMap.Add(i + 1, listProductsInOrder[i]);
+                productMap.Add(i + 1, order.ProductsList[i]);
             }
             do
             {
@@ -1098,14 +1096,14 @@ public class Ults
                     active = false;
                     break;
                 }
-            } while (!IsValidNumberString(input, listProductsInOrder));
+            } while (!IsValidNumberString(input));
 
             if (active == false)
                 break;
             string[] targetNumberStrings = input.Split(',');
             foreach (var targetNumberString in targetNumberStrings)
             {
-                if (int.TryParse(targetNumberString.Trim(), out int targetNumber) && targetNumber > 0 && targetNumber <= listProductsInOrder.Count)
+                if (int.TryParse(targetNumberString.Trim(), out int targetNumber) && targetNumber > 0 && targetNumber <= order.ProductsList.Count)
                 {
                     if (productMap.TryGetValue(targetNumber, out Product productToUpdate))
                     {
@@ -1123,7 +1121,7 @@ public class Ults
             }
 
             List<Product> updatedProductList = productMap.Values.ToList();
-            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, "CONFIRM PRODUCT IN ORDER", staff.StaffName, 0);
+            UI.PrintOrderDetails(order.ProductsList, currentStaff, order, "CONFIRM PRODUCT IN ORDER", orderStaff.StaffName, 0);
             string confirmAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
             switch (confirmAsk)
             {
@@ -1237,18 +1235,18 @@ public class Ults
 
     }
 
-    public void RemoveProductsInOrder(List<Product> listProductsInOrder, string title, Order order, Staff staff, Staff currentStaff)
+    public void RemoveProductsInOrder(string title, Order order, Staff orderStaff, Staff currentStaff)
     {
         bool active = true;
         while (active)
         {
 
             string input;
-            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, title, staff.StaffName, 1);
+            UI.PrintOrderDetails(order.ProductsList, currentStaff, order, title, orderStaff.StaffName, 1);
             Dictionary<int, Product> productMap = new Dictionary<int, Product>();
-            for (int i = 0; i < listProductsInOrder.Count; i++)
+            for (int i = 0; i < order.ProductsList.Count; i++)
             {
-                productMap.Add(i + 1, listProductsInOrder[i]);
+                productMap.Add(i + 1, order.ProductsList[i]);
             }
             do
             {
@@ -1259,7 +1257,7 @@ public class Ults
                     active = false;
                     break;
                 }
-            } while (!IsValidNumberString(input, listProductsInOrder));
+            } while (!IsValidNumberString(input));
 
             if (active == false)
                 break;
@@ -1268,7 +1266,7 @@ public class Ults
             List<int> targetNumbers = new List<int>();
             foreach (var targetNumberString in targetNumberStrings)
             {
-                if (int.TryParse(targetNumberString.Trim(), out int targetNumber) && targetNumber > 0 && targetNumber <= listProductsInOrder.Count)
+                if (int.TryParse(targetNumberString.Trim(), out int targetNumber) && targetNumber > 0 && targetNumber <= order.ProductsList.Count)
                 {
                     targetNumbers.Add(targetNumber);
                 }
@@ -1290,7 +1288,7 @@ public class Ults
                     productNumbersComplete.Add(targetNumber);
                 }
             }
-            if (productsToRemove.Count() == listProductsInOrder.Count())
+            if (productsToRemove.Count() == order.ProductsList.Count())
             {
                 string deleteOrderAsk = UI.Ask("You have selected all the products in your order,Do you want to [Green]DELETE[/] this order?");
                 switch (deleteOrderAsk)
@@ -1313,10 +1311,10 @@ public class Ults
             }
             foreach (var productToRemove in productsToRemove)
             {
-                listProductsInOrder.Remove(productToRemove);
+                order.ProductsList.Remove(productToRemove);
             }
 
-            UI.PrintOrderDetails(listProductsInOrder, currentStaff, order, "REMOVE PRODUCT IN ORDER", staff.StaffName, 2);
+            UI.PrintOrderDetails(order.ProductsList, currentStaff, order, "REMOVE PRODUCT IN ORDER", orderStaff.StaffName, 2);
             string deleteAsk = UI.Ask("This is your order after update, do you want to [Green]CONINUE[/] compltete ?");
             switch (deleteAsk)
             {
@@ -1358,7 +1356,7 @@ public class Ults
         }
     }
 
-    public bool IsValidNumberString(string input, List<Product> productList)
+    public bool IsValidNumberString(string input)
     {
 
         // Sử dụng biểu thức chính quy để kiểm tra chuỗi có chứa chỉ số và dấu phẩy hay không
@@ -1434,14 +1432,14 @@ public class Ults
         return result;
     }
 
-    public int ChooseProductsize(Staff staff, int productId, string title)
+    public int ChooseProductsize(Staff currentStaff, int productId, string title)
     {
         string[] size = { "Size S", "Size M", "Size L", "Choose another product" };
         int sizeId = 0;
         bool active = true;
         while (active)
         {
-            UI.ApplicationLogoAfterLogin(staff);
+            UI.ApplicationLogoAfterLogin(currentStaff);
             UI.Title(title);
             if (title == "CREATE ORDER")
             {
@@ -1658,9 +1656,7 @@ public class Ults
         List<Order> listOrderTakeAwayUnComplete = orderBL.GetTakeAwayOrders();
         UI.PrintListOrderInProgress(listOrderInBarUnComplete, listOrderTakeAwayUnComplete, currentStaff, "CHECK OUT");
         decimal totalAmountInShop = 0;
-        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-        string selectedDateFormatted = date.ToString("yyyy/MM/dd");
-        List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay(selectedDateFormatted);
+        List<Order> listOrderComplete = orderBL.GetOrdersCompleteInDay();
         foreach (Order order in listOrderComplete)
         {
             List<Product> productsInOrder = productBL.GetListProductsInOrder(order.OrderId);
@@ -1687,21 +1683,43 @@ public class Ults
     }
 
     public string ChangePasswordMD5(string password)
+    {
+        // Creates an instance of the default implementation of the MD5 hash algorithm.
+        using (var md5Hash = MD5.Create())
         {
-            // Creates an instance of the default implementation of the MD5 hash algorithm.
-            using (var md5Hash = MD5.Create())
-            {
-                // Byte array representation of source string
-                var sourceBytes = Encoding.UTF8.GetBytes(password);
+            // Byte array representation of source string
+            var sourceBytes = Encoding.UTF8.GetBytes(password);
 
-                // Generate hash value(Byte Array) for input data
-                var hashBytes = md5Hash.ComputeHash(sourceBytes);
+            // Generate hash value(Byte Array) for input data
+            var hashBytes = md5Hash.ComputeHash(sourceBytes);
 
-                // Convert hash byte array to string
-                var passwordMD5 = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
+            // Convert hash byte array to string
+            var passwordMD5 = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
 
-                return passwordMD5;
-            }
-
+            return passwordMD5;
         }
+
+    }
+    public string GetPassword()
+    {
+        string Password = "";
+        ConsoleKey key;
+        do
+        {
+            var keyInfo = Console.ReadKey(intercept: true);
+            key = keyInfo.Key;
+
+            if (key == ConsoleKey.Backspace && Password.Length > 0)
+            {
+                Console.Write("\b \b");
+                Password = Password[0..^1];
+            }
+            else if (!char.IsControl(keyInfo.KeyChar))
+            {
+                Console.Write("*");
+                Password += keyInfo.KeyChar;
+            }
+        } while (key != ConsoleKey.Enter);
+        return Password;
+    }
 }

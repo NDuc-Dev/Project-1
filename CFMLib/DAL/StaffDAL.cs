@@ -57,13 +57,11 @@ namespace DAL
             return staff;
         }
 
-        
-
         public Staff CheckAuthorize(string UserName, string Password)
         {
             Staff staff = new Staff();
             staff = GetStaffAccount(UserName);
-            if (staff.Password == ChangePasswordMD5(Password) && staff.StaffStatus == 1)
+            if (staff.Password ==Password && staff.StaffStatus == 1)
             {
                 return staff;
             }
@@ -108,8 +106,6 @@ namespace DAL
         public Staff GetLastStaffLogOut()
         {
             Staff staff = new Staff();
-            // using (MySqlCommand cmd = connection.CreateCommand())
-            // using (MySqlCommand command = new MySqlCommand(query, connection))
             try
             {
                 string query = "SELECT *FROM login_details ORDER BY login_time DESC LIMIT 1;";
@@ -133,7 +129,7 @@ namespace DAL
             return staff;
         }
 
-        public bool UpdateLogoutTime(string time, decimal total)
+        public bool UpdateLogoutTime(string timeFormat, decimal total)
         {
             bool result = false;
             try
@@ -157,7 +153,7 @@ namespace DAL
                         }
                         reader.Close();
                         
-                        cmd.CommandText = $"update login_details set logout_time = '{time}', total_amount_in_shop = @total where login_id = @loginId;";
+                        cmd.CommandText = $"update login_details set logout_time = '{timeFormat}', total_amount_in_shop = @total where login_id = @loginId;";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@total",total);
                         cmd.Parameters.AddWithValue("@loginId", loginId);

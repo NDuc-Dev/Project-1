@@ -1,4 +1,3 @@
-using System.Dynamic;
 using MySqlConnector;
 using Persistence;
 
@@ -268,54 +267,6 @@ namespace DAL
             return result;
         }
 
-        public bool ConfirmOrder(Order order)
-        {
-            bool result = false;
-            try
-            {
-                using (MySqlTransaction trans = connection.BeginTransaction())
-                using (MySqlCommand cmd = connection.CreateCommand())
-                    try
-                    {
-                        cmd.Connection = connection;
-                        cmd.Transaction = trans;
-                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, Order_Details write;";
-                        cmd.ExecuteNonQuery();
-
-                        //delete old order
-                        cmd.CommandText = "update Orders set order_status = 2 where order_Id = @orderId ;";
-                        cmd.Parameters.Clear();
-                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
-                        cmd.ExecuteNonQuery();
-
-                        //commit transaction
-                        trans.Commit();
-                        result = true;
-                        // trans.Rollback();
-                    }
-                    catch (Exception ex)
-                    {
-
-                        try
-                        {
-                            Console.WriteLine($"ERROR: {ex.Message}");
-                            trans.Rollback();
-                        }
-                        catch { }
-                    }
-                    finally
-                    {
-                        //unlock all tables;
-                        cmd.CommandText = "unlock tables;";
-                        cmd.ExecuteNonQuery();
-                    }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ERROR: {ex.Message}");
-            }
-            return result;
-        }
         internal Order GetOrder(MySqlDataReader reader)
         {
             Order order = new Order();
@@ -353,44 +304,6 @@ namespace DAL
             {
                 MySqlCommand command = new MySqlCommand("", connection);
                 query = @"select * from orders where order_status = 1 and order_table = 0 or order_status = 2 and order_table = 0;";
-                command.CommandText = query;
-                MySqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    listOrder.Add(GetOrder(reader));
-                }
-                reader.Close();
-            }
-            catch { }
-            return listOrder;
-        }
-
-        public List<Order> GetAllOrdersInprogress()
-        {
-            List<Order> listOrder = new List<Order>();
-            try
-            {
-                MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from orders where order_status = 1 or order_status = 2 ;";
-                command.CommandText = query;
-                MySqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    listOrder.Add(GetOrder(reader));
-                }
-                reader.Close();
-            }
-            catch { }
-            return listOrder;
-        }
-
-        public List<Order> GetOrdersConfirmed()
-        {
-            List<Order> listOrder = new List<Order>();
-            try
-            {
-                MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from orders where order_status = 2;";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -492,13 +405,16 @@ namespace DAL
             return order;
         }
 
-        public List<Order> GetOrdersCompleted()
+
+        public List<Order> GetOrdersCompleteInDay()
         {
             List<Order> listOrder = new List<Order>();
+            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+            string DateFormatted = date.ToString("yyyy/MM/dd");
             try
             {
                 MySqlCommand command = new MySqlCommand("", connection);
-                query = @"select * from orders where order_status = 3;";
+                query = @$"SELECT * FROM orders WHERE DATE(order_date) = '{DateFormatted}' and order_status = '3';";
                 command.CommandText = query;
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -510,24 +426,69 @@ namespace DAL
             catch { }
             return listOrder;
         }
-
-        public List<Order> GetOrdersCompleteInDay(string Now)
+    
+            public bool ChangeTableOrder(int newTableId, Order order)
         {
-            List<Order> listOrder = new List<Order>();
+            bool result = false;
             try
             {
-                MySqlCommand command = new MySqlCommand("", connection);
-                query = @$"SELECT * FROM orders WHERE DATE(order_date) = '{Now}' and order_status = '3';";
-                command.CommandText = query;
-                MySqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    listOrder.Add(GetOrder(reader));
-                }
-                reader.Close();
+                using (MySqlTransaction trans = connection.BeginTransaction())
+                using (MySqlCommand cmd = connection.CreateCommand())
+                    try
+                    {
+                        cmd.Connection = connection;
+                        cmd.Transaction = trans;
+                        cmd.CommandText = "lock tables Orders write, staffs write, product_sizes write, tables write, sizes write, Order_Details write;";
+                        cmd.ExecuteNonQuery();
+
+                        //change status old table to 0
+                        cmd.CommandText = "UPDATE tables SET table_status = 0 WHERE table_id = @tableId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@tableId", order.TableID);
+                        cmd.ExecuteNonQuery();
+
+                        //change table id in current order to new table id
+                        cmd.CommandText = "UPDATE orders SET order_table = @newTableId WHERE order_id = @orderId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@newTableId", newTableId);
+                        cmd.Parameters.AddWithValue("@orderId", order.OrderId);
+                        cmd.ExecuteNonQuery();
+
+
+                        //change status new table to 1
+                        cmd.CommandText = "UPDATE tables SET table_status = 1 WHERE table_id = @tableId;";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@tableId", newTableId);
+                        cmd.ExecuteNonQuery();
+
+                        //commit transaction
+                        trans.Commit();
+                        result = true;
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            trans.Rollback();
+                        }
+                        catch (MySqlException ex)
+                        {
+                            Console.WriteLine($"ERROR: {ex.Message}");
+                        }
+                    }
+                    finally
+                    {
+                        //unlock all tables;
+                        cmd.CommandText = "unlock tables;";
+                        cmd.ExecuteNonQuery();
+                    }
+
             }
-            catch { }
-            return listOrder;
+            catch (MySqlException ex)
+            {
+                Console.WriteLine($"ERR: {ex.Message}");
+            }
+            return result;
         }
     }
 }

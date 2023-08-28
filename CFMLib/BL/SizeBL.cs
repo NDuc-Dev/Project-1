@@ -5,8 +5,6 @@ namespace BL
 {
     public class SizeBL
     {
-        private SizeDAL sizeDAL = new SizeDAL();
-
         public Size GetSizeSByProductID(int productId)
         {
             return new SizeDAL().GetSizeSByProductID(productId);
@@ -22,7 +20,7 @@ namespace BL
             return new SizeDAL().GetSizeLByProductID(productId);
         }
 
-        public Size GetSizeByID(int sizeId)
+        public Size GetSizeBySizeID(int sizeId)
         {
             return new SizeDAL().GetSizeBySizeId(sizeId);
         }

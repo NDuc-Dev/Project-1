@@ -30,12 +30,6 @@ namespace BL
             return productDAL.GetListProductsInOrder(orderId);
         }
 
-        public bool UpdateProductStatusInOrder(Product product, Order order)
-        {
-            bool result = productDAL.UpdateProductStatusInOrder(product, order);
-            return result;
-        }
-
         public List<Product> GetListAllProductInStock()
         {
             return productDAL.GetListAllProductInstock();

@@ -10,28 +10,6 @@ namespace BL
         {
             return new StaffDAL().GetStaffById(staffId);
         }
-        public string GetPassword()
-        {
-            string Password = "";
-            ConsoleKey key;
-            do
-            {
-                var keyInfo = Console.ReadKey(intercept: true);
-                key = keyInfo.Key;
-
-                if (key == ConsoleKey.Backspace && Password.Length > 0)
-                {
-                    Console.Write("\b \b");
-                    Password = Password[0..^1];
-                }
-                else if (!char.IsControl(keyInfo.KeyChar))
-                {
-                    Console.Write("*");
-                    Password += keyInfo.KeyChar;
-                }
-            } while (key != ConsoleKey.Enter);
-            return Password;
-        }
 
         public Staff CheckAuthorize(string userName, string Password)
         {
@@ -53,9 +31,9 @@ namespace BL
             return staffDAL.InsertNewLoginDetails(staff);
         }
 
-        public bool UpdateLogoutTime(string time, decimal total)
+        public bool UpdateLogoutTime(string timeFormat, decimal total)
         {
-            return staffDAL.UpdateLogoutTime(time, total);
+            return staffDAL.UpdateLogoutTime(timeFormat, total);
         }
 
         public bool InsertProblemLogin(string problem)
