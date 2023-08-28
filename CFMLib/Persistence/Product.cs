@@ -2,12 +2,6 @@ using System;
 
 namespace Persistence
 {
-    public static class ProductStatus
-    {
-        public const int NOT_ACTIVE = 0;
-        public const int ACTIVE = 1;
-    }
-
     public class Product
     {
         public int ProductId { set; get; }

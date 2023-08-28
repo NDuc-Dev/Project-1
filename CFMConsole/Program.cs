@@ -37,7 +37,8 @@ public class Program
             {
                 Console.Write("Password: ");
                 string password = staffBL.GetPassword();
-                currentStaff = staffBL.CheckAuthorize(UserName, password);
+                string passwordMD5 = Ultilities.ChangePasswordMD5(password);
+                currentStaff = staffBL.CheckAuthorize(UserName, passwordMD5);
             }
 
             if (currentStaff != null)

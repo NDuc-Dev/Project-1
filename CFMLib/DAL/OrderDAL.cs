@@ -34,7 +34,7 @@ namespace DAL
                         cmd.CommandText = "insert into Orders(order_staff_id, order_status, order_table) values (@staffId, @orderStatus, @orderTable);";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@staffId", order.OrderStaffID);
-                        cmd.Parameters.AddWithValue("@orderStatus", OrderStatus.ORDER_INPROGRESS);
+                        cmd.Parameters.AddWithValue("@orderStatus", order.OrderStatus);
                         cmd.Parameters.AddWithValue("@orderTable", order.TableID);
                         cmd.ExecuteNonQuery();
 

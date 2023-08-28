@@ -1,7 +1,6 @@
 using MySqlConnector;
 using Persistence;
-using System.Security.Cryptography;
-using System.Text;
+
 
 namespace DAL
 {
@@ -58,24 +57,7 @@ namespace DAL
             return staff;
         }
 
-        public string ChangePasswordMD5(string password)
-        {
-            // Creates an instance of the default implementation of the MD5 hash algorithm.
-            using (var md5Hash = MD5.Create())
-            {
-                // Byte array representation of source string
-                var sourceBytes = Encoding.UTF8.GetBytes(password);
-
-                // Generate hash value(Byte Array) for input data
-                var hashBytes = md5Hash.ComputeHash(sourceBytes);
-
-                // Convert hash byte array to string
-                var passwordMD5 = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
-
-                return passwordMD5;
-            }
-
-        }
+        
 
         public Staff CheckAuthorize(string UserName, string Password)
         {
@@ -270,6 +252,7 @@ namespace DAL
             }
             return result;
         }
+        
         public bool InsertNewLoginDetails(Staff staff)
         {
             bool result = false;
