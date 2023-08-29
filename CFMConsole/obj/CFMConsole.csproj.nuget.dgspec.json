@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj": {}
+    "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj": {}
   },
   "projects": {
-    "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj": {
+    "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
+        "projectUniqueName": "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
         "projectName": "CFMConsole",
-        "projectPath": "C:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
-        "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
-        "outputPath": "C:\\VTC\\Project-1\\CFMConsole\\obj\\",
+        "projectPath": "c:\\VTC\\Project-1\\CFMConsole\\CFMConsole.csproj",
+        "packagesPath": "C:\\Users\\ditvu\\.nuget\\packages\\",
+        "outputPath": "c:\\VTC\\Project-1\\CFMConsole\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\ditvu\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -26,8 +26,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj": {
-                "projectPath": "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj"
+              "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj": {
+                "projectPath": "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj"
               }
             }
           }
@@ -71,17 +71,17 @@
         }
       }
     },
-    "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj": {
+    "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj",
+        "projectUniqueName": "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj",
         "projectName": "CFMLib",
-        "projectPath": "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj",
-        "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
-        "outputPath": "C:\\VTC\\Project-1\\CFMLib\\obj\\",
+        "projectPath": "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj",
+        "packagesPath": "C:\\Users\\ditvu\\.nuget\\packages\\",
+        "outputPath": "c:\\VTC\\Project-1\\CFMLib\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\ditvu\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"

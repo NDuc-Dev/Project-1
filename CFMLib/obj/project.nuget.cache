@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "5sjWCQptwRbREjb0QE5i1oWWKby67fWVf2pzc2mxsgEo82CeuSJjkS7d3YNjnCI4IAsffndUdO0dkHAi6NGQhA==",
+  "dgSpecHash": "ikZpt/KYhjK3j4y8fTzPfdQjEyvAKoH5a1JHFXLrlpIBa/RzfUb0FfTgGY/zxZ2apj0INrcBHivMXXP6IlZlPQ==",
   "success": true,
-  "projectFilePath": "C:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj",
+  "projectFilePath": "c:\\VTC\\Project-1\\CFMLib\\CFMLib.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\pc\\.nuget\\packages\\mysqlconnector\\2.2.6\\mysqlconnector.2.2.6.nupkg.sha512"
+    "C:\\Users\\ditvu\\.nuget\\packages\\mysqlconnector\\2.2.6\\mysqlconnector.2.2.6.nupkg.sha512"
   ],
   "logs": []
 }
