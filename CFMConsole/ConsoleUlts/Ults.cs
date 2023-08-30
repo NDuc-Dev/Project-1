@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text;
 
+
 namespace Ultilities;
 
 public class Ults
@@ -16,6 +17,7 @@ public class Ults
     ProductBL productBL = new ProductBL();
     OrderBL orderBL = new OrderBL();
     TableBL tableBL = new TableBL();
+    SizeBL sizeBL = new SizeBL();
 
     public void CreateOrder(Staff currentStaff)
     {
@@ -32,7 +34,6 @@ public class Ults
             bool continuee = false;
             do
             {
-
                 bool checkDup = true;
                 if (orders.ProductsList.Count() == 0)
                 {
@@ -47,22 +48,24 @@ public class Ults
                 {
                     break;
                 }
-                product = GetProductToAddToOrder(lstproduct, currentStaff, "CREATE ORDER");
-                if (product != null)
+                product = GetProductToAddToOrder(lstproduct, currentStaff, "CREATE ORDER", orders.ProductsList);
+                if (product != null || (product == null && orders.ProductsList.Count() > 0))
                 {
                     orders.OrderStaffID = currentStaff.StaffId;
-
-                    foreach (Product item in orders.ProductsList)
+                    if (product != null)
                     {
-                        if (item.ProductId == product.ProductId && item.ProductSizeId == product.ProductSizeId)
+                        foreach (Product item in orders.ProductsList)
                         {
-                            item.ProductQuantity += product.ProductQuantity;
-                            checkDup = false;
+                            if (item.ProductId == product.ProductId && item.ProductSizeId == product.ProductSizeId)
+                            {
+                                item.ProductQuantity += product.ProductQuantity;
+                                checkDup = false;
+                            }
                         }
-                    }
-                    if (checkDup == true)
-                    {
-                        orders.ProductsList.Add(product);
+                        if (checkDup == true)
+                        {
+                            orders.ProductsList.Add(product);
+                        }
                     }
                     string addAsk = UI.Ask("[Green]Add product to order complete[/], do you want to [Green]CREATE ORDER[/] (Choose [red]No[/] to CONTINUE add product) ?");
                     switch (addAsk)
@@ -92,7 +95,7 @@ public class Ults
                             break;
                     }
                 }
-                else
+                else if (product == null && orders.ProductsList.Count() == 0)
                 {
                     active = false;
                     break;
@@ -161,7 +164,7 @@ public class Ults
                                             {
                                                 break;
                                             }
-                                            product = GetProductToAddToOrder(listAllProducts, currentStaff, "ADD PRODUCT TO ORDER");
+                                            product = GetProductToAddToOrder(listAllProducts, currentStaff, "ADD PRODUCT TO ORDER", order.ProductsList);
                                             if (product != null)
                                             {
                                                 foreach (Product item in order.ProductsList)
@@ -475,7 +478,6 @@ public class Ults
                                                 string formattedTotal = totalAmount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
                                                 AnsiConsole.Markup($"The total amount you have to pay is [green]{formattedTotal} VND[/].\n");
                                                 decimal received = InputTotal();
-                                                // string receivedFormat = received.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));
                                                 if (received == -1)
                                                 {
                                                     break;
@@ -818,7 +820,7 @@ public class Ults
         }
     }
 
-    public Product GetProductToAddToOrder(List<Product> lstproduct, Staff orderStaff, string title)
+    public Product GetProductToAddToOrder(List<Product> lstproduct, Staff orderStaff, string title, List<Product> listProductInOrder)
     {
         bool active = true;
         Product product = new Product();
@@ -827,7 +829,7 @@ public class Ults
         {
             do
             {
-                UI.PrintNewProductsTable(lstproduct, orderStaff, title);
+                UI.PrintNewProductsTable(lstproduct, orderStaff, title, listProductInOrder);
                 AnsiConsole.Markup("Product Number: ");
                 int productNumber;
                 if (int.TryParse(Console.ReadLine(), out productNumber) && productNumber >= 0 && productNumber <= lstproduct.Count)
@@ -1033,7 +1035,7 @@ public class Ults
                                 newList.Add(item);
                             }
                         }
-                        newProduct = GetProductToAddToOrder(productBL.GetAllProductActive(), currentStaff, title);
+                        newProduct = GetProductToAddToOrder(productBL.GetAllProductActive(), currentStaff, title, order.ProductsList);
                         if (newProduct != null)
                         {
                             bool checkDup = true;

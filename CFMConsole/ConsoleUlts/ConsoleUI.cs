@@ -235,7 +235,7 @@ namespace UI
             AnsiConsole.Write(table.Centered());
         }
 
-        public void PrintNewProductsTable(List<Product> productList, Staff staff, string title)
+        public void PrintNewProductsTable(List<Product> productList, Staff staff, string title, List<Product> listProductsInOrder)
         {
             int pageSize = 5; // Số sản phẩm mỗi trang
             int currentPage = 1; // Trang hiện tại
@@ -257,9 +257,24 @@ namespace UI
                 {
                     TimeLine(TimeLineContent(2, "CHANGE PRODUCT IN ORDER"));
                 }
+                if (listProductsInOrder.Count() > 0)
+                {
+                    var productTable = new Spectre.Console.Table();
+                    productTable.AddColumn(new TableColumn("NO").LeftAligned());
+                    productTable.AddColumn(new TableColumn("Product Name").LeftAligned());
+                    productTable.AddColumn(new TableColumn("Product Size").Centered());
+                    productTable.AddColumn(new TableColumn("Quantity").Centered());
+                    productTable.Title("Products In Order");
+                    for (int i = 0; i < listProductsInOrder.Count(); i++)
+                    {
+                        productTable.AddRow($"{i + 1}", $"{productBL.GetProductById(listProductsInOrder[i].ProductId).ProductName}", $"{sizeBL.GetSizeBySizeID(listProductsInOrder[i].ProductSizeId).SizeProduct}", $"{listProductsInOrder[i].ProductQuantity}");
+                    }
+                    AnsiConsole.Write(productTable.Centered());
+                }
                 var table = new Spectre.Console.Table();
                 table.AddColumn(new TableColumn("No").Centered());
                 table.AddColumn(new TableColumn("Product Name").LeftAligned());
+                table.Title("Menu");
                 // Hiển thị sản phẩm trên trang hiện tại
                 int startIndex = (currentPage - 1) * pageSize;
                 int endIndex = Math.Min(startIndex + pageSize - 1, productList.Count - 1);

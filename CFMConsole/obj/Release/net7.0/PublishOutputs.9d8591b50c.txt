@@ -1,0 +1,9 @@
+C:\VTC\CSMApp_Publish_Version_1.0.0\CFMConsole.exe
+C:\VTC\CSMApp_Publish_Version_1.0.0\CFMConsole.dll
+C:\VTC\CSMApp_Publish_Version_1.0.0\CFMConsole.deps.json
+C:\VTC\CSMApp_Publish_Version_1.0.0\CFMConsole.runtimeconfig.json
+C:\VTC\CSMApp_Publish_Version_1.0.0\CFMConsole.pdb
+C:\VTC\CSMApp_Publish_Version_1.0.0\MySqlConnector.dll
+C:\VTC\CSMApp_Publish_Version_1.0.0\Spectre.Console.dll
+C:\VTC\CSMApp_Publish_Version_1.0.0\CFMLib.dll
+C:\VTC\CSMApp_Publish_Version_1.0.0\CFMLib.pdb

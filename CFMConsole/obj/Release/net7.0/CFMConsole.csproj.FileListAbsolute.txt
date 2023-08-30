@@ -3,8 +3,6 @@ C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\CFMConsole.deps.json
 C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\CFMConsole.runtimeconfig.json
 C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\CFMConsole.dll
 C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\CFMConsole.pdb
-C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\MySql.Data.dll
-C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\MySQLConnection.dll
 C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\MySqlConnector.dll
 C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\Spectre.Console.dll
 C:\VTC\Project-1\CFMConsole\bin\Release\net7.0\CFMLib.dll
